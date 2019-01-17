@@ -17,7 +17,10 @@ repositories {
 
 dependencies {
     compile(kotlin("stdlib-jdk8"))
-
+    compile(kotlin("reflect"))
+    testCompile(kotlin("test"))
+    testCompile(kotlin("test-junit"))
+    
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
 
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:${spek_version}")  {

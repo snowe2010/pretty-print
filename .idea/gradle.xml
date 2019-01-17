@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+          </set>
+        </option>
+        <option name="useAutoImport" value="true" />
+        <option name="useQualifiedModuleNames" value="true" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/../spek" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/../spek" />
+            <option value="$PROJECT_DIR$/../spek/distribution" />
+            <option value="$PROJECT_DIR$/../spek/integration-test" />
+            <option value="$PROJECT_DIR$/../spek/integration-test/common" />
+            <option value="$PROJECT_DIR$/../spek/integration-test/jvm" />
+            <option value="$PROJECT_DIR$/../spek/spek-dsl" />
+            <option value="$PROJECT_DIR$/../spek/spek-dsl/common" />
+            <option value="$PROJECT_DIR$/../spek/spek-dsl/jvm" />
+            <option value="$PROJECT_DIR$/../spek/spek-ide-plugin" />
+            <option value="$PROJECT_DIR$/../spek/spek-ide-plugin/intellij-base" />
+            <option value="$PROJECT_DIR$/../spek/spek-ide-plugin/intellij-base-jvm" />
+            <option value="$PROJECT_DIR$/../spek/spek-ide-plugin/intellij-idea" />
+            <option value="$PROJECT_DIR$/../spek/spek-ide-plugin/interop-jvm" />
+            <option value="$PROJECT_DIR$/../spek/spek-runner" />
+            <option value="$PROJECT_DIR$/../spek/spek-runner/junit5" />
+            <option value="$PROJECT_DIR$/../spek/spek-runtime" />
+            <option value="$PROJECT_DIR$/../spek/spek-runtime/common" />
+            <option value="$PROJECT_DIR$/../spek/spek-runtime/jvm" />
+          </set>
+        </option>
+        <option name="useAutoImport" value="true" />
+        <option name="useQualifiedModuleNames" value="true" />
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
