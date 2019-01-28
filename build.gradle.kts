@@ -20,7 +20,8 @@ dependencies {
     compile(kotlin("reflect"))
     testCompile(kotlin("test"))
     testCompile(kotlin("test-junit"))
-    
+
+    testImplementation("io.mockk:mockk:1.9.kotlin12")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
 
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:${spek_version}")  {
