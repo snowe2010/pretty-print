@@ -3,7 +3,6 @@ package com.tylerthrailkill.helpers.prettyprint
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.io.ByteArrayOutputStream
-import kotlin.test.assertEquals
 
 object NestedObjectTest : Spek({
     val outContent by memoized { ByteArrayOutputStream() }
@@ -175,11 +174,3 @@ object NestedObjectTest : Spek({
         }
     }
 })
-
-infix fun ByteArrayOutputStream.shouldRenderLike(expected: String) {
-    assertEquals(
-        expected.trimIndent(),
-        this.toString().trim().replace("\r", "")
-    )
-}
-
