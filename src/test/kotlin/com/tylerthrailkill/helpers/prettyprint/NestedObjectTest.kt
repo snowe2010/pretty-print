@@ -32,6 +32,7 @@ object NestedObjectTest : Spek({
         val nestedObject = NestedSmallObject(SmallObject("a", 1))
         test("render a single field with multiple subfields") {
             pp(nestedObject)
+            p(outContent)
             outContent shouldRenderLike """
                 NestedSmallObject(
                   smallObject = SmallObject(
@@ -56,6 +57,7 @@ object NestedObjectTest : Spek({
         )
         test("render many nested fields") {
             pp(nestedObject)
+            p(outContent)
             outContent shouldRenderLike """
                 NestedLargeObject(
                   nestedSmallObject = NestedSmallObject(
@@ -103,13 +105,105 @@ object NestedObjectTest : Spek({
                 )
                 """
         }
+
+        test("render a single string in a collection") {
+            val nestedObject = NestedObjectWithCollection(
+                listOf("a string with spaces")
+            )
+            pp(nestedObject)
+            p(outContent)
+            outContent shouldRenderLike """
+                NestedObjectWithCollection(
+                  coll = [
+                           "a string with spaces"
+                         ]
+                )
+                """
+        }
+
+        test("render multiple objects in a collection, with commas") {
+            val nestedObject = NestedObjectWithCollection(
+                listOf(1, 2)
+            )
+            pp(nestedObject)
+            p(outContent)
+            outContent shouldRenderLike """
+                NestedObjectWithCollection(
+                  coll = [
+                           1,
+                           2
+                         ]
+                )
+                """
+        }
+
+        test("render a single nested object in a collection") {
+            val nestedObject = NestedObjectWithCollection(
+                listOf(NestedSmallObject(SmallObject("a", 1)))
+            )
+            pp(nestedObject)
+            p(outContent)
+            outContent shouldRenderLike """
+                NestedObjectWithCollection(
+                  coll = [
+                           NestedSmallObject(
+                             smallObject = SmallObject(
+                               field1 = a
+                               field2 = 1
+                             )
+                           )
+                         ]
+                )
+                """
+        }
+
+        test("render a multiple nested objects in a collection, with commas") {
+            val nestedObject = NestedObjectWithCollection(
+                listOf(NestedSmallObject(SmallObject("a", 1)),
+                    NestedSmallObject(SmallObject("a", 1)),
+                    NestedSmallObject(SmallObject("a", 1)),
+                    NestedSmallObject(SmallObject("a", 1)))
+            )
+            pp(nestedObject)
+            p(outContent)
+            outContent shouldRenderLike """
+                NestedObjectWithCollection(
+                  coll = [
+                           NestedSmallObject(
+                             smallObject = SmallObject(
+                               field1 = a
+                               field2 = 1
+                             )
+                           ),
+                           NestedSmallObject(
+                             smallObject = SmallObject(
+                               field1 = a
+                               field2 = 1
+                             )
+                           ),
+                           NestedSmallObject(
+                             smallObject = SmallObject(
+                               field1 = a
+                               field2 = 1
+                             )
+                           ),
+                           NestedSmallObject(
+                             smallObject = SmallObject(
+                               field1 = a
+                               field2 = 1
+                             )
+                           )
+                         ]
+                )
+                """
+        }
     }
 })
 
 infix fun ByteArrayOutputStream.shouldRenderLike(expected: String) {
     assertEquals(
-        this.toString().trim().replace("\r", ""),
-        expected.trimIndent()
+        expected.trimIndent(),
+        this.toString().trim().replace("\r", "")
     )
 }
 

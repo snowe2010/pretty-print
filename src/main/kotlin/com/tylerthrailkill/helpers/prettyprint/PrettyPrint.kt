@@ -9,45 +9,56 @@ fun pp(obj: Any?) {
     recurse(obj)
 }
 
-fun recurse(obj: Any?, numberOfTabs: Int = 0) {
-    val padString = " ".repeat(numberOfTabs * TAB_SIZE)
-
+fun recurse(obj: Any?, currentDepth: String = "") {
     val className = "${obj?.javaClass?.simpleName}("
-    writeLine(className)
+    write(className)
 
     obj?.javaClass?.declaredFields?.forEach {
+        val pad = deepen(currentDepth)
         it.isAccessible = true
-        val padString = " ".repeat((numberOfTabs + 1) * TAB_SIZE) // shadow padString to nest properly
-        write("$padString${it.name} = ")
+        println()
+        write("$pad${it.name} = ")
         val fieldValue = it.get(obj)
         when {
-            fieldValue is Iterable<*> -> recurseIterable(fieldValue, it.name.length + 3, numberOfTabs)
-            fieldValue == null -> writeLine("null")
-            fieldValue.javaClass.name.startsWith("java") -> writeLine(fieldValue.toString())
-            else -> recurse(fieldValue, numberOfTabs + 1)
+            fieldValue is Iterable<*> -> recurseIterable(fieldValue, deepen(pad, it.name.length + 3))
+            fieldValue == null -> write("null")
+            fieldValue.javaClass.name.startsWith("java") -> write(fieldValue.toString())
+            else -> recurse(fieldValue, deepen(currentDepth))
         }
     }
-    writeLine("$padString)")
+    println()
+    write("$currentDepth)")
 }
 
-fun recurseIterable(obj: Iterable<*>, initialDepth: Int, numberOfTabs: Int) {
-    val padDepth = (numberOfTabs + 1) * TAB_SIZE
-    val iterableDepth = initialDepth + padDepth
-    val iterableString = " ".repeat(iterableDepth)
+fun recurseIterable(obj: Iterable<*>, currentDepth: String) {
+    var commas = obj.count() // comma counter
 
+    // begin writing the iterable
     writeLine("[")
     obj.forEach {
-        write(iterableString + " ".repeat(TAB_SIZE))
-        if (it is String) {
-            write('"')
+        val increasedDepth = currentDepth + " ".repeat(TAB_SIZE)
+        write(increasedDepth) // write leading spacing
+        when {
+            it == null -> write("null")
+            it.javaClass.name.startsWith("java") -> {
+                if (it is String) {
+                    write('"')
+                }
+                write(it)
+                if (it is String) {
+                    write('"')
+                }
+            }
+            else -> recurse(it, increasedDepth)
         }
-        write(it)
-        if (it is String) {
-            write('"')
+        // add commas if not the last element
+        if (commas > 1) {
+            write(',')
+            commas--
         }
         println()
     }
-    writeLine("$iterableString]")
+    write("$currentDepth]")
 }
 
 fun writeLine(str: Any?) {
@@ -59,3 +70,5 @@ fun write(str: Any?) {
     logger.debug { "writing $str" }
     print(str)
 }
+
+fun deepen(currentDepth: String, modifier: Int? = null): String = " ".repeat(modifier ?: TAB_SIZE) + currentDepth

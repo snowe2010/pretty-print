@@ -18,5 +18,5 @@ data class NestedLargeObject(
 )
 
 data class NestedObjectWithCollection(
-    val coll: List<Int>
+    val coll: List<Any>
 )
