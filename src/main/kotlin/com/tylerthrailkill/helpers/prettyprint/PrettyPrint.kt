@@ -6,7 +6,11 @@ private val logger = KotlinLogging.logger {}
 private const val TAB_SIZE = 2
 
 fun pp(obj: Any?) {
-    recurse(obj)
+    when (obj) {
+        is Iterable<*> -> recurseIterable(obj, "")
+        is Map<*, *> -> recurseMap(obj, "")
+        else -> recurse(obj)
+    }
 }
 
 fun recurse(obj: Any?, currentDepth: String = "") {
@@ -19,8 +23,10 @@ fun recurse(obj: Any?, currentDepth: String = "") {
         println()
         write("$pad${it.name} = ")
         val fieldValue = it.get(obj)
+        logger.debug { "field value is ${fieldValue.javaClass}"}
         when {
             fieldValue is Iterable<*> -> recurseIterable(fieldValue, deepen(pad, it.name.length + 3))
+            fieldValue is Map<*, *> -> recurseMap(fieldValue, deepen(pad, it.name.length + 3))
             fieldValue == null -> write("null")
             fieldValue.javaClass.name.startsWith("java") -> write(fieldValue.toString())
             else -> recurse(fieldValue, deepen(currentDepth))
@@ -59,6 +65,51 @@ fun recurseIterable(obj: Iterable<*>, currentDepth: String) {
         println()
     }
     write("$currentDepth]")
+}
+
+fun recurseMap(obj: Map<*, *>, currentDepth: String) {
+    var commas = obj.count() // comma counter
+
+    // begin writing the iterable
+    writeLine("{")
+    obj.forEach {(k, v) ->
+        val increasedDepth = currentDepth + " ".repeat(TAB_SIZE)
+        write(increasedDepth) // write leading spacing
+        when {
+            k == null -> write("null")
+            k.javaClass.name.startsWith("java") -> {
+                if (k is String) {
+                    write('"')
+                }
+                write(k)
+                if (k is String) {
+                    write('"')
+                }
+            }
+            else -> recurse(k, increasedDepth)
+        }
+        write(" -> ")
+        when {
+            v == null -> write("null")
+            v.javaClass.name.startsWith("java") -> {
+                if (v is String) {
+                    write('"')
+                }
+                write(v)
+                if (v is String) {
+                    write('"')
+                }
+            }
+            else -> recurse(v, increasedDepth)
+        }
+        // add commas if not the last element
+        if (commas > 1) {
+            write(',')
+            commas--
+        }
+        println()
+    }
+    write("$currentDepth}")
 }
 
 fun writeLine(str: Any?) {
