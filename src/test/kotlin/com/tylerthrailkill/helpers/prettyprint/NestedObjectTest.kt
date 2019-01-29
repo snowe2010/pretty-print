@@ -1,52 +1,18 @@
 package com.tylerthrailkill.helpers.prettyprint
 
 import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.Suite
 import org.spekframework.spek2.style.specification.describe
 import java.io.ByteArrayOutputStream
-import java.io.PrintStream
 import kotlin.test.assertEquals
 
 object NestedObjectTest : Spek({
     val outContent by memoized { ByteArrayOutputStream() }
     val errContent by memoized { ByteArrayOutputStream() }
-    val originalOut = System.out
-    val originalErr = System.err
-
-    // Create new byte stream for each test
-    beforeEachTest {
-        System.setOut(PrintStream(outContent))
-        System.setErr(PrintStream(errContent))
-    }
-    afterEachTest {
-        System.setOut(originalOut)
-        System.setErr(originalErr)
-    }
-
-    fun debugPrint(outContent: ByteArrayOutputStream) {
-        System.setOut(originalOut)
-        println(outContent)
-    }
-
-    // Single test spot
-    fun Suite.mapsTo(expected: String) {
-        val testObject by memoized<Any>()
-        it("test value") {
-            pp(testObject)
-//            debugPrint(outContent)
-            outContent shouldRenderLike expected
-        }
-    }
-
-    fun testObject(obj: Any?) {
-        val testObject by memoized { obj }
-    }
+    setupStreams()
 
     describe("small nested object should") {
-        context("render a single field with multiple subfields") {
-            testObject(NestedSmallObject(SmallObject("a", 1)))
-            mapsTo(
-                """
+        it("render a single field with multiple subfields") {
+            prettyPrint(NestedSmallObject(SmallObject("a", 1))) mapsTo """
                 NestedSmallObject(
                   smallObject = SmallObject(
                     field1 = a
@@ -54,13 +20,13 @@ object NestedObjectTest : Spek({
                   )
                 )
                 """
-            )
+
         }
     }
 
     describe("nested large object should") {
-        context("render many nested fields") {
-            testObject(
+        it("render many nested fields") {
+            prettyPrint(
                 NestedLargeObject(
                     NestedSmallObject(SmallObject("smallObjectField1", 777)),
                     SmallObject("a field in top level nested large object", 17),
@@ -71,9 +37,7 @@ object NestedObjectTest : Spek({
                         "a test string in NestedLargeObject inner"
                     )
                 )
-            )
-            mapsTo(
-                """
+            ) mapsTo """
                 NestedLargeObject(
                   nestedSmallObject = NestedSmallObject(
                     smallObject = SmallObject(
@@ -102,53 +66,44 @@ object NestedObjectTest : Spek({
                   )
                 )
                 """
-            )
         }
     }
 
     describe("nested object with collection should") {
-        context("render a single item in a collection") {
-            testObject(
+        it("render a single item in a collection") {
+            prettyPrint(
                 NestedObjectWithCollection(
                     listOf(1)
                 )
-            )
-            mapsTo(
-                """
+            ) mapsTo """
                 NestedObjectWithCollection(
                   coll = [
                            1
                          ]
                 )
                 """
-            )
         }
 
-        context("render a single string in a collection") {
-            testObject(
+        it("render a single string in a collection") {
+            prettyPrint(
                 NestedObjectWithCollection(
                     listOf("a string with spaces")
                 )
-            )
-            mapsTo(
-                """
+            ) mapsTo """
                 NestedObjectWithCollection(
                   coll = [
                            "a string with spaces"
                          ]
                 )
                 """
-            )
         }
 
-        context("render multiple objects in a collection, with commas") {
-            testObject(
+        it("render multiple objects in a collection, with commas") {
+            prettyPrint(
                 NestedObjectWithCollection(
                     listOf(1, 2)
                 )
-            )
-            mapsTo(
-                """
+            ) mapsTo """
                 NestedObjectWithCollection(
                   coll = [
                            1,
@@ -156,17 +111,14 @@ object NestedObjectTest : Spek({
                          ]
                 )
                 """
-            )
         }
 
-        context("render a single nested object in a collection") {
-            testObject(
+        it("render a single nested object in a collection") {
+            prettyPrint(
                 NestedObjectWithCollection(
                     listOf(NestedSmallObject(SmallObject("a", 1)))
                 )
-            )
-            mapsTo(
-                """
+            ) mapsTo """
                 NestedObjectWithCollection(
                   coll = [
                            NestedSmallObject(
@@ -178,11 +130,10 @@ object NestedObjectTest : Spek({
                          ]
                 )
                 """
-            )
         }
 
-        context("render a multiple nested objects in a collection, with commas") {
-            testObject(
+        it("render a multiple nested objects in a collection, with commas") {
+            prettyPrint(
                 NestedObjectWithCollection(
                     listOf(
                         NestedSmallObject(SmallObject("a", 1)),
@@ -191,9 +142,7 @@ object NestedObjectTest : Spek({
                         NestedSmallObject(SmallObject("a", 1))
                     )
                 )
-            )
-            mapsTo(
-                """
+            ) mapsTo """
                 NestedObjectWithCollection(
                   coll = [
                            NestedSmallObject(
@@ -223,7 +172,6 @@ object NestedObjectTest : Spek({
                          ]
                 )
                 """
-            )
         }
     }
 })
