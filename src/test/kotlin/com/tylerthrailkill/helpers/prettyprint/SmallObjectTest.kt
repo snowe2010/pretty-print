@@ -41,17 +41,25 @@ object SmallObjectTest : Spek({
     fun testObject(obj: Any?) {
         val testObject by memoized { obj }
     }
-    
+
+    fun Suite.validateTestOutput(testObject: Any?, expected: String) {
+        it("test value") {
+            pp(testObject)
+            outContent shouldRenderLike expected
+        }
+    }
     describe("tiny object should") {
+        infix fun Any.mapsTo(expected: String) {
+            validateTestOutput(this, expected)
+        }
+
         context("render a single field") {
-            testObject(TinyObject(1))
-            mapsTo(
-                """
+            TinyObject(1) mapsTo """
                 TinyObject(
                   int = 1
                 )
                 """
-            )
+
         }
     }
     describe("small object should") {
