@@ -13,7 +13,7 @@ fun pp(obj: Any?) {
     }
 }
 
-fun recurse(obj: Any?, currentDepth: String = "") {
+private fun recurse(obj: Any?, currentDepth: String = "") {
     val className = "${obj?.javaClass?.simpleName}("
     write(className)
 
@@ -36,7 +36,7 @@ fun recurse(obj: Any?, currentDepth: String = "") {
     write("$currentDepth)")
 }
 
-fun recurseIterable(obj: Iterable<*>, currentDepth: String) {
+private fun recurseIterable(obj: Iterable<*>, currentDepth: String) {
     var commas = obj.count() // comma counter
 
     // begin writing the iterable
@@ -67,7 +67,7 @@ fun recurseIterable(obj: Iterable<*>, currentDepth: String) {
     write("$currentDepth]")
 }
 
-fun recurseMap(obj: Map<*, *>, currentDepth: String) {
+private fun recurseMap(obj: Map<*, *>, currentDepth: String) {
     var commas = obj.count() // comma counter
 
     // begin writing the iterable
@@ -112,14 +112,14 @@ fun recurseMap(obj: Map<*, *>, currentDepth: String) {
     write("$currentDepth}")
 }
 
-fun writeLine(str: Any?) {
+private fun writeLine(str: Any?) {
     logger.debug { "writing $str" }
     println(str)
 }
 
-fun write(str: Any?) {
+private fun write(str: Any?) {
     logger.debug { "writing $str" }
     print(str)
 }
 
-fun deepen(currentDepth: String, modifier: Int? = null): String = " ".repeat(modifier ?: TAB_SIZE) + currentDepth
+private fun deepen(currentDepth: String, modifier: Int? = null): String = " ".repeat(modifier ?: TAB_SIZE) + currentDepth
