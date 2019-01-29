@@ -24,7 +24,7 @@ object MapTest : Spek({
         System.setErr(originalErr)
     }
 
-    fun p(outContent: ByteArrayOutputStream) {
+    fun debugPrint(outContent: ByteArrayOutputStream) {
         System.setOut(originalOut)
         println(outContent)
     }
@@ -34,7 +34,7 @@ object MapTest : Spek({
         val testObject by memoized<Any>()
         it("test value") {
             pp(testObject)
-//            p(outContent)
+//            debugPrint(outContent)
             outContent shouldRenderLike expected
         }
     }
@@ -89,6 +89,28 @@ object MapTest : Spek({
                   "key1" -> SmallObject(
                     field1 = field
                     field2 = 1
+                  )
+                }
+                """
+                )
+            }
+            context("multiple objects") {
+                testObject(
+                    mapOf(
+                        "key1" to SmallObject("field", 1),
+                        "key2" to SmallObject("field2", 2)
+                    )
+                )
+                mapsTo(
+                    """
+                {
+                  "key1" -> SmallObject(
+                    field1 = field
+                    field2 = 1
+                  ),
+                  "key2" -> SmallObject(
+                    field1 = field2
+                    field2 = 2
                   )
                 }
                 """

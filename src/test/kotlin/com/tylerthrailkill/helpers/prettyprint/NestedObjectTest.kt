@@ -1,20 +1,20 @@
 package com.tylerthrailkill.helpers.prettyprint
 
 import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.Suite
+import org.spekframework.spek2.style.specification.describe
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import kotlin.test.assertEquals
 
 object NestedObjectTest : Spek({
-    lateinit var outContent: ByteArrayOutputStream
-    lateinit var errContent: ByteArrayOutputStream
+    val outContent by memoized { ByteArrayOutputStream() }
+    val errContent by memoized { ByteArrayOutputStream() }
     val originalOut = System.out
     val originalErr = System.err
 
     // Create new byte stream for each test
     beforeEachTest {
-        outContent = ByteArrayOutputStream()
-        errContent = ByteArrayOutputStream()
         System.setOut(PrintStream(outContent))
         System.setErr(PrintStream(errContent))
     }
@@ -23,17 +23,30 @@ object NestedObjectTest : Spek({
         System.setErr(originalErr)
     }
 
-    fun p(outContent: ByteArrayOutputStream) {
+    fun debugPrint(outContent: ByteArrayOutputStream) {
         System.setOut(originalOut)
         println(outContent)
     }
 
-    group("small nested object should") {
-        val nestedObject = NestedSmallObject(SmallObject("a", 1))
-        test("render a single field with multiple subfields") {
-            pp(nestedObject)
-            p(outContent)
-            outContent shouldRenderLike """
+    // Single test spot
+    fun Suite.mapsTo(expected: String) {
+        val testObject by memoized<Any>()
+        it("test value") {
+            pp(testObject)
+//            debugPrint(outContent)
+            outContent shouldRenderLike expected
+        }
+    }
+
+    fun testObject(obj: Any?) {
+        val testObject by memoized { obj }
+    }
+
+    describe("small nested object should") {
+        context("render a single field with multiple subfields") {
+            testObject(NestedSmallObject(SmallObject("a", 1)))
+            mapsTo(
+                """
                 NestedSmallObject(
                   smallObject = SmallObject(
                     field1 = a
@@ -41,24 +54,26 @@ object NestedObjectTest : Spek({
                   )
                 )
                 """
+            )
         }
     }
 
-    group("nested large object should") {
-        val nestedObject = NestedLargeObject(
-            NestedSmallObject(SmallObject("smallObjectField1", 777)),
-            SmallObject("a field in top level nested large object", 17),
-            "a test string in NestedLargeObject",
-            NestedLargeObject(
-                NestedSmallObject(SmallObject("inner small object field 1", 888)),
-                SmallObject("field 1 in nested small", 12),
-                "a test string in NestedLargeObject inner"
+    describe("nested large object should") {
+        context("render many nested fields") {
+            testObject(
+                NestedLargeObject(
+                    NestedSmallObject(SmallObject("smallObjectField1", 777)),
+                    SmallObject("a field in top level nested large object", 17),
+                    "a test string in NestedLargeObject",
+                    NestedLargeObject(
+                        NestedSmallObject(SmallObject("inner small object field 1", 888)),
+                        SmallObject("field 1 in nested small", 12),
+                        "a test string in NestedLargeObject inner"
+                    )
+                )
             )
-        )
-        test("render many nested fields") {
-            pp(nestedObject)
-            p(outContent)
-            outContent shouldRenderLike """
+            mapsTo(
+                """
                 NestedLargeObject(
                   nestedSmallObject = NestedSmallObject(
                     smallObject = SmallObject(
@@ -87,47 +102,53 @@ object NestedObjectTest : Spek({
                   )
                 )
                 """
+            )
         }
     }
 
-    group("nested object with collection should") {
-        test("render a single item in a collection") {
-            val nestedObject = NestedObjectWithCollection(
-                listOf(1)
+    describe("nested object with collection should") {
+        context("render a single item in a collection") {
+            testObject(
+                NestedObjectWithCollection(
+                    listOf(1)
+                )
             )
-            pp(nestedObject)
-            p(outContent)
-            outContent shouldRenderLike """
+            mapsTo(
+                """
                 NestedObjectWithCollection(
                   coll = [
                            1
                          ]
                 )
                 """
+            )
         }
 
-        test("render a single string in a collection") {
-            val nestedObject = NestedObjectWithCollection(
-                listOf("a string with spaces")
+        context("render a single string in a collection") {
+            testObject(
+                NestedObjectWithCollection(
+                    listOf("a string with spaces")
+                )
             )
-            pp(nestedObject)
-            p(outContent)
-            outContent shouldRenderLike """
+            mapsTo(
+                """
                 NestedObjectWithCollection(
                   coll = [
                            "a string with spaces"
                          ]
                 )
                 """
+            )
         }
 
-        test("render multiple objects in a collection, with commas") {
-            val nestedObject = NestedObjectWithCollection(
-                listOf(1, 2)
+        context("render multiple objects in a collection, with commas") {
+            testObject(
+                NestedObjectWithCollection(
+                    listOf(1, 2)
+                )
             )
-            pp(nestedObject)
-            p(outContent)
-            outContent shouldRenderLike """
+            mapsTo(
+                """
                 NestedObjectWithCollection(
                   coll = [
                            1,
@@ -135,15 +156,17 @@ object NestedObjectTest : Spek({
                          ]
                 )
                 """
+            )
         }
 
-        test("render a single nested object in a collection") {
-            val nestedObject = NestedObjectWithCollection(
-                listOf(NestedSmallObject(SmallObject("a", 1)))
+        context("render a single nested object in a collection") {
+            testObject(
+                NestedObjectWithCollection(
+                    listOf(NestedSmallObject(SmallObject("a", 1)))
+                )
             )
-            pp(nestedObject)
-            p(outContent)
-            outContent shouldRenderLike """
+            mapsTo(
+                """
                 NestedObjectWithCollection(
                   coll = [
                            NestedSmallObject(
@@ -155,18 +178,22 @@ object NestedObjectTest : Spek({
                          ]
                 )
                 """
+            )
         }
 
-        test("render a multiple nested objects in a collection, with commas") {
-            val nestedObject = NestedObjectWithCollection(
-                listOf(NestedSmallObject(SmallObject("a", 1)),
-                    NestedSmallObject(SmallObject("a", 1)),
-                    NestedSmallObject(SmallObject("a", 1)),
-                    NestedSmallObject(SmallObject("a", 1)))
+        context("render a multiple nested objects in a collection, with commas") {
+            testObject(
+                NestedObjectWithCollection(
+                    listOf(
+                        NestedSmallObject(SmallObject("a", 1)),
+                        NestedSmallObject(SmallObject("a", 1)),
+                        NestedSmallObject(SmallObject("a", 1)),
+                        NestedSmallObject(SmallObject("a", 1))
+                    )
+                )
             )
-            pp(nestedObject)
-            p(outContent)
-            outContent shouldRenderLike """
+            mapsTo(
+                """
                 NestedObjectWithCollection(
                   coll = [
                            NestedSmallObject(
@@ -196,6 +223,7 @@ object NestedObjectTest : Spek({
                          ]
                 )
                 """
+            )
         }
     }
 })
