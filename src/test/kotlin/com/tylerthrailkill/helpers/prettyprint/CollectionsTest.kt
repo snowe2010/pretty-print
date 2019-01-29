@@ -1,12 +1,10 @@
 package com.tylerthrailkill.helpers.prettyprint
 
-import com.google.common.collect.Collections2
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.Suite
 import org.spekframework.spek2.style.specification.describe
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
-import kotlin.test.assertEquals
 
 object CollectionsTest : Spek({
     val outContent by memoized { ByteArrayOutputStream() }

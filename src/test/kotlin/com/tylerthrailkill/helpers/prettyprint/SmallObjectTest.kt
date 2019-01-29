@@ -5,7 +5,6 @@ import org.spekframework.spek2.style.specification.Suite
 import org.spekframework.spek2.style.specification.describe
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
-import kotlin.test.assertEquals
 
 object SmallObjectTest : Spek({
     val outContent by memoized { ByteArrayOutputStream() }
@@ -28,15 +27,6 @@ object SmallObjectTest : Spek({
         println(outContent)
     }
 
-    // Single test spot
-    fun Suite.mapsTo(expected: String) {
-        val testObject by memoized<Any>()
-        it("test value") {
-            pp(testObject)
-//            debugPrint(outContent)
-            outContent shouldRenderLike expected
-        }
-    }
 
     fun testObject(obj: Any?) {
         val testObject by memoized { obj }
@@ -48,10 +38,9 @@ object SmallObjectTest : Spek({
             outContent shouldRenderLike expected
         }
     }
+
     describe("tiny object should") {
-        infix fun Any.mapsTo(expected: String) {
-            validateTestOutput(this, expected)
-        }
+        infix fun Any.mapsTo(expected: String) = validateTestOutput(this, expected)
 
         context("render a single field") {
             TinyObject(1) mapsTo """
@@ -63,16 +52,14 @@ object SmallObjectTest : Spek({
         }
     }
     describe("small object should") {
+        infix fun Any.mapsTo(expected: String) = validateTestOutput(this, expected)
         context("render two fields") {
-            testObject(SmallObject("a", 1))
-            mapsTo(
-                """
+            SmallObject("a", 1) mapsTo """
                 SmallObject(
                   field1 = a
                   field2 = 1
                 )
             """
-            )
         }
     }
 })
