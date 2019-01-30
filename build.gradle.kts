@@ -5,7 +5,10 @@ val spek_version = "2.0.0-alpha.2"
 
 plugins {
     kotlin("jvm") version "1.3.11"
+    id("nebula.maven-publish") version "9.4.6"
     id("nebula.nebula-bintray") version "3.5.2"
+    id("nebula.publish-verification") version "9.4.6"
+    `build-scan`
 }
 
 group = "com.tylerthrailkill.helpers"
@@ -54,4 +57,9 @@ tasks {
             includeEngines("spek2")
         }
     }
+}
+
+buildScan {
+    termsOfServiceUrl = "https://gradle.com/terms-of-service"
+    termsOfServiceAgree = "yes"
 }
