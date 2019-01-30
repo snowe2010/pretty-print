@@ -5,6 +5,7 @@ val spek_version = "2.0.0-alpha.2"
 
 plugins {
     kotlin("jvm") version "1.3.11"
+    id("nebula.nebula-bintray") version "3.5.2"
 }
 
 group = "com.tylerthrailkill.helpers"
