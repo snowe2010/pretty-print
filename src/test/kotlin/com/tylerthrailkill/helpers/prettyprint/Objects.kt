@@ -20,3 +20,10 @@ data class NestedLargeObject(
 data class NestedObjectWithCollection(
     val coll: List<Any>
 )
+
+data class NullableLists(
+    val col: List<Any?>?
+)
+
+// Massive Objects, with every type
+

@@ -1,10 +1,13 @@
 package com.tylerthrailkill.helpers.prettyprint
 
+import mu.KotlinLogging
 import org.spekframework.spek2.dsl.Root
 import org.spekframework.spek2.dsl.TestBody
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import kotlin.test.assertEquals
+
+private val logger = KotlinLogging.logger {}
 
 fun Root.setupStreams() {
     val outContent by memoized<ByteArrayOutputStream>()
@@ -30,6 +33,7 @@ fun TestBody.prettyPrint(obj: Any?): ByteArrayOutputStream {
 }
 
 infix fun ByteArrayOutputStream.mapsTo(expected: String) {
+    logger.info { "Actual output: $this" }
     assertEquals(
         expected.trimIndent(),
         this.toString().trim().replace("\r", "")
