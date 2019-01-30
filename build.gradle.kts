@@ -11,6 +11,7 @@ group = "com.tylerthrailkill.helpers"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    jcenter()
     mavenCentral()
     maven(url = "https://dl.bintray.com/spekframework/spek-dev/")
 }
@@ -35,9 +36,7 @@ dependencies {
         exclude(group = "org.junit.platform")
         exclude(group = "org.jetbrains.kotlin")
     }
-
-    // spek requires kotlin-reflect, can be omitted if already in the classpath
-    testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
+    testImplementation("com.beust:klaxon:5.0.1")
 }
 
 tasks {
