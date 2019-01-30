@@ -45,6 +45,8 @@ private fun recurseIterable(obj: Iterable<*>, currentDepth: String) {
         val increasedDepth = currentDepth + " ".repeat(TAB_SIZE)
         write(increasedDepth) // write leading spacing
         when {
+            it is Iterable<*> -> recurseIterable(it, increasedDepth)
+            it is Map<*, *> -> recurseMap(it, increasedDepth)
             it == null -> write("null")
             it.javaClass.name.startsWith("java") -> {
                 if (it is String) {
@@ -76,6 +78,8 @@ private fun recurseMap(obj: Map<*, *>, currentDepth: String) {
         val increasedDepth = currentDepth + " ".repeat(TAB_SIZE)
         write(increasedDepth) // write leading spacing
         when {
+            k is Iterable<*> -> recurseIterable(k, increasedDepth)
+            k is Map<*, *> -> recurseMap(k, increasedDepth)
             k == null -> write("null")
             k.javaClass.name.startsWith("java") -> {
                 if (k is String) {
@@ -90,6 +94,8 @@ private fun recurseMap(obj: Map<*, *>, currentDepth: String) {
         }
         write(" -> ")
         when {
+            v is Iterable<*> -> recurseIterable(v, increasedDepth)
+            v is Map<*, *> -> recurseMap(v, increasedDepth)
             v == null -> write("null")
             v.javaClass.name.startsWith("java") -> {
                 if (v is String) {
