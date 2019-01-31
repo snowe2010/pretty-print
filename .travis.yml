@@ -1,1 +1,18 @@
 language: java
+
+before_install:
+  - chmod +x gradlew
+
+stages:
+  - name: test
+  - name: release
+    if: tag IS present
+
+jobs:
+  include:
+    - stage: test
+      script:
+        - ./gradlew test
+    - stage: release
+      script:
+        - ./gradlew -Prelease.useLastTag=true final --info --stacktrace
