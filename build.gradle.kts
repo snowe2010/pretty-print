@@ -11,7 +11,7 @@ plugins {
     id("nebula.nebula-bintray") version "3.5.2"
     id("nebula.publish-verification") version "9.4.6"
     id("nebula.source-jar") version "9.4.6"
-    id("nebula.nebula-bintray-publishing") version "9.4.6"
+    id("nebula.nebula-bintray-publishing") version "5.0.0"
 }
 
 group = "com.tylerthrailkill.helpers"
