@@ -41,6 +41,7 @@ dependencies {
         exclude(group = "org.jetbrains.kotlin")
     }
     testImplementation("com.beust:klaxon:5.0.1")
+    testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
 }
 
 tasks {
