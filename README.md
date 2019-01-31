@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/snowe2010/pretty-print.svg?branch=master)](https://travis-ci.com/snowe2010/pretty-print)
+
 # Pretty Print - pp
 
 adds a single method `pp` to pretty print any java or kotlin object. 
