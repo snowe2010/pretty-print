@@ -84,12 +84,12 @@ configure<BintrayExtension> {
         issueTrackerUrl = "https://github.com/snowe2010/${project.name}/issues"
         vcsUrl = "https://github.com/snowe2010/${project.name}.git"
         setLabels("axon", "kotlin")
-//        version(delegateClosureOf<BintrayExtension.VersionConfig> {
-//            gpg(delegateClosureOf<BintrayExtension.GpgConfig> {
-//                sign = true
-//                passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
-//            })
-//        })
+        version(delegateClosureOf<BintrayExtension.VersionConfig> {
+            gpg(delegateClosureOf<BintrayExtension.GpgConfig> {
+                sign = true
+                passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
+            })
+        })
     })
     dryRun = false
     publish = true
