@@ -8,7 +8,6 @@ plugins {
     `build-scan`
     kotlin("jvm") version "1.3.11"
     id("nebula.maven-publish") version "9.4.6"
-    id("nebula.nebula-bintray") version "3.5.2"
     id("nebula.publish-verification") version "9.4.6"
     id("nebula.source-jar") version "9.4.6"
     id("nebula.release") version "9.2.0"
