@@ -71,6 +71,35 @@ object MapTest : Spek({
                 }
                 """
             }
+            it("map of lists") {
+                prettyPrint(
+                    mapOf(
+                        listOf(1, 2, 3) to listOf(4, 5, 6),
+                        listOf(7, 8, 9) to listOf(0, 1, 2)
+                    )
+                ) mapsTo """
+                {
+                  [
+                    1,
+                    2,
+                    3
+                  ] -> [
+                    4,
+                    5,
+                    6
+                  ],
+                  [
+                    7,
+                    8,
+                    9
+                  ] -> [
+                    0,
+                    1,
+                    2
+                  ]
+                }
+                """
+            }
         }
         context("null stuff") {
             it("null keys") {

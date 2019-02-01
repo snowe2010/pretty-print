@@ -96,5 +96,33 @@ object CollectionsTest : Spek({
             )
             """
         }
+        it("lists with maps") {
+            prettyPrint(
+                NullableLists(
+                    listOf(
+                        mapOf(1 to 2, 3 to 4),
+                        mapOf(5 to 6, 7 to 8),
+                        mapOf(9 to 0, 0 to 1)
+                    )
+                )
+            ) mapsTo """
+            NullableLists(
+              col = [
+                      {
+                        1 -> 2,
+                        3 -> 4
+                      },
+                      {
+                        5 -> 6,
+                        7 -> 8
+                      },
+                      {
+                        9 -> 0,
+                        0 -> 1
+                      }
+                    ]
+            )
+            """
+        }
     }
 })
