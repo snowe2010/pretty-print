@@ -21,6 +21,9 @@ dependencies {
     testCompile(kotlin("test"))
     testCompile(kotlin("test-junit"))
 
+    compile("io.github.microutils:kotlin-logging:1.6.22")
+    compile(group = "ch.qos.logback", name = "logback-classic", version = "1.3.0-alpha4")
+    compile(group = "org.slf4j", name = "slf4j-simple", version = "1.6.1")
     testImplementation("io.mockk:mockk:1.9.kotlin12")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
 

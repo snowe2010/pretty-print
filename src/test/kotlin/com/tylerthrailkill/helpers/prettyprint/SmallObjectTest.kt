@@ -2,6 +2,7 @@ package com.tylerthrailkill.helpers.prettyprint
 
 import io.mockk.mockk
 import io.mockk.verify
+import mu.KotlinLogging
 import org.hamcrest.CoreMatchers.startsWith
 import org.spekframework.spek2.Spek
 import java.io.PrintStream
