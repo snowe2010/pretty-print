@@ -1,28 +1,25 @@
 language: java
 install: true
-
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
-
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
 before_install:
-  - chmod +x gradlew
-
+- chmod +x gradlew
 stages:
-  - name: build
-  - name: release
-    if: tag IS present
-
+- name: build
+- name: release
+  if: tag IS present
 jobs:
   include:
-    - stage: build
-      script:
-        - ./gradlew build --scan -s
-    - stage: release
-      script:
-        - ./gradlew -Prelease.useLastTag=true final --info --stacktrace
+  - stage: build
+    script:
+    - "./gradlew build --scan -s"
+  - stage: release
+    script:
+    - "./gradlew -Prelease.useLastTag=true final --info --stacktrace"
+
+secure: "vWij4zhptWiQqJ06IYHu04Mow5ODf6JowPFtTDu8uGCxt9L3AhEnjWdNvrhKOSx3jSYIGrK+jVGzGm2Y/73W7DJCEroFrLzUqmONY2hRnC60n6m56d29ymmwdsP+ffgujwmHd56LDMIT5tT+o4X1Bu1c6uYZpuvR0KSNxjbQjYpaq4mKx8fwd6WEFQz9N1RThtvtBbkXUJ4yCXgt5MDSUaHKGE4VC9tIDQB3oibm1RVeVM9YURenigbpL54V7U0A2edOgrOB9uFnp8fqVJ+Jugc6tFSVDTAPMczs20TtZPU5CeXc5Bo5Fk0tRrU8uhpsraLCoPPQgtUnlRYY3TD8HyWtVXEohhvIM48i4u+VC4twsD0T2MbGwiGKbaE1KWu1gwzx12nbjQqFqfEF6RyTkHQXmFFENeRiHP50dzrLXwyOgMv2iUan8ffuXImysIPHTLMyQ47GFxznpX5vfbu44RCQLCZQwvQo0/Zq3LUzQ1VPUAA+1WikdVqvbyKm+51vTVhn7aqVt1WdmddAhcQMH3rQM+3ryA4vuWzmfsge+gxufhBdb2j37J32iGc8T6/hCG7HKn7Afia8uEjEJBRpMQpk1mTDuCRJ4RoTIrF1oqDeV8yGsebdTMdGFJsVUCa1bk139A0V3qW4ys7hIBm8ZRuo5JI/59hKZSdBGjsKnbI="
