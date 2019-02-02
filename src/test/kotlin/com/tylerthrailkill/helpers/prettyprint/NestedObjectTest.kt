@@ -5,9 +5,7 @@ import org.spekframework.spek2.style.specification.describe
 import java.io.ByteArrayOutputStream
 
 object NestedObjectTest : Spek({
-    val outContent by memoized { ByteArrayOutputStream() }
-    val errContent by memoized { ByteArrayOutputStream() }
-    setupStreams()
+    setup()
 
     describe("small nested object should") {
         it("render a single field with multiple subfields") {

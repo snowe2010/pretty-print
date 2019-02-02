@@ -6,9 +6,7 @@ import org.spekframework.spek2.style.specification.describe
 import java.io.*
 
 object NaughtyStringsTest : Spek({
-    val outContent by memoized { ByteArrayOutputStream() }
-    val errContent by memoized { ByteArrayOutputStream() }
-    setupStreams()
+    setup()
 
     describe("naughty strings should render correctly") {
             val naughtyString = javaClass.getResource("/naughty_strings.json").readText()

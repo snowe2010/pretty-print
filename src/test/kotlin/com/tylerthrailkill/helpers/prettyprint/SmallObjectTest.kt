@@ -5,9 +5,7 @@ import org.spekframework.spek2.style.specification.describe
 import java.io.ByteArrayOutputStream
 
 object SmallObjectTest : Spek({
-    val outContent by memoized { ByteArrayOutputStream() }
-    val errContent by memoized { ByteArrayOutputStream() }
-    setupStreams()
+    setup()
 
     describe("tiny object should") {
         context("render") {

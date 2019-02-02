@@ -7,9 +7,7 @@ import java.math.BigDecimal
 import java.util.*
 
 object MassiveObjectTest : Spek({
-    val outContent by memoized { ByteArrayOutputStream() }
-    val errContent by memoized { ByteArrayOutputStream() }
-    setupStreams()
+    setup()
 
     describe("massive objects") {
         val smallObject = SmallObject("a string in small object", 777)

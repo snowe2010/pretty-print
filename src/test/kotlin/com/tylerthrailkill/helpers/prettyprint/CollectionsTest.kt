@@ -5,9 +5,7 @@ import org.spekframework.spek2.style.specification.describe
 import java.io.ByteArrayOutputStream
 
 object CollectionsTest : Spek({
-    val outContent by memoized { ByteArrayOutputStream() }
-    val errContent by memoized { ByteArrayOutputStream() }
-    setupStreams()
+    setup()
 
     describe("pretty printing lists should") {
         it("render a list of strings") {

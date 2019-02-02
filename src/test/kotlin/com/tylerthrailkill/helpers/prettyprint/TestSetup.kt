@@ -9,29 +9,28 @@ import kotlin.test.assertEquals
 
 private val logger = KotlinLogging.logger {}
 
-fun Root.setupStreams() {
-    val outContent by memoized<ByteArrayOutputStream>()
-    val errContent by memoized<ByteArrayOutputStream>()
-    val originalOut = System.out
-    val originalErr = System.err
-
-    // Create new byte stream for each test
-    beforeEachTest {
-        System.setOut(PrintStream(outContent))
-        System.setErr(PrintStream(errContent))
-    }
-    afterEachTest {
-        System.setOut(originalOut)
-        System.setErr(originalErr)
-    }
+fun Root.setup() {
+    val outContent by memoized { ByteArrayOutputStream() }
 }
 
-fun TestBody.prettyPrint(obj: Any?): ByteArrayOutputStream {
-    pp(obj)
+/**
+ *
+ * Test helper function, defaults to providing no tab size and wrapping the print stream in
+ * a ByteArrayOutputStream to test against
+ */
+fun TestBody.prettyPrint(obj: Any?, tabSize: Int? = null): ByteArrayOutputStream {
     val outContent by memoized<ByteArrayOutputStream>()
+    if (tabSize == null) {
+        pp(obj, printStream = PrintStream(outContent))
+    } else {
+        pp(obj, tabSize = tabSize, printStream = PrintStream(outContent))
+    }
     return outContent
 }
 
+/**
+ * Accepts an `expected` string, and compares it against `this`. Removes leading indents and normalizes newlines
+ */
 infix fun ByteArrayOutputStream.mapsTo(expected: String) {
     logger.info { "Actual output: $this" }
     assertEquals(

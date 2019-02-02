@@ -1,11 +1,15 @@
 package com.tylerthrailkill.helpers.prettyprint
 
 import mu.KotlinLogging
+import java.io.PrintStream
 
 private val logger = KotlinLogging.logger {}
-private const val TAB_SIZE = 2
+private var TAB_SIZE = 2
+private var PRINT_STREAM = System.out
 
-fun pp(obj: Any?) {
+fun pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out) {
+    TAB_SIZE = tabSize
+    PRINT_STREAM = printStream
     when (obj) {
         is Iterable<*> -> recurseIterable(obj, "")
         is Map<*, *> -> recurseMap(obj, "")
@@ -20,7 +24,7 @@ private fun recurse(obj: Any?, currentDepth: String = "") {
     obj?.javaClass?.declaredFields?.forEach {
         val pad = deepen(currentDepth)
         it.isAccessible = true
-        println()
+        PRINT_STREAM.println()
         write("$pad${it.name} = ")
         val fieldValue = it.get(obj)
         logger.debug { "field value is ${fieldValue.javaClass}"}
@@ -32,7 +36,7 @@ private fun recurse(obj: Any?, currentDepth: String = "") {
             else -> recurse(fieldValue, deepen(currentDepth))
         }
     }
-    println()
+    PRINT_STREAM.println()
     write("$currentDepth)")
 }
 
@@ -64,7 +68,7 @@ private fun recurseIterable(obj: Iterable<*>, currentDepth: String) {
             write(',')
             commas--
         }
-        println()
+        PRINT_STREAM.println()
     }
     write("$currentDepth]")
 }
@@ -113,19 +117,19 @@ private fun recurseMap(obj: Map<*, *>, currentDepth: String) {
             write(',')
             commas--
         }
-        println()
+        PRINT_STREAM.println()
     }
     write("$currentDepth}")
 }
 
 private fun writeLine(str: Any?) {
     logger.debug { "writing $str" }
-    println(str)
+    PRINT_STREAM.println(str)
 }
 
 private fun write(str: Any?) {
     logger.debug { "writing $str" }
-    print(str)
+    PRINT_STREAM.print(str)
 }
 
 private fun deepen(currentDepth: String, modifier: Int? = null): String = " ".repeat(modifier ?: TAB_SIZE) + currentDepth
