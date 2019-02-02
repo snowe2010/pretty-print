@@ -1,8 +1,8 @@
 import com.jfrog.bintray.gradle.BintrayExtension
+import org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestFramework
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val kotlin_version = "1.3.11"
-val spek_version = "2.0.0-alpha.2"
+val spekVersion = "2.0.0-alpha.2"
 
 plugins {
     `build-scan`
@@ -12,6 +12,7 @@ plugins {
     id("nebula.source-jar") version "9.4.6"
     id("nebula.release") version "9.2.0"
     id("nebula.nebula-bintray-publishing") version "5.0.0"
+    jacoco
 }
 
 group = "com.tylerthrailkill.helpers"
@@ -23,26 +24,26 @@ repositories {
 }
 
 dependencies {
-    compile(kotlin("stdlib-jdk8"))
-    compile(kotlin("reflect"))
-    testCompile(kotlin("test"))
-    testCompile(kotlin("test-junit"))
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("reflect"))
+    testImplementation(kotlin("test"))
+    testImplementation(kotlin("test-junit"))
 
-    compile(group = "ch.qos.logback", name = "logback-classic", version = "1.3.0-alpha4")
-    compile(group = "org.slf4j", name = "slf4j-simple", version = "1.6.1")
-    compile("io.github.microutils:kotlin-logging:1.6.22")
+    // logging
+    implementation(group = "ch.qos.logback", name = "logback-classic", version = "1.3.0-alpha4")
+    implementation(group = "org.slf4j", name = "slf4j-simple", version = "1.6.1")
+    implementation("io.github.microutils:kotlin-logging:1.6.22")
+
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
     testImplementation("io.mockk:mockk:1.9.kotlin12")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
-
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spek_version") {
+    testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion") {
         exclude(group = "org.jetbrains.kotlin")
     }
-    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:$spek_version") {
+    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:$spekVersion") {
         exclude(group = "org.junit.platform")
         exclude(group = "org.jetbrains.kotlin")
     }
-    testImplementation("com.beust:klaxon:5.0.1")
+    testImplementation("com.beust:klaxon:5.0.1") // used to parse naughty list
     testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
 }
 
@@ -52,7 +53,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "4.10.2"
+        gradleVersion = "5.1.1"
     }
 
     withType<Test> {
@@ -60,7 +61,20 @@ tasks {
             includeEngines("spek2")
         }
     }
+    withType<JacocoReport> {
+        reports {
+            xml.apply {
+                isEnabled = true
+            }
+            html.apply {
+                isEnabled = true
+            }
+        }
+        applyTo(junitPlatformTest)
+    }
 }
+tasks["jacocoTestReport"].dependsOn("junitPlatformTest")
+
 
 buildScan {
     termsOfServiceUrl = "https://gradle.com/terms-of-service"
