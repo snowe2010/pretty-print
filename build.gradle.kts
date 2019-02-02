@@ -14,7 +14,6 @@ plugins {
     id("nebula.nebula-bintray-publishing") version "5.0.0"
     jacoco
 }
-
 group = "com.tylerthrailkill.helpers"
 
 repositories {
@@ -53,7 +52,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "5.1.1"
+        distributionType = Wrapper.DistributionType.ALL
     }
 
     withType<Test> {
@@ -65,16 +64,15 @@ tasks {
         reports {
             xml.apply {
                 isEnabled = true
+                this.destination = file("$buildDir/jacoco")
             }
             html.apply {
                 isEnabled = true
             }
         }
-        applyTo(junitPlatformTest)
+//        dependsOn("test") // TODO enable jacoco when you figure out how to remove jacoco from printstreams
     }
 }
-tasks["jacocoTestReport"].dependsOn("junitPlatformTest")
-
 
 buildScan {
     termsOfServiceUrl = "https://gradle.com/terms-of-service"
