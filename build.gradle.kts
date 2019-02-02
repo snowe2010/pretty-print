@@ -15,7 +15,6 @@ plugins {
 }
 
 group = "com.tylerthrailkill.helpers"
-version = "1.0.0"
 
 repositories {
     jcenter()
