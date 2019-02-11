@@ -1,6 +1,6 @@
 <configuration debug="false">
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>tests.log</file>
+        <file>pretty_print_debug.log</file>
         <append>false</append>
         <encoder>
             <pattern>%-5level - %msg%n</pattern>
