@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/snowe2010/pretty-print.svg?branch=master)](https://travis-ci.com/snowe2010/pretty-print)
-[![Download](https://api.bintray.com/packages/snowe/maven/Pretty-Print/images/download.svg?version=1.1.1)](https://bintray.com/snowe/maven/Pretty-Print/1.1.1/link)
+[![Download](https://img.shields.io/bintray/v/snowe/maven/Pretty-Print.svg?label=bintray&style=flat)](https://bintray.com/snowe/maven/Pretty-Print/)
  
  
 # Pretty Print - pp
