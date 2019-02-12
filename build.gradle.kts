@@ -60,18 +60,20 @@ tasks {
             includeEngines("spek2")
         }
     }
-    withType<JacocoReport> {
+    val report = withType<JacocoReport> {
         reports {
             xml.apply {
                 isEnabled = true
-                this.destination = file("$buildDir/jacoco")
+                this.destination = file("$buildDir/jacoco/report.xml")
             }
             html.apply {
                 isEnabled = true
+                this.destination = file("$buildDir/jacoco/html_report")
             }
         }
-//        dependsOn("test") // TODO enable jacoco when you figure out how to remove jacoco from printstreams
+        dependsOn("test")
     }
+    this["check"].dependsOn(report)
 }
 
 buildScan {

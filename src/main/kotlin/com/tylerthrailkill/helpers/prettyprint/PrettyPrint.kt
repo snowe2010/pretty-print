@@ -39,7 +39,7 @@ private fun recurse(obj: Any?, currentDepth: String = "") {
     val className = "${obj?.javaClass?.simpleName}("
     write(className)
 
-    obj?.javaClass?.declaredFields?.forEach {
+    obj?.javaClass?.declaredFields?.filter { !it.isSynthetic }?.forEach {
         val pad = deepen(currentDepth)
         it.isAccessible = true
         PRINT_STREAM.println()
