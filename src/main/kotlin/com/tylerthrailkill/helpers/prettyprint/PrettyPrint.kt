@@ -22,7 +22,8 @@ fun pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out) {
     when (obj) {
         is Iterable<*> -> recurseIterable(obj, "")
         is Map<*, *> -> recurseMap(obj, "")
-        else -> recurse(obj)
+        is Any -> recurse(obj)
+        else -> writeLine("null")
     }
     PRINT_STREAM.println()
 }
@@ -49,17 +50,17 @@ fun <T> T.pp(tabSize: Int = 2, printStream: PrintStream = System.out): T =
  * If Map then recurse and deepen the tab size
  * else recurse back into this function
  */
-private fun recurse(obj: Any?, currentDepth: String = "") {
-    val className = "${obj?.javaClass?.simpleName}("
+private fun recurse(obj: Any, currentDepth: String = "") {
+    val className = "${obj.javaClass.simpleName}("
     write(className)
 
-    obj?.javaClass?.declaredFields?.filter { !it.isSynthetic }?.forEach {
+    obj.javaClass.declaredFields.filter { !it.isSynthetic }.forEach {
         val pad = deepen(currentDepth)
         it.isAccessible = true
         PRINT_STREAM.println()
         write("$pad${it.name} = ")
         val fieldValue = it.get(obj)
-        logger.debug { "field value is ${fieldValue.javaClass}"}
+        logger.debug { "field value is ${fieldValue.javaClass}" }
         when {
             fieldValue is Iterable<*> -> recurseIterable(fieldValue, deepen(pad, it.name.length + 3))
             fieldValue is Map<*, *> -> recurseMap(fieldValue, deepen(pad, it.name.length + 3))
@@ -118,7 +119,7 @@ private fun recurseMap(obj: Map<*, *>, currentDepth: String) {
 
     // begin writing the iterable
     writeLine("{")
-    obj.forEach {(k, v) ->
+    obj.forEach { (k, v) ->
         val increasedDepth = currentDepth + " ".repeat(TAB_SIZE)
         write(increasedDepth) // write leading spacing
         when {
