@@ -21,9 +21,9 @@ fun Root.setup() {
 fun TestBody.prettyPrint(obj: Any?, tabSize: Int? = null): ByteArrayOutputStream {
     val outContent by memoized<ByteArrayOutputStream>()
     if (tabSize == null) {
-        pp(obj, printStream = PrintStream(outContent))
+        pp(obj, writeTo = PrintStream(outContent))
     } else {
-        pp(obj, tabSize = tabSize, printStream = PrintStream(outContent))
+        pp(obj, indent = tabSize, writeTo = PrintStream(outContent))
     }
     return outContent
 }
