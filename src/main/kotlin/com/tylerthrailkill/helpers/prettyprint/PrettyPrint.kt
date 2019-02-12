@@ -24,7 +24,21 @@ fun pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out) {
         is Map<*, *> -> recurseMap(obj, "")
         else -> recurse(obj)
     }
+    PRINT_STREAM.println()
 }
+
+/**
+ * Inline helper method for printing withing method chains. Simply delegates to [pp]
+ *
+ * Example:
+ *   val foo = op2(op1(bar).pp())
+ *
+ * @param[T] the object to pretty print
+ * @param[tabSize] optional param that specifies the number of spaces to use to indent
+ * @param[printStream] optional param that specifies the [PrintStream] to use to pretty print. Defaults to `System.out`
+ */
+fun <T> T.pp(tabSize: Int = 2, printStream: PrintStream = System.out): T =
+    this.also { pp(it, tabSize, printStream) }
 
 /**
  * Recurse over plain objects
