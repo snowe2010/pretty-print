@@ -2,7 +2,6 @@ package com.tylerthrailkill.helpers.prettyprint
 
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import java.io.ByteArrayOutputStream
 
 object MapTest : Spek({
     setup()
@@ -36,7 +35,7 @@ object MapTest : Spek({
         }
 
         context("objects") {
-            it("single object") {
+            it("single object as value") {
                 prettyPrint(
                     mapOf(
                         "key1" to SmallObject("field", 1)
@@ -47,6 +46,20 @@ object MapTest : Spek({
                     field1 = field
                     field2 = 1
                   )
+                }
+                """
+            }
+            it("single object as key") {
+                prettyPrint(
+                    mapOf(
+                        SmallObject("field", 1) to "value1"
+                    )
+                ) mapsTo """
+                {
+                  SmallObject(
+                    field1 = field
+                    field2 = 1
+                  ) -> "value1"
                 }
                 """
             }
@@ -95,6 +108,31 @@ object MapTest : Spek({
                     1,
                     2
                   ]
+                }
+                """
+            }
+            it("map of maps") {
+                prettyPrint(
+                    mapOf(
+                        mapOf(1 to 2, 2 to 3) to mapOf(3 to 4, 4 to 5),
+                        mapOf(6 to 7, 7 to 8) to mapOf(8 to 9, 9 to 0)
+                    )
+                ) mapsTo """
+                {
+                  {
+                    1 -> 2,
+                    2 -> 3
+                  } -> {
+                    3 -> 4,
+                    4 -> 5
+                  },
+                  {
+                    6 -> 7,
+                    7 -> 8
+                  } -> {
+                    8 -> 9,
+                    9 -> 0
+                  }
                 }
                 """
             }
