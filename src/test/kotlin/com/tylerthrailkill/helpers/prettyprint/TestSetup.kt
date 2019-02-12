@@ -27,6 +27,28 @@ fun TestBody.prettyPrint(obj: Any?, tabSize: Int? = null): ByteArrayOutputStream
     }
     return outContent
 }
+/**
+ * Helper function for testing the inline version of `pp`
+ * It defaults to providing no tab size and wrapping the print stream in
+ * a ByteArrayOutputStream to test against
+ */
+fun TestBody.prettyPrintInline(obj: Any?, tabSize: Int? = null): ByteArrayOutputStream {
+    val outContent by memoized<ByteArrayOutputStream>()
+    val printStream = PrintStream(outContent)
+    if (tabSize == null) {
+        inlineWrapper(obj.pp(printStream = printStream), printStream)
+    } else {
+        inlineWrapper(obj.pp(tabSize = tabSize, printStream = printStream), printStream)
+    }
+    return outContent
+}
+
+/**
+ * Prints a test string
+ */
+fun inlineWrapper(obj: Any?, printStream: PrintStream) {
+    printStream.println("inline wrapper function entered")
+}
 
 /**
  * Accepts an `expected` string, and compares it against `this`. Removes leading indents and normalizes newlines
