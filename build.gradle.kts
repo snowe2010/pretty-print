@@ -16,6 +16,15 @@ plugins {
 }
 group = "com.tylerthrailkill.helpers"
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    configurations.maybeCreate("pitest")
+    dependencies {
+        "pitest"("org.pitest:pitest-junit5-plugin:0.8")
+    }
+}
 repositories {
     jcenter()
     mavenCentral()
@@ -44,6 +53,9 @@ dependencies {
     }
     testImplementation("com.beust:klaxon:5.0.1") // used to parse naughty list
     testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
+    testImplementation(platform("org.junit:junit-bom:5.4.0"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
 tasks {
@@ -110,19 +122,8 @@ configure<BintrayExtension> {
 
 pitest {
     testPlugin = "junit5"
+    pitestVersion = "1.4.2"
+    targetClasses = setOf("com.tylerthrailkill.*")
+    targetTests = setOf("com.tylerthrailkill.**.*")
+    verbose = true
 }
-
-//plugins.withId("info.solidsoft.pitest") {
-//    configure<PitestPluginExtension> {
-//        jvmArgs = listOf("-Xmx512m")
-//        testPlugin = "junit5"
-//        avoidCallsTo = setOf("kotlin.jvm.internal")
-//        mutators = setOf("NEW_DEFAULTS")
-//        targetClasses = setOf("com.tylerthrailkill.*")  //by default "${project.group}.*"
-//        targetTests = setOf("com.tylerthrailkill.**.*")
-//        pitestVersion = "1.4.2"
-//        threads = System.getenv("PITEST_THREADS")?.toInt() ?:
-//                Runtime.getRuntime().availableProcessors()
-//        outputFormats = setOf("XML", "HTML")
-//    }
-//}
