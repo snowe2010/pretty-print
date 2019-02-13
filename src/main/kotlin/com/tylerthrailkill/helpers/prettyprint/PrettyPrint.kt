@@ -1,129 +1,122 @@
 package com.tylerthrailkill.helpers.prettyprint
 
 import mu.KotlinLogging
-import java.io.PrintStream
 
 private val logger = KotlinLogging.logger {}
 private var indentSize = 2
 private var appendable: Appendable = System.out
-// TODO fix docs
+
 /**
  * Pretty print function.
  *
  * Prints any object in a pretty format for easy debugging/reading
  *
- * @param[obj] the object to pretty print
- * @param[indent] optional param that specifies the number of spaces to use to indent
- * @param[appendable] optional param that specifies the [PrintStream] to use to pretty print. Defaults to `System.out`
+ * @param [obj] the object to pretty print
+ * @param [indent] optional param that specifies the number of spaces to use to indent. Defaults to 2.
+ * @param [writeTo] optional param that specifies the [Appendable] to output the pretty print to. Defaults appending to `System.out`.
  */
-public fun pp(obj: Any?, indent: Int = 2, writeTo: Appendable = System.out) {
+public fun pp(obj: Any?, indent: Int = indentSize, writeTo: Appendable = appendable) {
     indentSize = indent
     appendable = writeTo
     ppAny(obj)
 }
 
+/**
+ * Pretty prints any object. `collectionItemPad` is how much more to indent the contents of a collection.
+ * `objectFieldPad` is how much to indent the fields of an object. `shouldQuoteStrings` is whether or not a String
+ * object should be quoted.
+ */
 private fun ppAny(
     obj: Any?,
-    collectionPad: String = "",
-    objectPad: String = collectionPad,
+    collectionItemPad: String = "",
+    objectFieldPad: String = collectionItemPad,
     shouldQuoteStrings: Boolean = true
 ) = when {
-    obj is Iterable<*> -> ppIterable(obj, collectionPad)
-    obj is Map<*, *> -> ppMap(obj, collectionPad)
+    obj is Iterable<*> -> ppIterable(obj, collectionItemPad)
+    obj is Map<*, *> -> ppMap(obj, collectionItemPad)
     obj == null -> write("null")
     obj.javaClass.name.startsWith("java") -> {
         val fence = if (obj is String && shouldQuoteStrings) "\"" else ""
         write("$fence$obj$fence")
     }
-    else -> ppPlainObject(obj, objectPad)
+    else -> ppPlainObject(obj, objectFieldPad)
 }
 
 /**
- * Recurse over plain objects
- * If null, print null and end recursion
- * If String, print "string here" and end recursion
- * If java.* then write using toString() and end recursion
- * If Iterable then recurse and deepen the tab size
- * If Map then recurse and deepen the tab size
- * else recurse back into this function
+ * Pretty print a plain object.
  */
 private fun ppPlainObject(obj: Any?, currentDepth: String) {
     val className = "${obj?.javaClass?.simpleName}("
-    write(className)
+    val increasedDepth = deepen(currentDepth)
 
+    writeLine(className)
     obj?.javaClass?.declaredFields?.forEach {
-        val increasedDepth = deepen(currentDepth)
         val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3)
         it.isAccessible = true
-        appendable.appendln()
         write("$increasedDepth${it.name} = ")
-        val fieldValue = it.get(obj)
-        logger.debug { "field value is ${fieldValue.javaClass}" }
-        ppAny(fieldValue, extraIncreasedDepth, increasedDepth, false)
+        ppAny(it.get(obj), extraIncreasedDepth, increasedDepth, false)
+        writeLine()
     }
-    appendable.appendln()
-    write("$currentDepth)")
+    write(currentDepth)
+    write(')')
 }
 
 /**
- * Same as `recurse`, but meant for iterables. Handles deepening in appropriate areas
- * and calling back to `recurse`, `recurseIterable`, or `recurseMap`
+ * Pretty print an Iterable.
  */
 private fun ppIterable(obj: Iterable<*>, currentDepth: String) {
     var commas = obj.count() // comma counter
+    val increasedDepth = deepen(currentDepth)
 
-    // begin writing the iterable
-    writeLine("[")
+    writeLine('[')
     obj.forEach {
-        val increasedDepth = deepen(currentDepth)
-        write(increasedDepth) // write leading spacing
+        write(increasedDepth)
         ppAny(it, increasedDepth)
-        // add commas if not the last element
+
         if (commas > 1) {
             write(',')
             commas--
         }
-        appendable.appendln()
+        writeLine()
     }
-    write("$currentDepth]")
+    write(currentDepth)
+    write(']')
 }
 
 /**
- * Same as `recurse`, but meant for maps. Handles deepening in appropriate areas
- * and calling back to `recurse`, `recurseIterable`, or `recurseMap`
+ * Pretty print a Map.
  */
 private fun ppMap(obj: Map<*, *>, currentDepth: String) {
     var commas = obj.count() // comma counter
+    val increasedDepth = deepen(currentDepth)
 
-    // begin writing the iterable
-    writeLine("{")
+    writeLine('{')
     obj.forEach { (k, v) ->
-        val increasedDepth = deepen(currentDepth)
-        write(increasedDepth) // write leading spacing
+        write(increasedDepth)
         ppAny(k, increasedDepth)
         write(" -> ")
         ppAny(v, increasedDepth)
-        // add commas if not the last element
+
         if (commas > 1) {
             write(',')
             commas--
         }
-        appendable.appendln()
+        writeLine()
     }
-
-    write("$currentDepth}")
+    write(currentDepth)
+    write('}')
 }
 
 /**
- * Helper functions. Replaces `println()` and adds logging
+ * Writes to the appendable with a new line and adds logging
  */
-private fun writeLine(str: Any?) {
+private fun writeLine(str: Any? = "") {
     logger.debug { "writing $str" }
     appendable.append(str.toString()).appendln()
 }
 
 /**
- * Helper functions. Replaces `print()` and adds logging
+ * Writes to the appendable and adds logging
  */
 private fun write(str: Any?) {
     logger.debug { "writing $str" }
@@ -131,8 +124,7 @@ private fun write(str: Any?) {
 }
 
 /**
- * Helper function that generates a deeper string based on the current depth, tab size, and any modifiers
- * such as if we are currently iterating inside of a list or map
+ * Generates a deeper string based on the current depth and tab size
  */
-private fun deepen(currentDepth: String, modifier: Int = indentSize): String =
-    " ".repeat(modifier) + currentDepth
+private fun deepen(currentDepth: String, size: Int = indentSize): String =
+    " ".repeat(size) + currentDepth
