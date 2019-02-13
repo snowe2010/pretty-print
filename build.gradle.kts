@@ -1,5 +1,4 @@
 import com.jfrog.bintray.gradle.BintrayExtension
-import org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestFramework
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val spekVersion = "2.0.0-alpha.2"
@@ -12,6 +11,7 @@ plugins {
     id("nebula.source-jar") version "9.4.6"
     id("nebula.release") version "9.2.0"
     id("nebula.nebula-bintray-publishing") version "5.0.0"
+    id("info.solidsoft.pitest") version "1.4.0"
     jacoco
 }
 group = "com.tylerthrailkill.helpers"
@@ -57,7 +57,7 @@ tasks {
 
     withType<Test> {
         useJUnitPlatform {
-            includeEngines("spek2")
+            includeEngines("spek2", "junit-jupiter")
         }
     }
     val report = withType<JacocoReport> {
@@ -107,3 +107,22 @@ configure<BintrayExtension> {
     dryRun = false
     publish = true
 }
+
+pitest {
+    testPlugin = "junit5"
+}
+
+//plugins.withId("info.solidsoft.pitest") {
+//    configure<PitestPluginExtension> {
+//        jvmArgs = listOf("-Xmx512m")
+//        testPlugin = "junit5"
+//        avoidCallsTo = setOf("kotlin.jvm.internal")
+//        mutators = setOf("NEW_DEFAULTS")
+//        targetClasses = setOf("com.tylerthrailkill.*")  //by default "${project.group}.*"
+//        targetTests = setOf("com.tylerthrailkill.**.*")
+//        pitestVersion = "1.4.2"
+//        threads = System.getenv("PITEST_THREADS")?.toInt() ?:
+//                Runtime.getRuntime().availableProcessors()
+//        outputFormats = setOf("XML", "HTML")
+//    }
+//}
