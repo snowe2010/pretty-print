@@ -43,21 +43,38 @@ private fun ppAny(
 }
 
 /**
+ * Pretty prints the contents of the Iterable receiver. The given function is applied to each element. The result
+ * of an application to each element is on its own line, separated by a separator. `currentDepth` specifies the
+ * indentation level of any closing bracket.
+ */
+private fun <T> Iterable<T>.ppContents(currentDepth: String, separator: String = "", f: (T) -> Unit) {
+    val list = this.toMutableList()
+    if (!list.isEmpty()) f(list.removeAt(0))
+
+    list.forEach {
+        writeLine(separator)
+        f(it)
+    }
+
+    writeLine()
+    write(currentDepth)
+}
+
+/**
  * Pretty print a plain object.
  */
 private fun ppPlainObject(obj: Any?, currentDepth: String) {
-    val className = "${obj?.javaClass?.simpleName}("
     val increasedDepth = deepen(currentDepth)
+    val className = obj?.javaClass?.simpleName
 
-    writeLine(className)
-    obj?.javaClass?.declaredFields?.forEach {
-        val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3)
+    write(className)
+    writeLine('(')
+    obj?.javaClass?.declaredFields?.toList()?.ppContents(currentDepth) {
         it.isAccessible = true
         write("$increasedDepth${it.name} = ")
+        val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3)
         ppAny(it.get(obj), extraIncreasedDepth, increasedDepth, false)
-        writeLine()
     }
-    write(currentDepth)
     write(')')
 }
 
@@ -65,21 +82,13 @@ private fun ppPlainObject(obj: Any?, currentDepth: String) {
  * Pretty print an Iterable.
  */
 private fun ppIterable(obj: Iterable<*>, currentDepth: String) {
-    var commas = obj.count() // comma counter
     val increasedDepth = deepen(currentDepth)
 
     writeLine('[')
-    obj.forEach {
+    obj.ppContents(currentDepth, ",") {
         write(increasedDepth)
         ppAny(it, increasedDepth)
-
-        if (commas > 1) {
-            write(',')
-            commas--
-        }
-        writeLine()
     }
-    write(currentDepth)
     write(']')
 }
 
@@ -87,23 +96,15 @@ private fun ppIterable(obj: Iterable<*>, currentDepth: String) {
  * Pretty print a Map.
  */
 private fun ppMap(obj: Map<*, *>, currentDepth: String) {
-    var commas = obj.count() // comma counter
     val increasedDepth = deepen(currentDepth)
 
     writeLine('{')
-    obj.forEach { (k, v) ->
+    obj.entries.ppContents(currentDepth, ",") {
         write(increasedDepth)
-        ppAny(k, increasedDepth)
+        ppAny(it.key, increasedDepth)
         write(" -> ")
-        ppAny(v, increasedDepth)
-
-        if (commas > 1) {
-            write(',')
-            commas--
-        }
-        writeLine()
+        ppAny(it.value, increasedDepth)
     }
-    write(currentDepth)
     write('}')
 }
 
