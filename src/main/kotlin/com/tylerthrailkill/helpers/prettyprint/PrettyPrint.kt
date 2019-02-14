@@ -7,6 +7,7 @@ import java.util.*
 private val logger = KotlinLogging.logger {}
 private var TAB_SIZE = 2
 private var PRINT_STREAM = System.out
+private var WRAPPED_LINE_WIDTH = 80
 
 typealias CurrentNodeIdentityHashCodes = ArrayDeque<Int>
 typealias DetectedCycles = MutableList<Int>
@@ -83,7 +84,17 @@ private fun recurse(
             fieldValue is Iterable<*> -> recurseIterable(fieldValue, nodeList, detectedCycles, deepen(pad, it.name.length + 3))
             fieldValue is Map<*, *> -> recurseMap(fieldValue, nodeList, detectedCycles, deepen(pad, it.name.length + 3))
             fieldValue == null -> write("null")
-            fieldValue.javaClass.name.startsWith("java") -> write(fieldValue.toString())
+            fieldValue.javaClass.name.startsWith("java") -> {
+                val str = fieldValue.toString()
+                if (str.length > 80) {
+                    writeLine("\"\"\"")
+                    val newPad = deepen(pad, it.name.length + 3)
+                    writeLine("$newPad${wordWrap(str, newPad)}")
+                    write("$newPad\"\"\"")
+                } else {
+                    write(str)
+                }
+            }
             else -> recurse(fieldValue, nodeList, detectedCycles, deepen(currentDepth))
         }
     }
@@ -240,3 +251,21 @@ private fun write(str: Any?) {
  * such as if we are currently iterating inside of a list or map
  */
 private fun deepen(currentDepth: String, modifier: Int? = null): String = " ".repeat(modifier ?: TAB_SIZE) + currentDepth
+
+private fun wordWrap(text: String, padding: String): String {
+    val words = text.split(' ')
+    val sb = StringBuilder(words.first())
+    var spaceLeft = WRAPPED_LINE_WIDTH - words.first().length
+    for (word in words.drop(1)) {
+        val len = word.length
+        if (len + 1 > spaceLeft) {
+            sb.append("\n").append(padding).append(word)
+            spaceLeft = WRAPPED_LINE_WIDTH - len
+        }
+        else {
+            sb.append(" ").append(word)
+            spaceLeft -= (len + 1)
+        }
+    }
+    return sb.toString()
+}
