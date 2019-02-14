@@ -17,6 +17,19 @@ object CycleDetectionTest : Spek({
                 )[${'$'}id=$identity]
                 """
             }
+            it("should detect a cycle with two small objects") {
+                val sco1 = SmallCyclicalObject1()
+                val sco2 = SmallCyclicalObject2(sco1)
+                sco1.c = sco2
+                val identity = System.identityHashCode(sco1)
+                prettyPrint(sco1) mapsTo """
+                SmallCyclicalObject1(
+                  c = SmallCyclicalObject2(
+                    c = cyclic reference detected for $identity
+                  )
+                )[${'$'}id=$identity]
+                """
+            }
             it("should detect no cycle when an element is repeated several times in the same objects fields") {
                 val smallObject = SmallObject("a string in small object", 777)
                 val nestedLargeObjectNull = NestedLargeObject(

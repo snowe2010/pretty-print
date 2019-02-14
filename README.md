@@ -30,6 +30,31 @@ NestedObjectWithCollection(
 )
 ```
 
+### Cyclic references
+
+```kotlin
+data class SmallCyclicalObject1(
+    val c: SmallCyclicalObject2? = null
+)
+data class SmallCyclicalObject2(
+    val c: SmallCyclicalObject1? = null
+)
+val sco1 = SmallCyclicalObject1()
+val sco2 = SmallCyclicalObject2(sco1)
+sco1.c = sco2
+pp(sco1)
+```
+prints
+```text
+ObjectWithMap(
+  map = {
+          1 -> ObjectContainingObjectWithMap(
+            objectWithMap = cyclic reference detected for 775386112
+          )
+        }
+)[$id=775386112]
+```
+
 # ToDo
 
 * implement cycle detection

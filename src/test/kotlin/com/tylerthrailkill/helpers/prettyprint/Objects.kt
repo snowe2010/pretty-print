@@ -51,6 +51,13 @@ data class EmailAddress(
     private val serialVersionUUID = 1L
 }
 
+// cyclical objects
+data class SmallCyclicalObject1(
+    var c: SmallCyclicalObject2? = null
+)
+data class SmallCyclicalObject2(
+    val c: SmallCyclicalObject1? = null
+)
 data class ObjectContainingObjectWithMap(
     var objectWithMap: ObjectWithMap? = null
 )
