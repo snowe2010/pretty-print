@@ -50,3 +50,16 @@ data class EmailAddress(
 ) {
     private val serialVersionUUID = 1L
 }
+
+data class ObjectContainingObjectWithMap(
+    var objectWithMap: ObjectWithMap? = null
+)
+data class ObjectWithMap(
+    val map: MutableMap<Int, ObjectContainingObjectWithMap?>
+)
+data class ObjectContainingObjectWithList(
+    var objectWithList: ObjectWithList? = null
+)
+data class ObjectWithList(
+    val list: MutableList<ObjectContainingObjectWithList?>
+)
