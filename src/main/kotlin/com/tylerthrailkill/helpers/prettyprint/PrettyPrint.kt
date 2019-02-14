@@ -2,10 +2,14 @@ package com.tylerthrailkill.helpers.prettyprint
 
 import mu.KotlinLogging
 import java.io.PrintStream
+import java.util.*
 
 private val logger = KotlinLogging.logger {}
 private var TAB_SIZE = 2
 private var PRINT_STREAM = System.out
+
+typealias CurrentNodeIdentityHashCodes = ArrayDeque<Int>
+typealias DetectedCycles = MutableList<Int>
 
 /**
  * Pretty print function.
@@ -19,10 +23,12 @@ private var PRINT_STREAM = System.out
 fun pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out) {
     TAB_SIZE = tabSize
     PRINT_STREAM = printStream
+    val nodeList: CurrentNodeIdentityHashCodes = ArrayDeque()
+    val detectedCycles: DetectedCycles = mutableListOf()
     when (obj) {
-        is Iterable<*> -> recurseIterable(obj, "")
-        is Map<*, *> -> recurseMap(obj, "")
-        is Any -> recurse(obj)
+        is Iterable<*> -> recurseIterable(obj, nodeList, detectedCycles, "")
+        is Map<*, *> -> recurseMap(obj, nodeList, detectedCycles, "")
+        is Any -> recurse(obj, nodeList, detectedCycles)
         else -> writeLine("null")
     }
     PRINT_STREAM.println()
@@ -50,7 +56,19 @@ fun <T> T.pp(tabSize: Int = 2, printStream: PrintStream = System.out): T =
  * If Map then recurse and deepen the tab size
  * else recurse back into this function
  */
-private fun recurse(obj: Any, currentDepth: String = "") {
+private fun recurse(
+    obj: Any,
+    nodeList: CurrentNodeIdentityHashCodes,
+    detectedCycles: DetectedCycles,
+    currentDepth: String = ""
+) {
+    val currentObjectIdentity = System.identityHashCode(obj)
+    if (nodeList.contains(currentObjectIdentity)) {
+        write("cyclic reference detected for $currentObjectIdentity")
+        detectedCycles.add(currentObjectIdentity)
+        return
+    }
+    nodeList.push(currentObjectIdentity)
     val className = "${obj.javaClass.simpleName}("
     write(className)
 
@@ -62,22 +80,39 @@ private fun recurse(obj: Any, currentDepth: String = "") {
         val fieldValue = it.get(obj)
         logger.debug { "field value is ${fieldValue.javaClass}" }
         when {
-            fieldValue is Iterable<*> -> recurseIterable(fieldValue, deepen(pad, it.name.length + 3))
-            fieldValue is Map<*, *> -> recurseMap(fieldValue, deepen(pad, it.name.length + 3))
+            fieldValue is Iterable<*> -> recurseIterable(fieldValue, nodeList, detectedCycles, deepen(pad, it.name.length + 3))
+            fieldValue is Map<*, *> -> recurseMap(fieldValue, nodeList, detectedCycles, deepen(pad, it.name.length + 3))
             fieldValue == null -> write("null")
             fieldValue.javaClass.name.startsWith("java") -> write(fieldValue.toString())
-            else -> recurse(fieldValue, deepen(currentDepth))
+            else -> recurse(fieldValue, nodeList, detectedCycles, deepen(currentDepth))
         }
     }
     PRINT_STREAM.println()
     write("$currentDepth)")
+    if (detectedCycles.contains(currentObjectIdentity)) {
+        write("[\$id=$currentObjectIdentity]")
+        detectedCycles.remove(currentObjectIdentity)
+    }
+    nodeList.pop()
 }
 
 /**
  * Same as `recurse`, but meant for iterables. Handles deepening in appropriate areas
  * and calling back to `recurse`, `recurseIterable`, or `recurseMap`
  */
-private fun recurseIterable(obj: Iterable<*>, currentDepth: String) {
+private fun recurseIterable(
+    obj: Iterable<*>,
+    nodeList: CurrentNodeIdentityHashCodes,
+    detectedCycles: DetectedCycles,
+    currentDepth: String
+) {
+    val currentObjectIdentity = System.identityHashCode(obj)
+    if (nodeList.contains(currentObjectIdentity)) {
+        write("cyclic reference detected for $currentObjectIdentity")
+        detectedCycles.add(currentObjectIdentity)
+        return
+    }
+    nodeList.push(currentObjectIdentity)
     var commas = obj.count() // comma counter
 
     // begin writing the iterable
@@ -86,8 +121,8 @@ private fun recurseIterable(obj: Iterable<*>, currentDepth: String) {
         val increasedDepth = currentDepth + " ".repeat(TAB_SIZE)
         write(increasedDepth) // write leading spacing
         when {
-            it is Iterable<*> -> recurseIterable(it, increasedDepth)
-            it is Map<*, *> -> recurseMap(it, increasedDepth)
+            it is Iterable<*> -> recurseIterable(it, nodeList, detectedCycles, increasedDepth)
+            it is Map<*, *> -> recurseMap(it, nodeList, detectedCycles, increasedDepth)
             it == null -> write("null")
             it.javaClass.name.startsWith("java") -> {
                 if (it is String) {
@@ -98,7 +133,7 @@ private fun recurseIterable(obj: Iterable<*>, currentDepth: String) {
                     write('"')
                 }
             }
-            else -> recurse(it, increasedDepth)
+            else -> recurse(it, nodeList, detectedCycles, increasedDepth)
         }
         // add commas if not the last element
         if (commas > 1) {
@@ -108,13 +143,29 @@ private fun recurseIterable(obj: Iterable<*>, currentDepth: String) {
         PRINT_STREAM.println()
     }
     write("$currentDepth]")
+    if (detectedCycles.contains(currentObjectIdentity)) {
+        write("[\$id=$currentObjectIdentity]")
+        detectedCycles.remove(currentObjectIdentity)
+    }
+    nodeList.pop()
 }
 
 /**
  * Same as `recurse`, but meant for maps. Handles deepening in appropriate areas
  * and calling back to `recurse`, `recurseIterable`, or `recurseMap`
  */
-private fun recurseMap(obj: Map<*, *>, currentDepth: String) {
+private fun recurseMap(
+    obj: Map<*, *>,
+    nodeList: CurrentNodeIdentityHashCodes,
+    detectedCycles: DetectedCycles, currentDepth: String
+) {
+    val currentObjectIdentity = System.identityHashCode(obj)
+    if (nodeList.contains(currentObjectIdentity)) {
+        write("cyclic reference detected for $currentObjectIdentity")
+        detectedCycles.add(currentObjectIdentity)
+        return
+    }
+    nodeList.push(currentObjectIdentity)
     var commas = obj.count() // comma counter
 
     // begin writing the iterable
@@ -123,8 +174,8 @@ private fun recurseMap(obj: Map<*, *>, currentDepth: String) {
         val increasedDepth = currentDepth + " ".repeat(TAB_SIZE)
         write(increasedDepth) // write leading spacing
         when {
-            k is Iterable<*> -> recurseIterable(k, increasedDepth)
-            k is Map<*, *> -> recurseMap(k, increasedDepth)
+            k is Iterable<*> -> recurseIterable(k, nodeList, detectedCycles, increasedDepth)
+            k is Map<*, *> -> recurseMap(k, nodeList, detectedCycles, increasedDepth)
             k == null -> write("null")
             k.javaClass.name.startsWith("java") -> {
                 if (k is String) {
@@ -135,12 +186,12 @@ private fun recurseMap(obj: Map<*, *>, currentDepth: String) {
                     write('"')
                 }
             }
-            else -> recurse(k, increasedDepth)
+            else -> recurse(k, nodeList, detectedCycles, increasedDepth)
         }
         write(" -> ")
         when {
-            v is Iterable<*> -> recurseIterable(v, increasedDepth)
-            v is Map<*, *> -> recurseMap(v, increasedDepth)
+            v is Iterable<*> -> recurseIterable(v, nodeList, detectedCycles, increasedDepth)
+            v is Map<*, *> -> recurseMap(v, nodeList, detectedCycles, increasedDepth)
             v == null -> write("null")
             v.javaClass.name.startsWith("java") -> {
                 if (v is String) {
@@ -151,7 +202,7 @@ private fun recurseMap(obj: Map<*, *>, currentDepth: String) {
                     write('"')
                 }
             }
-            else -> recurse(v, increasedDepth)
+            else -> recurse(v, nodeList, detectedCycles, increasedDepth)
         }
         // add commas if not the last element
         if (commas > 1) {
@@ -161,6 +212,11 @@ private fun recurseMap(obj: Map<*, *>, currentDepth: String) {
         PRINT_STREAM.println()
     }
     write("$currentDepth}")
+    if (detectedCycles.contains(currentObjectIdentity)) {
+        write("[\$id=$currentObjectIdentity]")
+        detectedCycles.remove(currentObjectIdentity)
+    }
+    nodeList.pop()
 }
 
 /**
