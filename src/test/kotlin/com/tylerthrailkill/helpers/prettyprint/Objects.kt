@@ -5,6 +5,8 @@ import java.util.*
 
 // Simple objects
 
+class EmptyObject
+
 data class TinyObject(var int: Int)
 
 data class SmallObject(val field1: String, var field2: Int)

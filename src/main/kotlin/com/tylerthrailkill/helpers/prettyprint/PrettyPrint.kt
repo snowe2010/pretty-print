@@ -19,7 +19,21 @@ public fun pp(obj: Any?, indent: Int = indentSize, writeTo: Appendable = appenda
     indentSize = indent
     appendable = writeTo
     ppAny(obj)
+    writeLine()
 }
+
+/**
+ * Inline helper method for printing withing method chains. Simply delegates to [pp]
+ *
+ * Example:
+ *   val foo = op2(op1(bar).pp())
+ *
+ * @param[T] the object to pretty print
+ * @param[indent] optional param that specifies the number of spaces to use to indent. Defaults to 2.
+ * @param[writeTo] optional param that specifies the [Appendable] to output the pretty print to. Defaults appending to `System.out`
+ */
+public fun <T> T.pp(indent: Int = indentSize, writeTo: Appendable = appendable): T =
+    this.also { pp(it, indent, writeTo) }
 
 /**
  * Pretty prints any object. `collectionItemPad` is how much more to indent the contents of a collection.
@@ -29,17 +43,12 @@ public fun pp(obj: Any?, indent: Int = indentSize, writeTo: Appendable = appenda
 private fun ppAny(
     obj: Any?,
     collectionItemPad: String = "",
-    objectFieldPad: String = collectionItemPad,
-    shouldQuoteStrings: Boolean = true
-) = when {
-    obj is Iterable<*> -> ppIterable(obj, collectionItemPad)
-    obj is Map<*, *> -> ppMap(obj, collectionItemPad)
-    obj == null -> write("null")
-    obj.javaClass.name.startsWith("java") -> {
-        val fence = if (obj is String && shouldQuoteStrings) "\"" else ""
-        write("$fence$obj$fence")
-    }
-    else -> ppPlainObject(obj, objectFieldPad)
+    objectFieldPad: String = collectionItemPad
+) = when (obj) {
+    is Iterable<*> -> ppIterable(obj, collectionItemPad)
+    is Map<*, *> -> ppMap(obj, collectionItemPad)
+    is Any -> ppPlainObject(obj, objectFieldPad)
+    else -> write("null")
 }
 
 /**
@@ -49,33 +58,44 @@ private fun ppAny(
  */
 private fun <T> Iterable<T>.ppContents(currentDepth: String, separator: String = "", f: (T) -> Unit) {
     val list = this.toMutableList()
-    if (!list.isEmpty()) f(list.removeAt(0))
-
-    list.forEach {
-        writeLine(separator)
-        f(it)
+    if (!list.isEmpty()) {
+        f(list.removeAt(0))
+        list.forEach {
+            writeLine(separator)
+            f(it)
+        }
+        writeLine()
     }
 
-    writeLine()
     write(currentDepth)
 }
 
 /**
  * Pretty print a plain object.
  */
-private fun ppPlainObject(obj: Any?, currentDepth: String) {
-    val increasedDepth = deepen(currentDepth)
-    val className = obj?.javaClass?.simpleName
+private fun ppPlainObject(obj: Any, currentDepth: String) {
+    if (obj.javaClass.name.startsWith("java")) {
+        val fence = if (obj is String) "\"" else ""
+        write("$fence$obj$fence")
+    } else {
+        val increasedDepth = deepen(currentDepth)
+        val className = obj.javaClass.simpleName
 
-    write(className)
-    writeLine('(')
-    obj?.javaClass?.declaredFields?.toList()?.ppContents(currentDepth) {
-        it.isAccessible = true
-        write("$increasedDepth${it.name} = ")
-        val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3)
-        ppAny(it.get(obj), extraIncreasedDepth, increasedDepth, false)
+        write(className)
+        writeLine('(')
+        obj.javaClass.declaredFields
+            .filterNot { it.isSynthetic }
+            .toList()
+            .ppContents(currentDepth) {
+                it.isAccessible = true
+                write("$increasedDepth${it.name} = ")
+                val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3)
+                val fieldValue = it.get(obj)
+                logger.debug { "field value is ${fieldValue.javaClass}" }
+                ppAny(fieldValue, extraIncreasedDepth, increasedDepth)
+            }
+        write(')')
     }
-    write(')')
 }
 
 /**
