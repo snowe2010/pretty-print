@@ -69,15 +69,9 @@ private fun ppAny(
 
 private fun isAtomic(o: Any?): Boolean =
     o == null
-            || o is Char
-            || o is Byte
-            || o is Short
-            || o is Int
-            || o is Long
-            || o is Float
-            || o is Double
-            || o is Boolean
-            || o is String
+            || o is Char || o is String || o is Byte
+            || o is Short || o is Int || o is Long
+            || o is Float || o is Double || o is Boolean
 
 /**
  * Pretty prints the contents of the Iterable receiver. The given function is applied to each element. The result
@@ -86,6 +80,7 @@ private fun isAtomic(o: Any?): Boolean =
  */
 private fun <T> Iterable<T>.ppContents(currentDepth: String, separator: String = "", f: (T) -> Unit) {
     val list = this.toMutableList()
+
     if (!list.isEmpty()) {
         f(list.removeAt(0))
         list.forEach {
@@ -102,11 +97,21 @@ private fun <T> Iterable<T>.ppContents(currentDepth: String, separator: String =
  * Pretty print a plain object.
  */
 private fun ppPlainObject(obj: Any, visited: MutableSet<Int>, revisited: MutableSet<Int>, currentDepth: String) {
-    if (obj.javaClass.name.startsWith("java")) {
-        val fence = if (obj is String) "\"" else ""
-        write("$fence$obj$fence")
+    val increasedDepth = deepen(currentDepth)
+
+    if (obj is String) {
+        if (obj.length > WRAPPED_LINE_WIDTH) {
+            val tripleDoubleQuotes = "\"\"\""
+            writeLine(tripleDoubleQuotes)
+            val newPad = deepen(increasedDepth)
+            writeLine("$newPad${wordWrap(obj, newPad)}")
+            write("$newPad$tripleDoubleQuotes")
+        } else {
+            write("\"$obj\"")
+        }
+    } else if (obj.javaClass.name.startsWith("java")) {
+        write(obj.toString())
     } else {
-        val increasedDepth = deepen(currentDepth)
         val className = obj.javaClass.simpleName
 
         write(className)
@@ -117,7 +122,7 @@ private fun ppPlainObject(obj: Any, visited: MutableSet<Int>, revisited: Mutable
             .ppContents(currentDepth) {
                 it.isAccessible = true
                 write("$increasedDepth${it.name} = ")
-                val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3)
+                val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3) // " = ".length is 3 in prev line
                 val fieldValue = it.get(obj)
                 logger.debug { "field value is ${fieldValue.javaClass}" }
                 ppAny(fieldValue, visited, revisited, extraIncreasedDepth, increasedDepth)
