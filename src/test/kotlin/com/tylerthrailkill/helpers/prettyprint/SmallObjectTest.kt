@@ -23,7 +23,7 @@ object SmallObjectTest : Spek({
             it("two fields") {
                 prettyPrint(SmallObject("a", 1)) mapsTo """
                 SmallObject(
-                  field1 = a
+                  field1 = "a"
                   field2 = 1
                 )
             """

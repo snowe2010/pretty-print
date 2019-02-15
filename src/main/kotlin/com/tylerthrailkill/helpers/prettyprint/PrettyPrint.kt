@@ -1,38 +1,26 @@
 package com.tylerthrailkill.helpers.prettyprint
 
 import mu.KotlinLogging
-import java.io.PrintStream
-import java.util.*
 
 private val logger = KotlinLogging.logger {}
-private var TAB_SIZE = 2
-private var PRINT_STREAM = System.out
-private var WRAPPED_LINE_WIDTH = 80
-
-typealias CurrentNodeIdentityHashCodes = ArrayDeque<Int>
-typealias DetectedCycles = MutableList<Int>
+private val WRAPPED_LINE_WIDTH = 80
+private var indentSize = 2
+private var appendable: Appendable = System.out
 
 /**
  * Pretty print function.
  *
  * Prints any object in a pretty format for easy debugging/reading
  *
- * @param[obj] the object to pretty print
- * @param[tabSize] optional param that specifies the number of spaces to use to indent
- * @param[printStream] optional param that specifies the [PrintStream] to use to pretty print. Defaults to `System.out`
+ * @param [obj] the object to pretty print
+ * @param [indent] optional param that specifies the number of spaces to use to indent. Defaults to 2.
+ * @param [writeTo] optional param that specifies the [Appendable] to output the pretty print to. Defaults appending to `System.out`.
  */
-fun pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out) {
-    TAB_SIZE = tabSize
-    PRINT_STREAM = printStream
-    val nodeList: CurrentNodeIdentityHashCodes = ArrayDeque()
-    val detectedCycles: DetectedCycles = mutableListOf()
-    when (obj) {
-        is Iterable<*> -> recurseIterable(obj, nodeList, detectedCycles, "")
-        is Map<*, *> -> recurseMap(obj, nodeList, detectedCycles, "")
-        is Any -> recurse(obj, nodeList, detectedCycles)
-        else -> writeLine("null")
-    }
-    PRINT_STREAM.println()
+public fun pp(obj: Any?, indent: Int = indentSize, writeTo: Appendable = appendable) {
+    indentSize = indent
+    appendable = writeTo
+    ppAny(obj, mutableSetOf(), mutableSetOf())
+    writeLine()
 }
 
 /**
@@ -42,216 +30,159 @@ fun pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out) {
  *   val foo = op2(op1(bar).pp())
  *
  * @param[T] the object to pretty print
- * @param[tabSize] optional param that specifies the number of spaces to use to indent
- * @param[printStream] optional param that specifies the [PrintStream] to use to pretty print. Defaults to `System.out`
+ * @param[indent] optional param that specifies the number of spaces to use to indent. Defaults to 2.
+ * @param[writeTo] optional param that specifies the [Appendable] to output the pretty print to. Defaults appending to `System.out`
  */
-fun <T> T.pp(tabSize: Int = 2, printStream: PrintStream = System.out): T =
-    this.also { pp(it, tabSize, printStream) }
+public fun <T> T.pp(indent: Int = indentSize, writeTo: Appendable = appendable): T =
+    this.also { pp(it, indent, writeTo) }
 
 /**
- * Recurse over plain objects
- * If null, print null and end recursion
- * If String, print "string here" and end recursion
- * If java.* then write using toString() and end recursion
- * If Iterable then recurse and deepen the tab size
- * If Map then recurse and deepen the tab size
- * else recurse back into this function
+ * Pretty prints any object. `collectionItemPad` is how much more to indent the contents of a collection.
+ * `objectFieldPad` is how much to indent the fields of an object.
  */
-private fun recurse(
-    obj: Any,
-    nodeList: CurrentNodeIdentityHashCodes,
-    detectedCycles: DetectedCycles,
-    currentDepth: String = ""
+private fun ppAny(
+    obj: Any?,
+    visited: MutableSet<Int>,
+    revisited: MutableSet<Int>,
+    collectionItemPad: String = "",
+    objectFieldPad: String = collectionItemPad
 ) {
-    val currentObjectIdentity = System.identityHashCode(obj)
-    if (nodeList.contains(currentObjectIdentity)) {
-        write("cyclic reference detected for $currentObjectIdentity")
-        detectedCycles.add(currentObjectIdentity)
+    val id = System.identityHashCode(obj)
+
+    if (!isAtomic(obj) && visited.contains(id)) {
+        write("cyclic reference detected for $id")
+        revisited.add(id)
         return
     }
-    nodeList.push(currentObjectIdentity)
-    val className = "${obj.javaClass.simpleName}("
-    write(className)
 
-    obj.javaClass.declaredFields.filter { !it.isSynthetic }.forEach {
-        val pad = deepen(currentDepth)
-        it.isAccessible = true
-        PRINT_STREAM.println()
-        write("$pad${it.name} = ")
-        val fieldValue = it.get(obj)
-        logger.debug { "field value is ${fieldValue.javaClass}" }
-        when {
-            fieldValue is Iterable<*> -> recurseIterable(fieldValue, nodeList, detectedCycles, deepen(pad, it.name.length + 3))
-            fieldValue is Map<*, *> -> recurseMap(fieldValue, nodeList, detectedCycles, deepen(pad, it.name.length + 3))
-            fieldValue == null -> write("null")
-            fieldValue.javaClass.name.startsWith("java") -> {
-                val str = fieldValue.toString()
-                if (str.length > 80) {
-                    writeLine("\"\"\"")
-                    val newPad = deepen(pad, it.name.length + 3)
-                    writeLine("$newPad${wordWrap(str, newPad)}")
-                    write("$newPad\"\"\"")
-                } else {
-                    write(str)
-                }
-            }
-            else -> recurse(fieldValue, nodeList, detectedCycles, deepen(currentDepth))
+    if (!isAtomic(obj)) visited.add(id)
+
+    when (obj) {
+        is Iterable<*> -> ppIterable(obj, visited, revisited, collectionItemPad)
+        is Map<*, *> -> ppMap(obj, visited, revisited, collectionItemPad)
+        is Any -> ppPlainObject(obj, visited, revisited, objectFieldPad)
+        else -> write("null")
+    }
+
+    visited.remove(id)
+}
+
+private fun isAtomic(o: Any?): Boolean =
+    o == null
+            || o is Char
+            || o is Byte
+            || o is Short
+            || o is Int
+            || o is Long
+            || o is Float
+            || o is Double
+            || o is Boolean
+            || o is String
+
+/**
+ * Pretty prints the contents of the Iterable receiver. The given function is applied to each element. The result
+ * of an application to each element is on its own line, separated by a separator. `currentDepth` specifies the
+ * indentation level of any closing bracket.
+ */
+private fun <T> Iterable<T>.ppContents(currentDepth: String, separator: String = "", f: (T) -> Unit) {
+    val list = this.toMutableList()
+    if (!list.isEmpty()) {
+        f(list.removeAt(0))
+        list.forEach {
+            writeLine(separator)
+            f(it)
         }
+        writeLine()
     }
-    PRINT_STREAM.println()
-    write("$currentDepth)")
-    if (detectedCycles.contains(currentObjectIdentity)) {
-        write("[\$id=$currentObjectIdentity]")
-        detectedCycles.remove(currentObjectIdentity)
-    }
-    nodeList.pop()
+
+    write(currentDepth)
 }
 
 /**
- * Same as `recurse`, but meant for iterables. Handles deepening in appropriate areas
- * and calling back to `recurse`, `recurseIterable`, or `recurseMap`
+ * Pretty print a plain object.
  */
-private fun recurseIterable(
-    obj: Iterable<*>,
-    nodeList: CurrentNodeIdentityHashCodes,
-    detectedCycles: DetectedCycles,
-    currentDepth: String
-) {
-    val currentObjectIdentity = System.identityHashCode(obj)
-    if (nodeList.contains(currentObjectIdentity)) {
-        write("cyclic reference detected for $currentObjectIdentity")
-        detectedCycles.add(currentObjectIdentity)
-        return
-    }
-    nodeList.push(currentObjectIdentity)
-    var commas = obj.count() // comma counter
+private fun ppPlainObject(obj: Any, visited: MutableSet<Int>, revisited: MutableSet<Int>, currentDepth: String) {
+    if (obj.javaClass.name.startsWith("java")) {
+        val fence = if (obj is String) "\"" else ""
+        write("$fence$obj$fence")
+    } else {
+        val increasedDepth = deepen(currentDepth)
+        val className = obj.javaClass.simpleName
 
-    // begin writing the iterable
-    writeLine("[")
-    obj.forEach {
-        val increasedDepth = currentDepth + " ".repeat(TAB_SIZE)
-        write(increasedDepth) // write leading spacing
-        when {
-            it is Iterable<*> -> recurseIterable(it, nodeList, detectedCycles, increasedDepth)
-            it is Map<*, *> -> recurseMap(it, nodeList, detectedCycles, increasedDepth)
-            it == null -> write("null")
-            it.javaClass.name.startsWith("java") -> {
-                if (it is String) {
-                    write('"')
-                }
-                write(it)
-                if (it is String) {
-                    write('"')
-                }
+        write(className)
+        writeLine('(')
+        obj.javaClass.declaredFields
+            .filterNot { it.isSynthetic }
+            .toList()
+            .ppContents(currentDepth) {
+                it.isAccessible = true
+                write("$increasedDepth${it.name} = ")
+                val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3)
+                val fieldValue = it.get(obj)
+                logger.debug { "field value is ${fieldValue.javaClass}" }
+                ppAny(fieldValue, visited, revisited, extraIncreasedDepth, increasedDepth)
             }
-            else -> recurse(it, nodeList, detectedCycles, increasedDepth)
-        }
-        // add commas if not the last element
-        if (commas > 1) {
-            write(',')
-            commas--
-        }
-        PRINT_STREAM.println()
+        write(')')
+        val id = System.identityHashCode(obj)
+        if (revisited.contains(id)) write("[\$id=$id]")
+        revisited.remove(id)
     }
-    write("$currentDepth]")
-    if (detectedCycles.contains(currentObjectIdentity)) {
-        write("[\$id=$currentObjectIdentity]")
-        detectedCycles.remove(currentObjectIdentity)
-    }
-    nodeList.pop()
 }
 
 /**
- * Same as `recurse`, but meant for maps. Handles deepening in appropriate areas
- * and calling back to `recurse`, `recurseIterable`, or `recurseMap`
+ * Pretty print an Iterable.
  */
-private fun recurseMap(
-    obj: Map<*, *>,
-    nodeList: CurrentNodeIdentityHashCodes,
-    detectedCycles: DetectedCycles, currentDepth: String
-) {
-    val currentObjectIdentity = System.identityHashCode(obj)
-    if (nodeList.contains(currentObjectIdentity)) {
-        write("cyclic reference detected for $currentObjectIdentity")
-        detectedCycles.add(currentObjectIdentity)
-        return
-    }
-    nodeList.push(currentObjectIdentity)
-    var commas = obj.count() // comma counter
+private fun ppIterable(obj: Iterable<*>, visited: MutableSet<Int>, revisited: MutableSet<Int>, currentDepth: String) {
+    val increasedDepth = deepen(currentDepth)
 
-    // begin writing the iterable
-    writeLine("{")
-    obj.forEach { (k, v) ->
-        val increasedDepth = currentDepth + " ".repeat(TAB_SIZE)
-        write(increasedDepth) // write leading spacing
-        when {
-            k is Iterable<*> -> recurseIterable(k, nodeList, detectedCycles, increasedDepth)
-            k is Map<*, *> -> recurseMap(k, nodeList, detectedCycles, increasedDepth)
-            k == null -> write("null")
-            k.javaClass.name.startsWith("java") -> {
-                if (k is String) {
-                    write('"')
-                }
-                write(k)
-                if (k is String) {
-                    write('"')
-                }
-            }
-            else -> recurse(k, nodeList, detectedCycles, increasedDepth)
-        }
+    writeLine('[')
+    obj.ppContents(currentDepth, ",") {
+        write(increasedDepth)
+        ppAny(it, visited, revisited, increasedDepth)
+    }
+    write(']')
+    val id = System.identityHashCode(obj)
+    if (revisited.contains(id)) write("[\$id=$id]")
+}
+
+/**
+ * Pretty print a Map.
+ */
+private fun ppMap(obj: Map<*, *>, visited: MutableSet<Int>, revisited: MutableSet<Int>, currentDepth: String) {
+    val increasedDepth = deepen(currentDepth)
+
+    writeLine('{')
+    obj.entries.ppContents(currentDepth, ",") {
+        write(increasedDepth)
+        ppAny(it.key, visited, revisited, increasedDepth)
         write(" -> ")
-        when {
-            v is Iterable<*> -> recurseIterable(v, nodeList, detectedCycles, increasedDepth)
-            v is Map<*, *> -> recurseMap(v, nodeList, detectedCycles, increasedDepth)
-            v == null -> write("null")
-            v.javaClass.name.startsWith("java") -> {
-                if (v is String) {
-                    write('"')
-                }
-                write(v)
-                if (v is String) {
-                    write('"')
-                }
-            }
-            else -> recurse(v, nodeList, detectedCycles, increasedDepth)
-        }
-        // add commas if not the last element
-        if (commas > 1) {
-            write(',')
-            commas--
-        }
-        PRINT_STREAM.println()
+        ppAny(it.value, visited, revisited, increasedDepth)
     }
-    write("$currentDepth}")
-    if (detectedCycles.contains(currentObjectIdentity)) {
-        write("[\$id=$currentObjectIdentity]")
-        detectedCycles.remove(currentObjectIdentity)
-    }
-    nodeList.pop()
+    write('}')
+    val id = System.identityHashCode(obj)
+    if (revisited.contains(id)) write("[\$id=$id]")
+    revisited.remove(id)
 }
 
 /**
- * Helper functions. Replaces `println()` and adds logging
+ * Writes to the appendable with a new line and adds logging
  */
-private fun writeLine(str: Any?) {
+private fun writeLine(str: Any? = "") {
     logger.debug { "writing $str" }
-    PRINT_STREAM.println(str)
+    appendable.append(str.toString()).appendln()
 }
 
 /**
- * Helper functions. Replaces `print()` and adds logging
+ * Writes to the appendable and adds logging
  */
 private fun write(str: Any?) {
     logger.debug { "writing $str" }
-    PRINT_STREAM.print(str)
+    appendable.append(str.toString())
 }
 
 /**
- * Helper function that generates a deeper string based on the current depth, tab size, and any modifiers
- * such as if we are currently iterating inside of a list or map
+ * Generates a deeper string based on the current depth and tab size
  */
-private fun deepen(currentDepth: String, modifier: Int? = null): String = " ".repeat(modifier ?: TAB_SIZE) + currentDepth
-
 private fun wordWrap(text: String, padding: String): String {
     val words = text.split(' ')
     val sb = StringBuilder(words.first())
@@ -261,11 +192,13 @@ private fun wordWrap(text: String, padding: String): String {
         if (len + 1 > spaceLeft) {
             sb.append("\n").append(padding).append(word)
             spaceLeft = WRAPPED_LINE_WIDTH - len
-        }
-        else {
+        } else {
             sb.append(" ").append(word)
             spaceLeft -= (len + 1)
         }
     }
     return sb.toString()
 }
+
+private fun deepen(currentDepth: String, size: Int = indentSize): String =
+    " ".repeat(size) + currentDepth
