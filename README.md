@@ -1,6 +1,5 @@
-[![Build Status](https://travis-ci.com/snowe2010/pretty-print.svg?branch=master)](https://travis-ci.com/snowe2010/pretty-print)
-[![Download](https://img.shields.io/bintray/v/snowe/maven/Pretty-Print.svg?label=bintray&style=flat)](https://bintray.com/snowe/maven/Pretty-Print/)
-[![codecov](https://codecov.io/gh/snowe2010/pretty-print/branch/master/graph/badge.svg)](https://codecov.io/gh/snowe2010/pretty-print)
+[![Build Status](https://travis-ci.com/ndon55555/pretty-print.svg?branch=master)](https://travis-ci.com/ndon55555/pretty-print)
+[![codecov](https://codecov.io/gh/ndon55555/pretty-print/branch/master/graph/badge.svg)](https://codecov.io/gh/ndon55555/pretty-print)
  
 # Pretty Print - pp
 
