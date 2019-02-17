@@ -66,7 +66,6 @@ private fun ppAny(
         obj is String -> ppString(obj, collectionItemPad)
         isAtomic(obj) -> write(obj)
         obj is Any -> ppPlainObject(obj, visited, revisited, objectFieldPad)
-        //else -> write("null")
     }
 
     visited.remove(id)
@@ -75,6 +74,7 @@ private fun ppAny(
 private fun isAtomic(o: Any?): Boolean =
     o == null
             || o is Char || o is Number || o is Boolean || o is BigInteger || o is BigDecimal || o is UUID
+
 /**
  * Pretty prints the contents of the Iterable receiver. The given function is applied to each element. The result
  * of an application to each element is on its own line, separated by a separator. `currentDepth` specifies the
