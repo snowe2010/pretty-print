@@ -1,11 +1,14 @@
 package com.tylerthrailkill.helpers.prettyprint
 
 import mu.KotlinLogging
+import java.math.BigDecimal
+import java.math.BigInteger
+import java.util.*
 
 private val logger = KotlinLogging.logger {}
-private val WRAPPED_LINE_WIDTH = 80
-private var indentSize = 2
-private var appendable: Appendable = System.out
+var defaultWrapWidth = 80
+var defaultIndentSize = 2
+var defaultAppendable: Appendable = System.out
 
 /**
  * Pretty print function.
@@ -16,9 +19,9 @@ private var appendable: Appendable = System.out
  * @param [indent] optional param that specifies the number of spaces to use to indent. Defaults to 2.
  * @param [writeTo] optional param that specifies the [Appendable] to output the pretty print to. Defaults appending to `System.out`.
  */
-public fun pp(obj: Any?, indent: Int = indentSize, writeTo: Appendable = appendable) {
-    indentSize = indent
-    appendable = writeTo
+fun pp(obj: Any?, indent: Int = defaultIndentSize, writeTo: Appendable = defaultAppendable) {
+    defaultIndentSize = indent
+    defaultAppendable = writeTo
     ppAny(obj, mutableSetOf(), mutableSetOf())
     writeLine()
 }
@@ -33,7 +36,7 @@ public fun pp(obj: Any?, indent: Int = indentSize, writeTo: Appendable = appenda
  * @param[indent] optional param that specifies the number of spaces to use to indent. Defaults to 2.
  * @param[writeTo] optional param that specifies the [Appendable] to output the pretty print to. Defaults appending to `System.out`
  */
-public fun <T> T.pp(indent: Int = indentSize, writeTo: Appendable = appendable): T =
+fun <T> T.pp(indent: Int = defaultIndentSize, writeTo: Appendable = defaultAppendable): T =
     this.also { pp(it, indent, writeTo) }
 
 /**
@@ -57,11 +60,13 @@ private fun ppAny(
 
     if (!isAtomic(obj)) visited.add(id)
 
-    when (obj) {
-        is Iterable<*> -> ppIterable(obj, visited, revisited, collectionItemPad)
-        is Map<*, *> -> ppMap(obj, visited, revisited, collectionItemPad)
-        is Any -> ppPlainObject(obj, visited, revisited, objectFieldPad)
-        else -> write("null")
+    when {
+        obj is Iterable<*> -> ppIterable(obj, visited, revisited, collectionItemPad)
+        obj is Map<*, *> -> ppMap(obj, visited, revisited, collectionItemPad)
+        obj is String -> ppString(obj, collectionItemPad)
+        isAtomic(obj) -> write(obj)
+        obj is Any -> ppPlainObject(obj, visited, revisited, objectFieldPad)
+        //else -> write("null")
     }
 
     visited.remove(id)
@@ -69,10 +74,7 @@ private fun ppAny(
 
 private fun isAtomic(o: Any?): Boolean =
     o == null
-            || o is Char || o is String || o is Byte
-            || o is Short || o is Int || o is Long
-            || o is Float || o is Double || o is Boolean
-
+            || o is Char || o is Number || o is Boolean || o is BigInteger || o is BigDecimal || o is UUID
 /**
  * Pretty prints the contents of the Iterable receiver. The given function is applied to each element. The result
  * of an application to each element is on its own line, separated by a separator. `currentDepth` specifies the
@@ -93,44 +95,44 @@ private fun <T> Iterable<T>.ppContents(currentDepth: String, separator: String =
     write(currentDepth)
 }
 
+private fun ppAtomic(obj: Any?, currentDepth: String) {
+    write(obj.toString())
+}
+
 /**
  * Pretty print a plain object.
  */
 private fun ppPlainObject(obj: Any, visited: MutableSet<Int>, revisited: MutableSet<Int>, currentDepth: String) {
     val increasedDepth = deepen(currentDepth)
+    val className = obj.javaClass.simpleName
 
-    if (obj is String) {
-        if (obj.length > WRAPPED_LINE_WIDTH) {
-            val tripleDoubleQuotes = "\"\"\""
-            writeLine(tripleDoubleQuotes)
-            val newPad = deepen(increasedDepth)
-            writeLine("$newPad${wordWrap(obj, newPad)}")
-            write("$newPad$tripleDoubleQuotes")
-        } else {
-            write("\"$obj\"")
+    write(className)
+    writeLine('(')
+    obj.javaClass.declaredFields
+        .filterNot { it.isSynthetic }
+        .toList()
+        .ppContents(currentDepth) {
+            it.isAccessible = true
+            write("$increasedDepth${it.name} = ")
+            val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3) // " = ".length is 3 in prev line
+            val fieldValue = it.get(obj)
+            logger.debug { "field value is ${fieldValue.javaClass}" }
+            ppAny(fieldValue, visited, revisited, extraIncreasedDepth, increasedDepth)
         }
-    } else if (obj.javaClass.name.startsWith("java")) {
-        write(obj.toString())
-    } else {
-        val className = obj.javaClass.simpleName
+    write(')')
+    val id = System.identityHashCode(obj)
+    if (revisited.contains(id)) write("[\$id=$id]")
+    revisited.remove(id)
+}
 
-        write(className)
-        writeLine('(')
-        obj.javaClass.declaredFields
-            .filterNot { it.isSynthetic }
-            .toList()
-            .ppContents(currentDepth) {
-                it.isAccessible = true
-                write("$increasedDepth${it.name} = ")
-                val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3) // " = ".length is 3 in prev line
-                val fieldValue = it.get(obj)
-                logger.debug { "field value is ${fieldValue.javaClass}" }
-                ppAny(fieldValue, visited, revisited, extraIncreasedDepth, increasedDepth)
-            }
-        write(')')
-        val id = System.identityHashCode(obj)
-        if (revisited.contains(id)) write("[\$id=$id]")
-        revisited.remove(id)
+private fun ppString(s: String, currentDepth: String) {
+    if (s.length > defaultWrapWidth) {
+        val tripleDoubleQuotes = "\"\"\""
+        writeLine(tripleDoubleQuotes)
+        writeLine("$currentDepth${wordWrap(s, currentDepth)}")
+        write("$currentDepth$tripleDoubleQuotes")
+    } else {
+        write("\"$s\"")
     }
 }
 
@@ -170,19 +172,19 @@ private fun ppMap(obj: Map<*, *>, visited: MutableSet<Int>, revisited: MutableSe
 }
 
 /**
- * Writes to the appendable with a new line and adds logging
+ * Writes to the defaultAppendable with a new line and adds logging
  */
 private fun writeLine(str: Any? = "") {
     logger.debug { "writing $str" }
-    appendable.append(str.toString()).appendln()
+    defaultAppendable.append(str.toString()).appendln()
 }
 
 /**
- * Writes to the appendable and adds logging
+ * Writes to the defaultAppendable and adds logging
  */
 private fun write(str: Any?) {
     logger.debug { "writing $str" }
-    appendable.append(str.toString())
+    defaultAppendable.append(str.toString())
 }
 
 /**
@@ -191,12 +193,12 @@ private fun write(str: Any?) {
 private fun wordWrap(text: String, padding: String): String {
     val words = text.split(' ')
     val sb = StringBuilder(words.first())
-    var spaceLeft = WRAPPED_LINE_WIDTH - words.first().length
+    var spaceLeft = defaultWrapWidth - words.first().length
     for (word in words.drop(1)) {
         val len = word.length
         if (len + 1 > spaceLeft) {
             sb.append("\n").append(padding).append(word)
-            spaceLeft = WRAPPED_LINE_WIDTH - len
+            spaceLeft = defaultWrapWidth - len
         } else {
             sb.append(" ").append(word)
             spaceLeft -= (len + 1)
@@ -205,5 +207,5 @@ private fun wordWrap(text: String, padding: String): String {
     return sb.toString()
 }
 
-private fun deepen(currentDepth: String, size: Int = indentSize): String =
+private fun deepen(currentDepth: String, size: Int = defaultIndentSize): String =
     " ".repeat(size) + currentDepth
