@@ -120,5 +120,39 @@ object CycleDetectionTest : Spek({
                 """.trimIndent()
             }
         }
+        context("a cycle of 3 objects") {
+            context("a list contains 2 of these objects") {
+                it("should only show ID of outermost object in the cycle each time the cycle gets printed") {
+                    // outermost meaning the first object in the cycle that pretty print calls on
+                    val anyMap = { mutableMapOf<Any, Any>() }
+                    val a = anyMap()
+                    val b = anyMap()
+                    val c = anyMap()
+
+                    a["foo"] = b
+                    b["fie"] = c
+                    c["fum"] = a
+
+                    prettyPrint(listOf(a, b)) mapsTo """
+                        [
+                          {
+                            "foo" -> {
+                              "fie" -> {
+                                "fum" -> cyclic reference detected for ${System.identityHashCode(a)}
+                              }
+                            }
+                          }[${'$'}id=${System.identityHashCode(a)}],
+                          {
+                            "fie" -> {
+                              "fum" -> {
+                                "foo" -> cyclic reference detected for ${System.identityHashCode(b)}
+                              }
+                            }
+                          }[${'$'}id=${System.identityHashCode(b)}]
+                        ]
+                        """.trimIndent()
+                }
+            }
+        }
     }
 })

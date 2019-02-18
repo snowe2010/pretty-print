@@ -64,7 +64,7 @@ private fun ppAny(
         obj is Iterable<*> -> ppIterable(obj, visited, revisited, collectionItemPad)
         obj is Map<*, *> -> ppMap(obj, visited, revisited, collectionItemPad)
         obj is String -> ppString(obj, collectionItemPad)
-        isAtomic(obj) -> write(obj)
+        isAtomic(obj) -> ppAtomic(obj)
         obj is Any -> ppPlainObject(obj, visited, revisited, objectFieldPad)
     }
 
@@ -95,7 +95,7 @@ private fun <T> Iterable<T>.ppContents(currentDepth: String, separator: String =
     write(currentDepth)
 }
 
-private fun ppAtomic(obj: Any?, currentDepth: String) {
+private fun ppAtomic(obj: Any?) {
     write(obj.toString())
 }
 
@@ -150,6 +150,7 @@ private fun ppIterable(obj: Iterable<*>, visited: MutableSet<Int>, revisited: Mu
     write(']')
     val id = System.identityHashCode(obj)
     if (revisited.contains(id)) write("[\$id=$id]")
+    revisited.remove(id)
 }
 
 /**

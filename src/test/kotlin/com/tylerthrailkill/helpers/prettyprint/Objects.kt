@@ -26,6 +26,8 @@ data class NestedObjectWithCollection(
     val coll: List<Any>
 )
 
+data class SinglyLinkedIntList(val n: Int, val next: SinglyLinkedIntList?)
+
 data class NullableLists(
     val col: List<Any?>?
 )
@@ -55,18 +57,23 @@ data class EmailAddress(
 data class SmallCyclicalObject1(
     var c: SmallCyclicalObject2? = null
 )
+
 data class SmallCyclicalObject2(
     val c: SmallCyclicalObject1? = null
 )
+
 data class ObjectContainingObjectWithMap(
     var objectWithMap: ObjectWithMap? = null
 )
+
 data class ObjectWithMap(
     val map: MutableMap<Int, ObjectContainingObjectWithMap?>
 )
+
 data class ObjectContainingObjectWithList(
     var objectWithList: ObjectWithList? = null
 )
+
 data class ObjectWithList(
     val list: MutableList<ObjectContainingObjectWithList?>
 )
