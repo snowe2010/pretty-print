@@ -6,7 +6,7 @@ import java.math.BigInteger
 import java.util.*
 
 private val logger = KotlinLogging.logger {}
-var defaultWrapWidth = 80
+private const val DEFAULT_WRAP_WIDTH = 80
 var defaultIndentSize = 2
 var defaultAppendable: Appendable = System.out
 
@@ -40,15 +40,15 @@ fun <T> T.pp(indent: Int = defaultIndentSize, writeTo: Appendable = defaultAppen
     this.also { pp(it, indent, writeTo) }
 
 /**
- * Pretty prints any object. `collectionItemPad` is how much more to indent the contents of a collection.
+ * Pretty prints any object. `collectionElementPad` is how much more to indent the contents of a collection.
  * `objectFieldPad` is how much to indent the fields of an object.
  */
 private fun ppAny(
     obj: Any?,
     visited: MutableSet<Int>,
     revisited: MutableSet<Int>,
-    collectionItemPad: String = "",
-    objectFieldPad: String = collectionItemPad
+    collectionElementPad: String = "",
+    objectFieldPad: String = collectionElementPad
 ) {
     val id = System.identityHashCode(obj)
 
@@ -61,14 +61,19 @@ private fun ppAny(
     if (!isAtomic(obj)) visited.add(id)
 
     when {
-        obj is Iterable<*> -> ppIterable(obj, visited, revisited, collectionItemPad)
-        obj is Map<*, *> -> ppMap(obj, visited, revisited, collectionItemPad)
-        obj is String -> ppString(obj, collectionItemPad)
+        obj is Iterable<*> -> ppIterable(obj, visited, revisited, collectionElementPad)
+        obj is Map<*, *> -> ppMap(obj, visited, revisited, collectionElementPad)
+        obj is String -> ppString(obj, collectionElementPad)
         isAtomic(obj) -> ppAtomic(obj)
         obj is Any -> ppPlainObject(obj, visited, revisited, objectFieldPad)
     }
 
     visited.remove(id)
+
+    if (revisited.contains(id)) {
+        write("[\$id=$id]")
+        revisited.remove(id)
+    }
 }
 
 private fun isAtomic(o: Any?): Boolean =
@@ -106,27 +111,23 @@ private fun ppPlainObject(obj: Any, visited: MutableSet<Int>, revisited: Mutable
     val increasedDepth = deepen(currentDepth)
     val className = obj.javaClass.simpleName
 
-    write(className)
-    writeLine('(')
+    writeLine("$className(")
     obj.javaClass.declaredFields
         .filterNot { it.isSynthetic }
         .toList()
         .ppContents(currentDepth) {
             it.isAccessible = true
             write("$increasedDepth${it.name} = ")
-            val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3) // " = ".length is 3 in prev line
+            val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3) // 3 is " = ".length in prev line
             val fieldValue = it.get(obj)
             logger.debug { "field value is ${fieldValue.javaClass}" }
             ppAny(fieldValue, visited, revisited, extraIncreasedDepth, increasedDepth)
         }
     write(')')
-    val id = System.identityHashCode(obj)
-    if (revisited.contains(id)) write("[\$id=$id]")
-    revisited.remove(id)
 }
 
 private fun ppString(s: String, currentDepth: String) {
-    if (s.length > defaultWrapWidth) {
+    if (s.length > DEFAULT_WRAP_WIDTH) {
         val tripleDoubleQuotes = "\"\"\""
         writeLine(tripleDoubleQuotes)
         writeLine("$currentDepth${wordWrap(s, currentDepth)}")
@@ -148,9 +149,6 @@ private fun ppIterable(obj: Iterable<*>, visited: MutableSet<Int>, revisited: Mu
         ppAny(it, visited, revisited, increasedDepth)
     }
     write(']')
-    val id = System.identityHashCode(obj)
-    if (revisited.contains(id)) write("[\$id=$id]")
-    revisited.remove(id)
 }
 
 /**
@@ -167,9 +165,6 @@ private fun ppMap(obj: Map<*, *>, visited: MutableSet<Int>, revisited: MutableSe
         ppAny(it.value, visited, revisited, increasedDepth)
     }
     write('}')
-    val id = System.identityHashCode(obj)
-    if (revisited.contains(id)) write("[\$id=$id]")
-    revisited.remove(id)
 }
 
 /**
@@ -194,12 +189,12 @@ private fun write(str: Any?) {
 private fun wordWrap(text: String, padding: String): String {
     val words = text.split(' ')
     val sb = StringBuilder(words.first())
-    var spaceLeft = defaultWrapWidth - words.first().length
+    var spaceLeft = DEFAULT_WRAP_WIDTH - words.first().length
     for (word in words.drop(1)) {
         val len = word.length
         if (len + 1 > spaceLeft) {
             sb.append("\n").append(padding).append(word)
-            spaceLeft = defaultWrapWidth - len
+            spaceLeft = DEFAULT_WRAP_WIDTH - len
         } else {
             sb.append(" ").append(word)
             spaceLeft -= (len + 1)

@@ -7,6 +7,17 @@ object MultilineStringTest : Spek({
     setup()
 
     describe("really long string reformatting") {
+        context("when the long string is not part of another object") {
+            it("renders as a multiline string") {
+                val s = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a"
+                prettyPrint(s) mapsTo """
+                    ${"\"\"\""}
+                    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                    a
+                    ${"\"\"\""}
+                    """
+            }
+        }
         context("when the long string is the value of a field") {
             it("renders as a multiline string") {
                 prettyPrint(
