@@ -11,6 +11,7 @@ data class TinyObject(var int: Int)
 
 data class SmallObject(val field1: String, var field2: Int)
 
+data class LongString(val longString: String)
 // Nested objects
 
 data class NestedSmallObject(val smallObject: SmallObject)

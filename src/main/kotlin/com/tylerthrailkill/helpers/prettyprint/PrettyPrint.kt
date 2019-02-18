@@ -2,12 +2,14 @@ package com.tylerthrailkill.helpers.prettyprint
 
 import mu.KotlinLogging
 import java.io.PrintStream
+import java.text.BreakIterator
 import java.util.*
 
 private val logger = KotlinLogging.logger {}
 private var TAB_SIZE = 2
 private var PRINT_STREAM = System.out
 private var WRAPPED_LINE_WIDTH = 80
+private val lineInstance = BreakIterator.getLineInstance()
 
 typealias CurrentNodeIdentityHashCodes = ArrayDeque<Int>
 typealias DetectedCycles = MutableList<Int>
@@ -21,9 +23,10 @@ typealias DetectedCycles = MutableList<Int>
  * @param[tabSize] optional param that specifies the number of spaces to use to indent
  * @param[printStream] optional param that specifies the [PrintStream] to use to pretty print. Defaults to `System.out`
  */
-fun pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out) {
+fun pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out, wrappedLineWidth: Int = 80) {
     TAB_SIZE = tabSize
     PRINT_STREAM = printStream
+    WRAPPED_LINE_WIDTH = wrappedLineWidth // TODO move all pp logic into class, and get rid of top level CONSTANTS
     val nodeList: CurrentNodeIdentityHashCodes = ArrayDeque()
     val detectedCycles: DetectedCycles = mutableListOf()
     when (obj) {
@@ -85,15 +88,23 @@ private fun recurse(
             fieldValue is Map<*, *> -> recurseMap(fieldValue, nodeList, detectedCycles, deepen(pad, it.name.length + 3))
             fieldValue == null -> write("null")
             fieldValue.javaClass.name.startsWith("java") -> {
-                val str = fieldValue.toString()
-                if (str.length > 80) {
-                    writeLine("\"\"\"")
-                    val newPad = deepen(pad, it.name.length + 3)
-                    writeLine("$newPad${wordWrap(str, newPad)}")
-                    write("$newPad\"\"\"")
-                } else {
-                    write(str)
+                when(fieldValue) {
+                    is String -> {
+                        val str = fieldValue.toString()
+                        if (str.length > WRAPPED_LINE_WIDTH) {
+                            writeLine("\"\"\"")
+                            val newPad = deepen(pad, it.name.length + 3)
+                            writeLine(wordWrap(str, newPad))
+                            write("$newPad\"\"\"")
+                        } else {
+                            write('"')
+                            write(str)
+                            write('"')
+                        }
+                    }
+                    else -> write(fieldValue)
                 }
+
             }
             else -> recurse(fieldValue, nodeList, detectedCycles, deepen(currentDepth))
         }
@@ -253,19 +264,28 @@ private fun write(str: Any?) {
 private fun deepen(currentDepth: String, modifier: Int? = null): String = " ".repeat(modifier ?: TAB_SIZE) + currentDepth
 
 private fun wordWrap(text: String, padding: String): String {
-    val words = text.split(' ')
-    val sb = StringBuilder(words.first())
-    var spaceLeft = WRAPPED_LINE_WIDTH - words.first().length
-    for (word in words.drop(1)) {
-        val len = word.length
-        if (len + 1 > spaceLeft) {
-            sb.append("\n").append(padding).append(word)
-            spaceLeft = WRAPPED_LINE_WIDTH - len
-        }
-        else {
-            sb.append(" ").append(word)
-            spaceLeft -= (len + 1)
+    lineInstance.setText(text)
+    var start = lineInstance.first()
+    var end = lineInstance.next()
+    val breakableLocations = mutableListOf<String>()
+    while (end != BreakIterator.DONE) {
+        val substring = text.substring(start, end)
+        breakableLocations.add(substring)
+        start = end
+        end = lineInstance.next()
+    }
+    val arr = mutableListOf(mutableListOf<String>())
+    var index = 0
+    var sot = true
+    arr[index].add(breakableLocations[0])
+    breakableLocations.drop(1).forEach lit@{
+        val currentSize = arr[index].joinToString(separator = "").length
+        if (currentSize + it.length <= WRAPPED_LINE_WIDTH) {
+            arr[index].add(it)
+        } else {
+            arr.add(mutableListOf(it))
+            index += 1
         }
     }
-    return sb.toString()
+    return arr.flatMap { listOf("$padding${it.joinToString(separator = "")}") }.joinToString("\n")
 }
