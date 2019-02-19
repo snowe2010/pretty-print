@@ -13,7 +13,7 @@ object NaughtyStringsTest : Spek({
             val naughtyList = Klaxon().parseArray<String>(naughtyString)!!
         it("in list") {
             val expectedString = javaClass.getResource("/naughty_string_printed.txt").readText()
-            prettyPrint(naughtyList) mapsTo expectedString
+            prettyPrint(naughtyList, wrappedLineWidth = 1000) mapsTo expectedString // don't wrap in the naughty strings test, as it can't be generated then.
         }
     }
 })
