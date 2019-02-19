@@ -69,12 +69,7 @@ private class PrettyPrint(
             currentDepth: String = ""
     ) {
         val currentObjectIdentity = System.identityHashCode(obj)
-        if (nodeList.contains(currentObjectIdentity)) {
-            write("cyclic reference detected for $currentObjectIdentity")
-            detectedCycles.add(currentObjectIdentity)
-            return
-        }
-        nodeList.push(currentObjectIdentity)
+        checkCycledStart(currentObjectIdentity, nodeList, detectedCycles) { return }
         val className = "${obj.javaClass.simpleName}("
         write(className)
 
@@ -84,41 +79,12 @@ private class PrettyPrint(
             printStream.println()
             write("$pad${it.name} = ")
             val fieldValue = it.get(obj)
-            logger.debug { "field value is ${fieldValue.javaClass}" }
-            when {
-                fieldValue is Iterable<*> -> ppIterable(fieldValue, nodeList, detectedCycles, deepen(pad, it.name.length + 3))
-                fieldValue is Map<*, *> -> ppMap(fieldValue, nodeList, detectedCycles, deepen(pad, it.name.length + 3))
-                fieldValue == null -> write("null")
-                fieldValue.javaClass.name.startsWith("java") -> {
-                    when (fieldValue) {
-                        is String -> {
-                            val str = fieldValue.toString()
-                            if (str.length > wrappedLineWidth) {
-                                writeLine("\"\"\"")
-                                val newPad = deepen(pad, it.name.length + 3)
-                                writeLine(wordWrap(str, newPad))
-                                write("$newPad\"\"\"")
-                            } else {
-                                write("\"")
-                                write(str)
-                                write("\"")
-                            }
-                        }
-                        else -> write(fieldValue)
-                    }
-                }
-                else -> pp(fieldValue, nodeList, detectedCycles, deepen(currentDepth))
-            }
+            recurse(fieldValue, nodeList, detectedCycles, pad, it.name.length + 3)
         }
         printStream.println()
         write("$currentDepth)")
-        if (detectedCycles.contains(currentObjectIdentity)) {
-            write("[\$id=$currentObjectIdentity]")
-            detectedCycles.remove(currentObjectIdentity)
-        }
-        nodeList.pop()
+        checkCycleEnd(currentObjectIdentity, nodeList, detectedCycles)
     }
-
 
     /**
      * Same as `pp`, but meant for iterables. Handles deepening in appropriate areas
@@ -131,12 +97,7 @@ private class PrettyPrint(
             currentDepth: String
     ) {
         val currentObjectIdentity = System.identityHashCode(obj)
-        if (nodeList.contains(currentObjectIdentity)) {
-            write("cyclic reference detected for $currentObjectIdentity")
-            detectedCycles.add(currentObjectIdentity)
-            return
-        }
-        nodeList.push(currentObjectIdentity)
+        checkCycledStart(currentObjectIdentity, nodeList, detectedCycles) { return }
         var commas = obj.count() // comma counter
 
         // begin writing the iterable
@@ -144,21 +105,7 @@ private class PrettyPrint(
         obj.forEach {
             val increasedDepth = currentDepth + " ".repeat(tabSize)
             write(increasedDepth) // write leading spacing
-            when {
-                it is Iterable<*> -> ppIterable(it, nodeList, detectedCycles, increasedDepth)
-                it is Map<*, *> -> ppMap(it, nodeList, detectedCycles, increasedDepth)
-                it == null -> write("null")
-                it.javaClass.name.startsWith("java") -> {
-                    if (it is String) {
-                        write('"')
-                    }
-                    write(it)
-                    if (it is String) {
-                        write('"')
-                    }
-                }
-                else -> pp(it, nodeList, detectedCycles, increasedDepth)
-            }
+            recurse(it, nodeList, detectedCycles, increasedDepth)
             // add commas if not the last element
             if (commas > 1) {
                 write(',')
@@ -167,11 +114,7 @@ private class PrettyPrint(
             printStream.println()
         }
         write("$currentDepth]")
-        if (detectedCycles.contains(currentObjectIdentity)) {
-            write("[\$id=$currentObjectIdentity]")
-            detectedCycles.remove(currentObjectIdentity)
-        }
-        nodeList.pop()
+        checkCycleEnd(currentObjectIdentity, nodeList, detectedCycles)
     }
 
     /**
@@ -181,15 +124,11 @@ private class PrettyPrint(
     fun ppMap(
             obj: Map<*, *>,
             nodeList: CurrentNodeIdentityHashCodes,
-            detectedCycles: DetectedCycles, currentDepth: String
+            detectedCycles: DetectedCycles,
+            currentDepth: String
     ) {
         val currentObjectIdentity = System.identityHashCode(obj)
-        if (nodeList.contains(currentObjectIdentity)) {
-            write("cyclic reference detected for $currentObjectIdentity")
-            detectedCycles.add(currentObjectIdentity)
-            return
-        }
-        nodeList.push(currentObjectIdentity)
+        checkCycledStart(currentObjectIdentity, nodeList, detectedCycles) { return }
         var commas = obj.count() // comma counter
 
         // begin writing the iterable
@@ -197,37 +136,9 @@ private class PrettyPrint(
         obj.forEach { (k, v) ->
             val increasedDepth = currentDepth + " ".repeat(tabSize)
             write(increasedDepth) // write leading spacing
-            when {
-                k is Iterable<*> -> ppIterable(k, nodeList, detectedCycles, increasedDepth)
-                k is Map<*, *> -> ppMap(k, nodeList, detectedCycles, increasedDepth)
-                k == null -> write("null")
-                k.javaClass.name.startsWith("java") -> {
-                    if (k is String) {
-                        write('"')
-                    }
-                    write(k)
-                    if (k is String) {
-                        write('"')
-                    }
-                }
-                else -> pp(k, nodeList, detectedCycles, increasedDepth)
-            }
+            ppKey(k, nodeList, detectedCycles, increasedDepth)
             write(" -> ")
-            when {
-                v is Iterable<*> -> ppIterable(v, nodeList, detectedCycles, increasedDepth)
-                v is Map<*, *> -> ppMap(v, nodeList, detectedCycles, increasedDepth)
-                v == null -> write("null")
-                v.javaClass.name.startsWith("java") -> {
-                    if (v is String) {
-                        write('"')
-                    }
-                    write(v)
-                    if (v is String) {
-                        write('"')
-                    }
-                }
-                else -> pp(v, nodeList, detectedCycles, increasedDepth)
-            }
+            ppValue(v, nodeList, detectedCycles, increasedDepth)
             // add commas if not the last element
             if (commas > 1) {
                 write(',')
@@ -236,11 +147,90 @@ private class PrettyPrint(
             printStream.println()
         }
         write("$currentDepth}")
+        checkCycleEnd(currentObjectIdentity, nodeList, detectedCycles)
+    }
+
+    fun recurse(value: Any?,
+                nodeList: CurrentNodeIdentityHashCodes,
+                detectedCycles: DetectedCycles,
+                padding: String,
+                extraPadding: Int? = 0) {
+        logger.debug { "value is ${value?.javaClass}" }
+        when {
+            value is Iterable<*> -> ppIterable(value, nodeList, detectedCycles, deepen(padding, extraPadding))
+            value is Map<*, *> -> ppMap(value, nodeList, detectedCycles, deepen(padding, extraPadding))
+            value == null -> write("null")
+            value.javaClass.name.startsWith("java") -> ppJavaClass(value, padding, extraPadding)
+            else -> pp(value, nodeList, detectedCycles, padding)
+        }
+    }
+
+    inline fun checkCycledStart(currentObjectIdentity: Int, nodeList: CurrentNodeIdentityHashCodes, detectedCycles: DetectedCycles, ret: () -> Unit) {
+        if (nodeList.contains(currentObjectIdentity)) {
+            write("cyclic reference detected for $currentObjectIdentity")
+            detectedCycles.add(currentObjectIdentity)
+            ret()
+        }
+        nodeList.push(currentObjectIdentity)
+    }
+
+    fun checkCycleEnd(currentObjectIdentity: Int, nodeList: CurrentNodeIdentityHashCodes, detectedCycles: DetectedCycles) {
         if (detectedCycles.contains(currentObjectIdentity)) {
             write("[\$id=$currentObjectIdentity]")
             detectedCycles.remove(currentObjectIdentity)
         }
         nodeList.pop()
+    }
+
+    fun ppKey(key: Any?,
+              nodeList: CurrentNodeIdentityHashCodes,
+              detectedCycles: DetectedCycles,
+              increasedDepth: String) {
+        when {
+            key is Iterable<*> -> ppIterable(key, nodeList, detectedCycles, increasedDepth)
+            key is Map<*, *> -> ppMap(key, nodeList, detectedCycles, increasedDepth)
+            key == null -> write("null")
+            key.javaClass.name.startsWith("java") -> ppJavaClass(key, increasedDepth)
+            else -> pp(key, nodeList, detectedCycles, increasedDepth)
+        }
+    }
+
+    fun ppValue(value: Any?,
+                nodeList: CurrentNodeIdentityHashCodes,
+                detectedCycles: DetectedCycles,
+                increasedDepth: String) {
+        when {
+            value is Iterable<*> -> ppIterable(value, nodeList, detectedCycles, increasedDepth)
+            value is Map<*, *> -> ppMap(value, nodeList, detectedCycles, increasedDepth)
+            value == null -> write("null")
+            value.javaClass.name.startsWith("java") -> ppJavaClass(value, increasedDepth)
+            else -> pp(value, nodeList, detectedCycles, increasedDepth)
+        }
+    }
+
+    fun ppJavaClass(fieldValue: Any, padding: String, extraPadding: Int? = null) {
+        when (fieldValue) {
+            is String -> ppString(fieldValue, padding, extraPadding)
+            else -> write(fieldValue)
+        }
+    }
+
+    fun ppString(text: Any, padding: String, extraPadding: Int? = null) {
+        val str = text.toString()
+        if (str.length > wrappedLineWidth) {
+            writeLine("\"\"\"")
+            val padding = if (extraPadding != null) {
+                deepen(padding, extraPadding)
+            } else {
+                padding
+            }
+            writeLine(wordWrap(str, padding))
+            write("$padding\"\"\"")
+        } else {
+            write("\"")
+            write(str)
+            write("\"")
+        }
     }
 
     /**
@@ -278,7 +268,6 @@ private class PrettyPrint(
         }
         val arr = mutableListOf(mutableListOf<String>())
         var index = 0
-        var sot = true
         arr[index].add(breakableLocations[0])
         breakableLocations.drop(1).forEach lit@{
             val currentSize = arr[index].joinToString(separator = "").length

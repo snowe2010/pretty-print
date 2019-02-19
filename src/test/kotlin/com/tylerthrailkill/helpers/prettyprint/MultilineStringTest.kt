@@ -1,3 +1,4 @@
+//@formatter:off
 package com.tylerthrailkill.helpers.prettyprint
 
 import org.spekframework.spek2.Spek
@@ -20,7 +21,6 @@ object MultilineStringTest : Spek({
 
     describe("really long strings should wrap to a nice format") {
         it("when there are plain spaces") {
-            // @formatter:off
             prettyPrint(
                     wrappedLineWidth = 22,
                     obj = SmallObject("Goodbye, cruel world. Goodbye, cruel lamp.", 1)
@@ -33,7 +33,6 @@ object MultilineStringTest : Spek({
                   field2 = 1
                 )
                 """
-            // @formatter:on
         }
         context("break should occur between ") {
             javaClass.getResource("/LineBreakTest.txt").readText().lines().forEach nextTest@{ testLine ->
@@ -74,6 +73,49 @@ object MultilineStringTest : Spek({
                   field2 = 1
                 )
                 """
+        }
+        context("in a list") {
+            it("with plain spaces") {
+                prettyPrint(
+                        wrappedLineWidth = 22,
+                        obj = listOf("Goodbye, cruel world. Goodbye, cruel lamp.")
+                ) mapsTo """
+                [
+                  ""${'"'}
+                  Goodbye, cruel world. 
+                  Goodbye, cruel lamp.
+                  ""${'"'}
+                ]
+                """
+            }
+        }
+        context("in a map") {
+            it("as a value with plain spaces") {
+                prettyPrint(
+                        wrappedLineWidth = 22,
+                        obj = mapOf(1 to "Goodbye, cruel world. Goodbye, cruel lamp.")
+                ) mapsTo """
+                {
+                  1 -> ""${'"'}
+                  Goodbye, cruel world. 
+                  Goodbye, cruel lamp.
+                  ""${'"'}
+                }
+                """
+            }
+            it("as a key with plain spaces") {
+                prettyPrint(
+                        wrappedLineWidth = 22,
+                        obj = mapOf("Goodbye, cruel world. Goodbye, cruel lamp." to 1)
+                ) mapsTo """
+                {
+                  ""${'"'}
+                  Goodbye, cruel world. 
+                  Goodbye, cruel lamp.
+                  ""${'"'} -> 1
+                }
+                """
+            }
         }
     }
 })
