@@ -12,7 +12,7 @@ object NestedObjectTest : Spek({
             prettyPrint(NestedSmallObject(SmallObject("a", 1))) mapsTo """
                 NestedSmallObject(
                   smallObject = SmallObject(
-                    field1 = a
+                    field1 = "a"
                     field2 = 1
                   )
                 )
@@ -38,27 +38,27 @@ object NestedObjectTest : Spek({
                 NestedLargeObject(
                   nestedSmallObject = NestedSmallObject(
                     smallObject = SmallObject(
-                      field1 = smallObjectField1
+                      field1 = "smallObjectField1"
                       field2 = 777
                     )
                   )
                   smallObject = SmallObject(
-                    field1 = a field in top level nested large object
+                    field1 = "a field in top level nested large object"
                     field2 = 17
                   )
-                  testString = a test string in NestedLargeObject
+                  testString = "a test string in NestedLargeObject"
                   bigObject = NestedLargeObject(
                     nestedSmallObject = NestedSmallObject(
                       smallObject = SmallObject(
-                        field1 = inner small object field 1
+                        field1 = "inner small object field 1"
                         field2 = 888
                       )
                     )
                     smallObject = SmallObject(
-                      field1 = field 1 in nested small
+                      field1 = "field 1 in nested small"
                       field2 = 12
                     )
-                    testString = a test string in NestedLargeObject inner
+                    testString = "a test string in NestedLargeObject inner"
                     bigObject = null
                   )
                 )
@@ -120,7 +120,7 @@ object NestedObjectTest : Spek({
                   coll = [
                            NestedSmallObject(
                              smallObject = SmallObject(
-                               field1 = a
+                               field1 = "a"
                                field2 = 1
                              )
                            )
@@ -144,25 +144,25 @@ object NestedObjectTest : Spek({
                   coll = [
                            NestedSmallObject(
                              smallObject = SmallObject(
-                               field1 = a
+                               field1 = "a"
                                field2 = 1
                              )
                            ),
                            NestedSmallObject(
                              smallObject = SmallObject(
-                               field1 = a
+                               field1 = "a"
                                field2 = 1
                              )
                            ),
                            NestedSmallObject(
                              smallObject = SmallObject(
-                               field1 = a
+                               field1 = "a"
                                field2 = 1
                              )
                            ),
                            NestedSmallObject(
                              smallObject = SmallObject(
-                               field1 = a
+                               field1 = "a"
                                field2 = 1
                              )
                            )
