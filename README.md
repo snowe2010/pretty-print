@@ -18,127 +18,141 @@ adds a `pp(Any?)` and `<T>.pp()` method to pretty print any java or kotlin objec
 `wrappedLineWidth` allows you to change how many characters are allowed before wrapping in a multiline string. Default is `80`
  
 # Examples
-
-<table>
-    <tr>
-        <th>Code</th>
-        <th>Pretty Print Output</th>
-    </tr>
-    <tr>
-        <td>
-            <div class="highlight highlight-source-kotlin">
-                <pre>pp(
-  NestedObjectWithCollection(
-    listOf(NestedSmallObject(SmallObject("a", 1)))
-  )
-)</pre>
-            </div>
-        </td>
-        <td>
-            <pre>NestedObjectWithCollection(
-  coll = [
-           NestedSmallObject(
-             smallObject = SmallObject(
-               field1 = a
-               field2 = 1
-             )
-           )
-         ]
-)</pre>
-        </td>
-     </tr>
-    <tr>
-        <td>
-            <div class="highlight highlight-source-kotlin">
-                <pre>fun callSomething(obj: Any?) {
-    println("inline wrapper function entered")
-}
-callSomething(TinyObject(1).pp())</pre>
-            </div>
-        </td>
-        <td>
-            <pre>TinyObject(
+### Main API
+###### Top level method
+```kotlin
+data class TinyObject(var int: Int)
+pp(TinyObject(1))
+```
+```text
+TinyObject(
   int = 1
 )
-inline wrapper function entered</pre>
-        </td>
-     </tr>
-    <tr>
-        <td>
-            <div class="highlight highlight-source-kotlin">
-                <pre>pp(
-    mapOf(
-        "key1" to "value1",
-        "key2" to "value2",
-        "key3" to "value3",
-        "key4" to "value4"
-    )
-)</pre>
-            </div>
-        </td>
-        <td>
-            <pre>{
+```
+###### Inline method
+```kotlin
+data class TinyObject(var int: Int)
+fun callSomething(obj: Any?) {
+    println("inline wrapper function entered")
+}
+callSomething(TinyObject(1).pp())
+```
+```
+TinyObject(
+  int = 1
+)
+inline wrapper function entered
+```
+
+### Lists
+###### List
+```kotlin
+pp(listOf("1", 2, 3.0, true))
+```
+```text
+[
+  "1",
+  2,
+  3.0,
+  true
+]
+```
+###### Object with list
+```kotlin
+data class OL(val list: List<String>)
+pp(OL(listOf("1")))
+```
+```
+OL(
+  list = [
+           "1"
+         ]
+)
+```
+
+###### map
+```kotlin
+pp(mapOf("key1" to "value1", "key2" to "value2"))
+```
+```
+{
   "key1" -> "value1",
-  "key2" -> "value2",
-  "key3" -> "value3",
-  "key4" -> "value4"
-}</pre>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <div class="highlight highlight-source-kotlin">
-                <pre>pp("Goodbye, cruel world. Goodbye, cruel lamp.", wrappedLineWidth = 22)</pre>
-            </div>
-        </td>
-        <td>
-            <pre>"""
+  "key2" -> "value2"
+}
+```
+###### Object with map
+```kotlin
+data class OM(val map: Map<Any, Any>)
+pp(OM(mapOf(1 to "value", "key" to 1)))
+```
+```text
+OM(
+  map = {
+          1 -> "value",
+          "key" -> 1
+        }
+)
+```
+
+###### multiline strings
+```kotlin
+pp("Goodbye, cruel world. Goodbye, cruel lamp.", wrappedLineWidth = 22)
+```
+```
+"""
 Goodbye, cruel world. 
 Goodbye, cruel lamp.
-"""</pre>
-        </td>
-    </tr>
-</table>
+"""
+```
 
+###### multiline strings with unicode line breaking
+```kotlin
+pp("Goodbye, cruel world. Good­bye, cruel lamp.", wrappedLineWidth = 27)
+```
+```
+"""
+Goodbye, cruel world. Good­
+bye, cruel lamp.
+"""
+```
+```kotlin
+pp("❤️🥞❤️", wrappedLineWidth = 3)
+```
+```text
+"""
+❤️
+🥞
+❤️
+"""
+```
 
+###### multiple fields
 ```kotlin
 pp(SmallObject("Goodbye, cruel world. Goodbye, cruel lamp.", 1))
 ```
-prints
-
 ```
 SmallObject(
-  field1 = """
-           Goodbye, cruel world. 
-           Goodbye, cruel lamp.
-           """
+  field1 = "Goodbye, cruel world. Goodbye, cruel lamp."
   field2 = 1
 )
 ```
 
-### Cyclic references
+###### Cyclic references
 
 ```kotlin
-data class SmallCyclicalObject1(
-    val c: SmallCyclicalObject2? = null
-)
-data class SmallCyclicalObject2(
-    val c: SmallCyclicalObject1? = null
-)
-val sco1 = SmallCyclicalObject1()
-val sco2 = SmallCyclicalObject2(sco1)
+data class O1(var c: O2? = null)
+data class O2(var c: O1? = null)
+val sco1 = O1()
+val sco2 = O2(sco1)
 sco1.c = sco2
 pp(sco1)
 ```
-prints
 ```text
-ObjectWithMap(
-  map = {
-          1 -> ObjectContainingObjectWithMap(
-            objectWithMap = cyclic reference detected for 775386112
-          )
-        }
-)[$id=775386112]
+O1(
+  c = O2(
+    c = cyclic reference detected for 50699452
+  )
+)[$id=50699452]
 ```
 
 # ToDo
