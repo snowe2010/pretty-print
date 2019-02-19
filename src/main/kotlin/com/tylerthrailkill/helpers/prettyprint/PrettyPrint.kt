@@ -49,7 +49,7 @@ fun pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out, wrapp
  * @param[printStream] optional param that specifies the [PrintStream] to use to pretty print. Defaults to `System.out`
  */
 fun <T> T.pp(tabSize: Int = 2, printStream: PrintStream = System.out): T =
-    this.also { pp(it, tabSize, printStream) }
+        this.also { pp(it, tabSize, printStream) }
 
 /**
  * Recurse over plain objects
@@ -61,10 +61,10 @@ fun <T> T.pp(tabSize: Int = 2, printStream: PrintStream = System.out): T =
  * else recurse back into this function
  */
 private fun recurse(
-    obj: Any,
-    nodeList: CurrentNodeIdentityHashCodes,
-    detectedCycles: DetectedCycles,
-    currentDepth: String = ""
+        obj: Any,
+        nodeList: CurrentNodeIdentityHashCodes,
+        detectedCycles: DetectedCycles,
+        currentDepth: String = ""
 ) {
     val currentObjectIdentity = System.identityHashCode(obj)
     if (nodeList.contains(currentObjectIdentity)) {
@@ -88,7 +88,7 @@ private fun recurse(
             fieldValue is Map<*, *> -> recurseMap(fieldValue, nodeList, detectedCycles, deepen(pad, it.name.length + 3))
             fieldValue == null -> write("null")
             fieldValue.javaClass.name.startsWith("java") -> {
-                when(fieldValue) {
+                when (fieldValue) {
                     is String -> {
                         val str = fieldValue.toString()
                         if (str.length > WRAPPED_LINE_WIDTH) {
@@ -104,7 +104,6 @@ private fun recurse(
                     }
                     else -> write(fieldValue)
                 }
-
             }
             else -> recurse(fieldValue, nodeList, detectedCycles, deepen(currentDepth))
         }
@@ -123,10 +122,10 @@ private fun recurse(
  * and calling back to `recurse`, `recurseIterable`, or `recurseMap`
  */
 private fun recurseIterable(
-    obj: Iterable<*>,
-    nodeList: CurrentNodeIdentityHashCodes,
-    detectedCycles: DetectedCycles,
-    currentDepth: String
+        obj: Iterable<*>,
+        nodeList: CurrentNodeIdentityHashCodes,
+        detectedCycles: DetectedCycles,
+        currentDepth: String
 ) {
     val currentObjectIdentity = System.identityHashCode(obj)
     if (nodeList.contains(currentObjectIdentity)) {
@@ -177,9 +176,9 @@ private fun recurseIterable(
  * and calling back to `recurse`, `recurseIterable`, or `recurseMap`
  */
 private fun recurseMap(
-    obj: Map<*, *>,
-    nodeList: CurrentNodeIdentityHashCodes,
-    detectedCycles: DetectedCycles, currentDepth: String
+        obj: Map<*, *>,
+        nodeList: CurrentNodeIdentityHashCodes,
+        detectedCycles: DetectedCycles, currentDepth: String
 ) {
     val currentObjectIdentity = System.identityHashCode(obj)
     if (nodeList.contains(currentObjectIdentity)) {
