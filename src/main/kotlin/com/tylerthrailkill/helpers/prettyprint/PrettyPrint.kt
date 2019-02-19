@@ -1,8 +1,8 @@
 package com.tylerthrailkill.helpers.prettyprint
 
+import com.ibm.icu.text.BreakIterator
 import mu.KotlinLogging
 import java.io.PrintStream
-import java.text.BreakIterator
 import java.util.*
 
 private val logger = KotlinLogging.logger {}
