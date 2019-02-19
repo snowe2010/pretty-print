@@ -2,12 +2,12 @@
 [![Download](https://api.bintray.com/packages/snowe/maven/Pretty-Print/images/download.svg)](https://bintray.com/snowe/maven/Pretty-Print/_latestVersion)
 [![codecov](https://codecov.io/gh/snowe2010/pretty-print/branch/master/graph/badge.svg)](https://codecov.io/gh/snowe2010/pretty-print)
  
-# Pretty Print - pp
+# pretty-print - pp
 
-adds a `pp(Any?)` and `<T>.pp()` method to pretty print any java or kotlin object.
+adds a `pp(Any?)` and `T.pp()` method to pretty print any Java or Kotlin object.
 
 `pp(Any?)` takes any object and will print it in a pretty format.
-`<T>pp()` can be called on any object inline and will allow you to pretty print inside of a method chain
+`T.pp()` can be called on any object inline and will allow you to pretty print inside of a method chain
 
 # API
 
@@ -44,7 +44,7 @@ TinyObject(
 inline wrapper function entered
 ```
 
-### Lists
+### Other uses
 ###### List
 ```kotlin
 pp(listOf("1", 2, 3.0, true))
@@ -70,7 +70,7 @@ OL(
 )
 ```
 
-###### map
+###### Map
 ```kotlin
 pp(mapOf("key1" to "value1", "key2" to "value2"))
 ```
@@ -94,7 +94,7 @@ OM(
 )
 ```
 
-###### multiline strings
+###### Multiline strings
 ```kotlin
 pp("Goodbye, cruel world. Goodbye, cruel lamp.", wrappedLineWidth = 22)
 ```
@@ -105,7 +105,7 @@ Goodbye, cruel lamp.
 """
 ```
 
-###### multiline strings with unicode line breaking
+###### Multiline strings with unicode line breaking
 ```kotlin
 pp("Goodbye, cruel world. Good­bye, cruel lamp.", wrappedLineWidth = 27)
 ```
@@ -126,7 +126,7 @@ pp("😍️🥞😍️", wrappedLineWidth = 3)
 """
 ```
 
-###### multiple fields
+###### Multiple fields
 ```kotlin
 pp(SmallObject("Goodbye, cruel world. Goodbye, cruel lamp.", 1))
 ```
@@ -135,6 +135,42 @@ SmallObject(
   field1 = "Goodbye, cruel world. Goodbye, cruel lamp."
   field2 = 1
 )
+```
+
+###### Different indent size
+```kotlin
+data class TinyObject(var int: Int)
+pp(TinyObject(1), tabSize = 0)
+```
+```text
+TinyObject(
+int = 1
+)
+```
+```kotlin
+data class TinyObject(var int: Int)
+pp(TinyObject(1), tabSize = 10)
+```
+```text
+TinyObject(
+          int = 1
+)
+```
+
+###### Different output stream
+```kotlin
+val stream = ByteArrayOutputStream()
+pp(TinyObject(1), printStream = PrintStream(stream))
+println(":::")
+print(stream.toString())
+println(":::")
+```
+```text
+:::
+TinyObject(
+  int = 1
+)
+:::
 ```
 
 ###### Cyclic references
