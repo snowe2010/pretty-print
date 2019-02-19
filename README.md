@@ -116,13 +116,13 @@ bye, cruel lamp.
 """
 ```
 ```kotlin
-pp("❤️🥞❤️", wrappedLineWidth = 3)
+pp("😍️🥞😍️", wrappedLineWidth = 3)
 ```
 ```text
 """
-❤️
+😍️
 🥞
-❤️
+😍️
 """
 ```
 
