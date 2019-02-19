@@ -21,12 +21,7 @@ fun pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out, wrapp
     val prettyPrint = PrettyPrint(tabSize, printStream, wrappedLineWidth)
     val nodeList = CurrentNodeIdentityHashCodes()
     val detectedCycles: DetectedCycles = mutableListOf()
-    when (obj) {
-        is Iterable<*> -> prettyPrint.ppIterable(obj, nodeList, detectedCycles, "")
-        is Map<*, *> -> prettyPrint.ppMap(obj, nodeList, detectedCycles, "")
-        is Any -> prettyPrint.pp(obj, nodeList, detectedCycles)
-        else -> prettyPrint.writeLine("null")
-    }
+    prettyPrint.recurse(obj, nodeList, detectedCycles, "")
     printStream.println()
 }
 
