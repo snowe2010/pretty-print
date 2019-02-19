@@ -4,20 +4,40 @@
  
 # Pretty Print - pp
 
-adds a single method `pp` to pretty print any java or kotlin object. 
+adds a `pp(Any?)` and `<T>.pp()` method to pretty print any java or kotlin object.
 
+`pp(Any?)` takes any object and will print it in a pretty format.
+`<T>pp()` can be called on any object inline and will allow you to pretty print inside of a method chain
+
+# API
+
+`pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out, wrappedLineWidth: Int = 80)`
+
+`tabSize` allows you to change the number of spaces used to indent each level of the output. Default is `2`
+`printStream` allows you to change the `PrintStream` you are printing to. Default is `System.out`
+`wrappedLineWidth` allows you to change how many characters are allowed before wrapping in a multiline string. Default is `80`
+ 
 # Examples
 
-```kotlin
+<table>
+    <tr>
+        <th>Code</th>
+        <th>Pretty Print Output</th>
+    </tr>
+    <tr>
+        <td>
+            <div class="highlight highlight-source-kotlin">
+                <pre>
 pp(
-    NestedObjectWithCollection(
-        listOf(NestedSmallObject(SmallObject("a", 1)))
-    )
+  NestedObjectWithCollection(
+    listOf(NestedSmallObject(SmallObject("a", 1)))
+  )
 )
-```
-prints
-
-```
+                </pre>
+            </div>
+        </td>
+        <td>
+            <pre>
 NestedObjectWithCollection(
   coll = [
            NestedSmallObject(
@@ -27,6 +47,88 @@ NestedObjectWithCollection(
              )
            )
          ]
+)
+            </pre>
+        </td>
+     </tr>
+    <tr>
+        <td>
+            <div class="highlight highlight-source-kotlin">
+                <pre>
+fun callSomething(obj: Any?) {
+    println("inline wrapper function entered")
+}
+callSomething(TinyObject(1).pp())
+                </pre>
+            </div>
+        </td>
+        <td>
+            <pre>
+TinyObject(
+  int = 1
+)
+inline wrapper function entered
+            </pre>
+        </td>
+     </tr>
+    <tr>
+        <td>
+            <div class="highlight highlight-source-kotlin">
+                <pre>
+pp(
+    mapOf(
+        "key1" to "value1",
+        "key2" to "value2",
+        "key3" to "value3",
+        "key4" to "value4"
+    )
+)
+                </pre>
+            </div>
+        </td>
+        <td>
+            <pre>
+{
+  "key1" -> "value1",
+  "key2" -> "value2",
+  "key3" -> "value3",
+  "key4" -> "value4"
+}
+            </pre>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="highlight highlight-source-kotlin">
+                <pre>
+pp("Goodbye, cruel world. Goodbye, cruel lamp.", wrappedLineWidth = 22)
+                </pre>
+            </div>
+        </td>
+        <td>
+            <pre>
+"""
+Goodbye, cruel world. 
+Goodbye, cruel lamp.
+"""
+            </pre>
+        </td>
+    </tr>
+</table>
+
+
+```kotlin
+pp(SmallObject("Goodbye, cruel world. Goodbye, cruel lamp.", 1))
+```
+prints
+
+```
+SmallObject(
+  field1 = """
+           Goodbye, cruel world. 
+           Goodbye, cruel lamp.
+           """
+  field2 = 1
 )
 ```
 
