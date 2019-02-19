@@ -57,6 +57,6 @@ ObjectWithMap(
 
 # ToDo
 
-* implement cycle detection
-* test nullability cases (requires cycle detection)
-* allow printing of `java*` classes (requires cycle detection)
+* test nullability cases
+* allow printing of `java*` classes
+* fix unicode line breaking with certain characters only under icu4j library
