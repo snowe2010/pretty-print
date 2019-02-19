@@ -27,18 +27,15 @@ adds a `pp(Any?)` and `<T>.pp()` method to pretty print any java or kotlin objec
     <tr>
         <td>
             <div class="highlight highlight-source-kotlin">
-                <pre>
-pp(
+                <pre>pp(
   NestedObjectWithCollection(
     listOf(NestedSmallObject(SmallObject("a", 1)))
   )
-)
-                </pre>
+)</pre>
             </div>
         </td>
         <td>
-            <pre>
-NestedObjectWithCollection(
+            <pre>NestedObjectWithCollection(
   coll = [
            NestedSmallObject(
              smallObject = SmallObject(
@@ -47,71 +44,58 @@ NestedObjectWithCollection(
              )
            )
          ]
-)
-            </pre>
+)</pre>
         </td>
      </tr>
     <tr>
         <td>
             <div class="highlight highlight-source-kotlin">
-                <pre>
-fun callSomething(obj: Any?) {
+                <pre>fun callSomething(obj: Any?) {
     println("inline wrapper function entered")
 }
-callSomething(TinyObject(1).pp())
-                </pre>
+callSomething(TinyObject(1).pp())</pre>
             </div>
         </td>
         <td>
-            <pre>
-TinyObject(
+            <pre>TinyObject(
   int = 1
 )
-inline wrapper function entered
-            </pre>
+inline wrapper function entered</pre>
         </td>
      </tr>
     <tr>
         <td>
             <div class="highlight highlight-source-kotlin">
-                <pre>
-pp(
+                <pre>pp(
     mapOf(
         "key1" to "value1",
         "key2" to "value2",
         "key3" to "value3",
         "key4" to "value4"
     )
-)
-                </pre>
+)</pre>
             </div>
         </td>
         <td>
-            <pre>
-{
+            <pre>{
   "key1" -> "value1",
   "key2" -> "value2",
   "key3" -> "value3",
   "key4" -> "value4"
-}
-            </pre>
+}</pre>
         </td>
     </tr>
     <tr>
         <td>
             <div class="highlight highlight-source-kotlin">
-                <pre>
-pp("Goodbye, cruel world. Goodbye, cruel lamp.", wrappedLineWidth = 22)
-                </pre>
+                <pre>pp("Goodbye, cruel world. Goodbye, cruel lamp.", wrappedLineWidth = 22)</pre>
             </div>
         </td>
         <td>
-            <pre>
-"""
+            <pre>"""
 Goodbye, cruel world. 
 Goodbye, cruel lamp.
-"""
-            </pre>
+"""</pre>
         </td>
     </tr>
 </table>
