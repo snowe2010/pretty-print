@@ -42,15 +42,15 @@ object CycleDetectionTest : Spek({
                 NestedLargeObject(
                   nestedSmallObject = NestedSmallObject(
                     smallObject = SmallObject(
-                      field1 = a string in small object
+                      field1 = "a string in small object"
                       field2 = 777
                     )
                   )
                   smallObject = SmallObject(
-                    field1 = a string in small object
+                    field1 = "a string in small object"
                     field2 = 777
                   )
-                  testString = test string, please don't break
+                  testString = "test string, please don't break"
                   bigObject = null
                 )
                 """

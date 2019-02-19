@@ -97,7 +97,9 @@ private fun recurse(
                             writeLine(wordWrap(str, newPad))
                             write("$newPad\"\"\"")
                         } else {
+                            write("\"")
                             write(str)
+                            write("\"")
                         }
                     }
                     else -> write(fieldValue)

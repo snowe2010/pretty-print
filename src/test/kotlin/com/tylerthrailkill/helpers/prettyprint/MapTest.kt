@@ -43,7 +43,7 @@ object MapTest : Spek({
                 ) mapsTo """
                 {
                   "key1" -> SmallObject(
-                    field1 = field
+                    field1 = "field"
                     field2 = 1
                   )
                 }
@@ -57,7 +57,7 @@ object MapTest : Spek({
                 ) mapsTo """
                 {
                   SmallObject(
-                    field1 = field
+                    field1 = "field"
                     field2 = 1
                   ) -> "value1"
                 }
@@ -72,11 +72,11 @@ object MapTest : Spek({
                 ) mapsTo """
                 {
                   "key1" -> SmallObject(
-                    field1 = field
+                    field1 = "field"
                     field2 = 1
                   ),
                   "key2" -> SmallObject(
-                    field1 = field2
+                    field1 = "field2"
                     field2 = 2
                   )
                 }
@@ -146,7 +146,7 @@ object MapTest : Spek({
                 ) mapsTo """
                 {
                   null -> SmallObject(
-                    field1 = field
+                    field1 = "field"
                     field2 = 1
                   )
                 }
@@ -196,7 +196,7 @@ object MapTest : Spek({
                 ) mapsTo """
                 {
                   null -> SmallObject(
-                    field1 = field
+                    field1 = "field"
                     field2 = 1
                   ),
                   "key2" -> null
