@@ -27,7 +27,7 @@ object MultilineStringTest : Spek({
             ) mapsTo """
                 SmallObject(
                   field1 = ""${'"'}
-                           Goodbye, cruel world.
+                           Goodbye, cruel world. 
                            Goodbye, cruel lamp.
                            ""${'"'}
                   field2 = 1
