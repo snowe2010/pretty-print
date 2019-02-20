@@ -7,7 +7,7 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import kotlin.test.assertEquals
 
-private val logger = KotlinLogging.logger {}
+val logger = KotlinLogging.logger {}
 
 fun Root.setup() {
     val outContent by memoized { ByteArrayOutputStream() }
@@ -18,12 +18,12 @@ fun Root.setup() {
  * Test helper function, defaults to providing no tab size and wrapping the print stream in
  * a ByteArrayOutputStream to test against
  */
-fun TestBody.prettyPrint(obj: Any?, tabSize: Int? = null): ByteArrayOutputStream {
+fun TestBody.prettyPrint(obj: Any?, tabSize: Int? = null, wrappedLineWidth: Int = 80): ByteArrayOutputStream {
     val outContent by memoized<ByteArrayOutputStream>()
     if (tabSize == null) {
-        pp(obj, writeTo = PrintStream(outContent))
+        pp(obj, writeTo = PrintStream(outContent), wrappedLineWidth = wrappedLineWidth)
     } else {
-        pp(obj, indent = tabSize, writeTo = PrintStream(outContent))
+        pp(obj, indent = tabSize, writeTo = PrintStream(outContent), wrappedLineWidth = wrappedLineWidth)
     }
     return outContent
 }
@@ -55,6 +55,7 @@ fun inlineWrapper(obj: Any?, printStream: PrintStream) {
  */
 infix fun ByteArrayOutputStream.mapsTo(expected: String) {
     logger.info { "Actual output: $this" }
+    logger.info { "Expected output: ${expected.trimIndent()}"}
     assertEquals(
         expected.trimIndent(),
         this.toString().trim().replace("\r", "")
