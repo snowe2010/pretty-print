@@ -1,6 +1,7 @@
 package com.tylerthrailkill.helpers.prettyprint
 
 import com.ibm.icu.text.BreakIterator
+
 import mu.KotlinLogging
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -27,7 +28,6 @@ fun pp(
     wrappedLineWidth: Int = DEFAULT_WRAP_WIDTH
 ) = PrettyPrinter(indent, writeTo, wrappedLineWidth).pp(obj)
 
-
 /**
  * Inline helper method for printing withing method chains. Simply delegates to [pp]
  *
@@ -45,58 +45,45 @@ fun <T> T.pp(
     wrappedLineWidth: Int = DEFAULT_WRAP_WIDTH
 ): T = this.also { pp(it, indent, writeTo, wrappedLineWidth) }
 
-/**
- * Class used to perform pretty printing operations.
- */
 private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrappedLineWidth: Int) {
     private val lineInstance = BreakIterator.getLineInstance()
     private val logger = KotlinLogging.logger {}
+    private val visited = mutableSetOf<Int>()
+    private val revisited = mutableSetOf<Int>()
 
     fun pp(obj: Any?) {
-        ppAny(obj, mutableSetOf(), mutableSetOf())
+        ppAny(obj)
         writeLine()
     }
 
-    /**
-     * Pretty prints any object. `collectionElementPad` is how much more to indent the contents of a collection.
-     * `objectFieldPad` is how much to indent the fields of an object.
-     */
     private fun ppAny(
         obj: Any?,
-        visited: MutableSet<Int>,
-        revisited: MutableSet<Int>,
         collectionElementPad: String = "",
         objectFieldPad: String = collectionElementPad
     ) {
         val id = System.identityHashCode(obj)
 
-        if (!isAtomic(obj) && visited.contains(id)) {
+        if (!obj.isAtomic() && visited[id]) {
             write("cyclic reference detected for $id")
             revisited.add(id)
             return
         }
 
-        if (!isAtomic(obj)) visited.add(id)
-
+        visited += id
         when {
-            obj is Iterable<*> -> ppIterable(obj, visited, revisited, collectionElementPad)
-            obj is Map<*, *> -> ppMap(obj, visited, revisited, collectionElementPad)
+            obj is Iterable<*> -> ppIterable(obj, collectionElementPad)
+            obj is Map<*, *> -> ppMap(obj, collectionElementPad)
             obj is String -> ppString(obj, collectionElementPad)
-            isAtomic(obj) -> ppAtomic(obj)
-            obj is Any -> ppPlainObject(obj, visited, revisited, objectFieldPad)
+            obj.isAtomic() -> ppAtomic(obj)
+            obj is Any -> ppPlainObject(obj, objectFieldPad)
         }
+        visited -= id
 
-        visited.remove(id)
-
-        if (revisited.contains(id)) {
+        if (revisited[id]) {
             write("[\$id=$id]")
-            revisited.remove(id)
+            revisited -= id
         }
     }
-
-    private fun isAtomic(o: Any?): Boolean =
-        o == null
-                || o is Char || o is Number || o is Boolean || o is BigInteger || o is BigDecimal || o is UUID
 
     /**
      * Pretty prints the contents of the Iterable receiver. The given function is applied to each element. The result
@@ -118,14 +105,7 @@ private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrapp
         write(currentDepth)
     }
 
-    private fun ppAtomic(obj: Any?) {
-        write(obj.toString())
-    }
-
-    /**
-     * Pretty print a plain object.
-     */
-    private fun ppPlainObject(obj: Any, visited: MutableSet<Int>, revisited: MutableSet<Int>, currentDepth: String) {
+    private fun ppPlainObject(obj: Any, currentDepth: String) {
         val increasedDepth = deepen(currentDepth)
         val className = obj.javaClass.simpleName
 
@@ -139,9 +119,33 @@ private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrapp
                 val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3) // 3 is " = ".length in prev line
                 val fieldValue = it.get(obj)
                 logger.debug { "field value is ${fieldValue.javaClass}" }
-                ppAny(fieldValue, visited, revisited, extraIncreasedDepth, increasedDepth)
+                ppAny(fieldValue, extraIncreasedDepth, increasedDepth)
             }
         write(')')
+    }
+
+    private fun ppIterable(obj: Iterable<*>, currentDepth: String) {
+        val increasedDepth = deepen(currentDepth)
+
+        writeLine('[')
+        obj.ppContents(currentDepth, ",") {
+            write(increasedDepth)
+            ppAny(it, increasedDepth)
+        }
+        write(']')
+    }
+
+    private fun ppMap(obj: Map<*, *>, currentDepth: String) {
+        val increasedDepth = deepen(currentDepth)
+
+        writeLine('{')
+        obj.entries.ppContents(currentDepth, ",") {
+            write(increasedDepth)
+            ppAny(it.key, increasedDepth)
+            write(" -> ")
+            ppAny(it.value, increasedDepth)
+        }
+        write('}')
     }
 
     private fun ppString(s: String, currentDepth: String) {
@@ -155,39 +159,8 @@ private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrapp
         }
     }
 
-    /**
-     * Pretty print an Iterable.
-     */
-    private fun ppIterable(
-        obj: Iterable<*>,
-        visited: MutableSet<Int>,
-        revisited: MutableSet<Int>,
-        currentDepth: String
-    ) {
-        val increasedDepth = deepen(currentDepth)
-
-        writeLine('[')
-        obj.ppContents(currentDepth, ",") {
-            write(increasedDepth)
-            ppAny(it, visited, revisited, increasedDepth)
-        }
-        write(']')
-    }
-
-    /**
-     * Pretty print a Map.
-     */
-    private fun ppMap(obj: Map<*, *>, visited: MutableSet<Int>, revisited: MutableSet<Int>, currentDepth: String) {
-        val increasedDepth = deepen(currentDepth)
-
-        writeLine('{')
-        obj.entries.ppContents(currentDepth, ",") {
-            write(increasedDepth)
-            ppAny(it.key, visited, revisited, increasedDepth)
-            write(" -> ")
-            ppAny(it.value, visited, revisited, increasedDepth)
-        }
-        write('}')
+    private fun ppAtomic(obj: Any?) {
+        write(obj.toString())
     }
 
     /**
@@ -234,3 +207,13 @@ private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrapp
 
     private fun deepen(currentDepth: String, size: Int = tabSize): String = " ".repeat(size) + currentDepth
 }
+
+/**
+ * Determines if this object should not be broken down further for pretty printing.
+ */
+private fun Any?.isAtomic(): Boolean =
+    this == null
+            || this is Char || this is Number || this is Boolean || this is BigInteger || this is BigDecimal || this is UUID
+
+// For syntactic sugar
+operator fun <T> Set<T>.get(x: T): Boolean = this.contains(x)
