@@ -21,9 +21,9 @@ fun Root.setup() {
 fun TestBody.prettyPrint(obj: Any?, tabSize: Int? = null, wrappedLineWidth: Int? = null): ByteArrayOutputStream {
     val outContent by memoized<ByteArrayOutputStream>()
     if (tabSize == null) {
-        pp(obj, printStream = PrintStream(outContent), wrappedLineWidth = wrappedLineWidth ?: 80) // TODO fix this, really messy
+        pp(obj, writeTo = PrintStream(outContent), wrappedLineWidth = wrappedLineWidth ?: 80) // TODO fix this, really messy
     } else {
-        pp(obj, tabSize = tabSize, printStream = PrintStream(outContent), wrappedLineWidth = wrappedLineWidth ?: 80) // TODO ^
+        pp(obj, indent = tabSize, writeTo = PrintStream(outContent), wrappedLineWidth = wrappedLineWidth ?: 80) // TODO ^
     }
     return outContent
 }
@@ -36,9 +36,9 @@ fun TestBody.prettyPrintInline(obj: Any?, tabSize: Int? = null): ByteArrayOutput
     val outContent by memoized<ByteArrayOutputStream>()
     val printStream = PrintStream(outContent)
     if (tabSize == null) {
-        inlineWrapper(obj.pp(printStream = printStream), printStream)
+        inlineWrapper(obj.pp(writeTo = printStream), printStream)
     } else {
-        inlineWrapper(obj.pp(tabSize = tabSize, printStream = printStream), printStream)
+        inlineWrapper(obj.pp(indent = tabSize, writeTo = printStream), printStream)
     }
     return outContent
 }

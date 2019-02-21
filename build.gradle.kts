@@ -1,5 +1,5 @@
 import com.jfrog.bintray.gradle.BintrayExtension
-import org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestFramework
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val spekVersion = "2.0.0-alpha.2"
