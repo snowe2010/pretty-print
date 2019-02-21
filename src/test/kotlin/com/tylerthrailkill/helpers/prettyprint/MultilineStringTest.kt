@@ -70,43 +70,6 @@ object MultilineStringTest : Spek({
             }
         }
 
-        context("when the long string is a member of a list") {
-            it("renders as a multiline string") {
-                prettyPrint(
-                    listOf(
-                        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a"
-                    )
-                ) mapsTo """
-                    [
-                      ${"\"\"\""}
-                      aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa$SPACE
-                      a
-                      ${"\"\"\""}
-                    ]
-                    """
-            }
-        }
-
-        context("when the long string is a key or value in a map") {
-            it("renders as a multiline string") {
-                prettyPrint(
-                    mapOf(
-                        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a"
-                                to "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb b"
-                    )
-                ) mapsTo """
-                    {
-                      ${"\"\"\""}
-                      aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa$SPACE
-                      a
-                      ${"\"\"\""} -> ${"\"\"\""}
-                      bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb$SPACE
-                      b
-                      ${"\"\"\""}
-                    }
-                    """
-            }
-        }
         context("break should occur between ") {
             javaClass.getResource("/LineBreakTest.txt").readText().lines().forEach nextTest@{ testLine ->
                 if (testLine.startsWith('#') or testLine.isBlank()) {
@@ -162,6 +125,21 @@ object MultilineStringTest : Spek({
                 ]
                 """
             }
+
+            it("renders as a multiline string") {
+                prettyPrint(
+                    listOf(
+                        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a"
+                    )
+                ) mapsTo """
+                    [
+                      ${"\"\"\""}
+                      aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa$SPACE
+                      a
+                      ${"\"\"\""}
+                    ]
+                    """
+            }
         }
         context("in a map") {
             it("as a value with plain spaces") {
@@ -189,6 +167,24 @@ object MultilineStringTest : Spek({
                   ""${'"'} -> 1
                 }
                 """
+            }
+            it("renders as a multiline string") {
+                prettyPrint(
+                    mapOf(
+                        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a"
+                                to "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb b"
+                    )
+                ) mapsTo """
+                    {
+                      ${"\"\"\""}
+                      aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa$SPACE
+                      a
+                      ${"\"\"\""} -> ${"\"\"\""}
+                      bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb$SPACE
+                      b
+                      ${"\"\"\""}
+                    }
+                    """
             }
         }
     }

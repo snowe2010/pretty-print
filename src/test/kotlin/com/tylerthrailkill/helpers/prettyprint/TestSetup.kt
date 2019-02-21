@@ -18,12 +18,12 @@ fun Root.setup() {
  * Test helper function, defaults to providing no tab size and wrapping the print stream in
  * a ByteArrayOutputStream to test against
  */
-fun TestBody.prettyPrint(obj: Any?, tabSize: Int? = null, wrappedLineWidth: Int = 80): ByteArrayOutputStream {
+fun TestBody.prettyPrint(obj: Any?, tabSize: Int? = null, wrappedLineWidth: Int? = null): ByteArrayOutputStream {
     val outContent by memoized<ByteArrayOutputStream>()
     if (tabSize == null) {
-        pp(obj, writeTo = PrintStream(outContent), wrappedLineWidth = wrappedLineWidth)
+        pp(obj, writeTo = PrintStream(outContent), wrappedLineWidth = wrappedLineWidth ?: 80) // TODO fix this, really messy
     } else {
-        pp(obj, indent = tabSize, writeTo = PrintStream(outContent), wrappedLineWidth = wrappedLineWidth)
+        pp(obj, indent = tabSize, writeTo = PrintStream(outContent), wrappedLineWidth = wrappedLineWidth ?: 80) // TODO ^
     }
     return outContent
 }

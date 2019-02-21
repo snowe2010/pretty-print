@@ -75,14 +75,6 @@ tasks {
         dependsOn("test")
     }
     this["check"].dependsOn(report)
-
-    test {
-        testLogging {
-            showExceptions = true
-            showStackTraces = true
-            exceptionFormat = TestExceptionFormat.FULL
-        }
-    }
 }
 
 buildScan {
