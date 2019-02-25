@@ -9,6 +9,23 @@ adds a `pp(Any?)` and `T.pp()` method to pretty print any Java or Kotlin object.
 `pp(Any?)` takes any object and will print it in a pretty format.
 `T.pp()` can be called on any object inline and will allow you to pretty print inside of a method chain
 
+<table>
+    <thead><tr><th>Approach</th><th>Instruction</th></tr></thead>
+    <tr>
+        <td>Gradle</td>
+        <td><pre>testImplementation "io.mockk:mockk:{version}"</pre></td>
+    </tr>
+    <tr>
+        <td>Maven<td>
+    <pre>&lt;dependency&gt;
+        &lt;groupId&gt;com.tylerthrailkill.helpers&lt;/groupId&gt;
+        &lt;artifactId&gt;pretty-print&lt;/artifactId&gt;
+        &lt;version&gt;{version}&lt;/version&gt;
+    &lt;/dependency&gt;</pre>
+        </td>
+    </tr>
+</table>
+
 # API
 
 `pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out, wrappedLineWidth: Int = 80)`

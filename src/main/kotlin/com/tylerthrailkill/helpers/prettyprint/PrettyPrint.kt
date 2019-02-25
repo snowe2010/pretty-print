@@ -1,11 +1,10 @@
 package com.tylerthrailkill.helpers.prettyprint
 
 import com.ibm.icu.text.BreakIterator
-
 import mu.KotlinLogging
 import java.math.BigDecimal
 import java.math.BigInteger
-import java.util.UUID
+import java.util.*
 
 /**
  * Pretty print function.
@@ -17,6 +16,7 @@ import java.util.UUID
  * @param [writeTo] optional param that specifies the [Appendable] to output the pretty print to. Defaults appending to `System.out`.
  * @param [wrappedLineWidth] optional param that specifies how many characters of a string should be on a line.
  */
+@JvmOverloads
 fun pp(obj: Any?, indent: Int = 2, writeTo: Appendable = System.out, wrappedLineWidth: Int = 80) =
     PrettyPrinter(indent, writeTo, wrappedLineWidth).pp(obj)
 
@@ -31,6 +31,7 @@ fun pp(obj: Any?, indent: Int = 2, writeTo: Appendable = System.out, wrappedLine
  * @param [writeTo] optional param that specifies the [Appendable] to output the pretty print to. Defaults appending to `System.out`
  * @param [wrappedLineWidth] optional param that specifies how many characters of a string should be on a line.
  */
+@JvmOverloads
 fun <T> T.pp(
     indent: Int = 2,
     writeTo: Appendable = System.out,
