@@ -212,6 +212,6 @@ O1(
 
 # ToDo
 
-* test nullability cases
-* allow printing of `java*` classes
-* fix unicode line breaking with certain characters only under icu4j library
+* Test nullability cases,
+* implement pretty print for `java*` classes and
+* fix unicode line breaking with icu4j library characters.
