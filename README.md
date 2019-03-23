@@ -4,7 +4,7 @@
  
 # pretty-print - pp
 
-Adds a `pp(Any?)` and `T.pp()` method to pretty print Java or Kotlin object.
+Adds a `pp(Any?)` and `T.pp()` method to pretty print any Java or Kotlin object.
 
 `pp(Any?)` takes an object and prints in a pretty format.
 `T.pp()` pretty prints inside a method chain when called on an object.
