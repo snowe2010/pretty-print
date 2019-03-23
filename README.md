@@ -6,8 +6,8 @@
 
 Adds a `pp(Any?)` and `T.pp()` method to pretty print any Java or Kotlin object.
 
-`pp(Any?)` takes an object and prints in a pretty format.
-`T.pp()` pretty prints inside a method chain when called on an object.
+`pp(Any?)` takes any object and prints it in a pretty format.
+`T.pp()` pretty prints inside a method chain when called on an object inline.
 
 <table>
     <thead><tr><th>Approach</th><th>Instruction</th></tr></thead>
@@ -32,7 +32,7 @@ Adds a `pp(Any?)` and `T.pp()` method to pretty print any Java or Kotlin object.
 
 `tabSize` changes the number of spaces used to indent each level of the output. Default is `2`.
 
-`printStream` changes the `PrintStream` being used. Default is `System.out`.
+`printStream` changes the `PrintStream` you are printing to. Default is `System.out`.
 
 `wrappedLineWidth` changes the number of characters allowed before wrapping in a multiline string. Default is `80`.
  
@@ -212,6 +212,6 @@ O1(
 
 # ToDo
 
-* Test nullability cases,
-* implement pretty print for `java*` classes and
-* fix unicode line breaking with icu4j library characters.
+* Test nullability cases
+* implement pretty print for `java*` classes 
+* fix unicode line breaking with icu4j library characters
