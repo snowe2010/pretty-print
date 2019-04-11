@@ -4,21 +4,36 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val spekVersion = "2.0.0-alpha.2"
 
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath("com.tylerthrailkill.gradle:nebula-mit-license:0.0.1")
+    }
+}
 plugins {
     `build-scan`
     kotlin("jvm") version "1.3.11"
     id("nebula.maven-publish") version "9.4.6"
+    id("nebula.maven-base-publish") version "9.4.6"
     id("nebula.publish-verification") version "9.4.6"
     id("nebula.source-jar") version "9.4.6"
+    id("nebula.javadoc-jar") version "9.4.6"
+    id("nebula.info") version "5.0.2"
     id("nebula.release") version "9.2.0"
     id("nebula.nebula-bintray-publishing") version "5.0.0"
+//    id("tylerthrailkill.nebula-mit-license") version "0.0.1"
     jacoco
 }
+apply(plugin = "tylerthrailkill.nebula-mit-license")
 group = "com.tylerthrailkill.helpers"
+description = "Pretty printing of objects"
 
 repositories {
     jcenter()
     mavenCentral()
+    mavenLocal()
     maven(url = "https://dl.bintray.com/spekframework/spek-dev/")
 }
 
@@ -98,12 +113,12 @@ configure<BintrayExtension> {
         issueTrackerUrl = "https://github.com/snowe2010/${project.name}/issues"
         vcsUrl = "https://github.com/snowe2010/${project.name}.git"
         setLabels("axon", "kotlin")
-        version(delegateClosureOf<BintrayExtension.VersionConfig> {
-            gpg(delegateClosureOf<BintrayExtension.GpgConfig> {
-                sign = true
-                passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
-            })
-        })
+//        version(delegateClosureOf<BintrayExtension.VersionConfig> {
+//            gpg(delegateClosureOf<BintrayExtension.GpgConfig> {
+//                sign = true
+//                passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
+//            })
+//        })
     })
     dryRun = false
     publish = true
