@@ -1,5 +1,6 @@
 import com.jfrog.bintray.gradle.BintrayExtension
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import nebula.plugin.contacts.Contact
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val spekVersion = "2.0.0-alpha.2"
@@ -8,17 +9,23 @@ plugins {
     `build-scan`
     kotlin("jvm") version "1.3.11"
     id("nebula.maven-publish") version "9.4.6"
+    id("nebula.maven-base-publish") version "9.4.6"
     id("nebula.publish-verification") version "9.4.6"
     id("nebula.source-jar") version "9.4.6"
+    id("nebula.javadoc-jar") version "9.4.6"
+    id("nebula.info") version "5.0.2"
     id("nebula.release") version "9.2.0"
     id("nebula.nebula-bintray-publishing") version "5.0.0"
+    id("nebula.contacts") version "5.0.2"
+    id("tylerthrailkill.nebula-mit-license") version "0.0.3"
     jacoco
 }
+
 group = "com.tylerthrailkill.helpers"
+description = "Pretty printing of objects"
 
 repositories {
     jcenter()
-    mavenCentral()
     maven(url = "https://dl.bintray.com/spekframework/spek-dev/")
 }
 
@@ -98,13 +105,20 @@ configure<BintrayExtension> {
         issueTrackerUrl = "https://github.com/snowe2010/${project.name}/issues"
         vcsUrl = "https://github.com/snowe2010/${project.name}.git"
         setLabels("axon", "kotlin")
-        version(delegateClosureOf<BintrayExtension.VersionConfig> {
-            gpg(delegateClosureOf<BintrayExtension.GpgConfig> {
-                sign = true
-                passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
-            })
-        })
+//        version(delegateClosureOf<BintrayExtension.VersionConfig> {
+//            gpg(delegateClosureOf<BintrayExtension.GpgConfig> {
+//                sign = true
+//                passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
+//            })
+//        })
     })
     dryRun = false
     publish = true
+}
+
+contacts {  // Use statically-typed extension accessor
+    addPerson("tyler.b.thrailkill@gmail.com", delegateClosureOf<Contact> { // type-safe adapter for dynamic Groovy Closure
+        moniker = "Tyler Thrailkill" // This can be assigned as property
+        role("owner") // To add role to `roles` set, you also can call it directly `roles.add("owner")`
+    })
 }
