@@ -110,6 +110,10 @@ configure<BintrayExtension> {
                 sign = true
                 passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
             })
+            mavenCentralSync(delegateClosureOf<BintrayExtension.MavenCentralSyncConfig> {
+                user = findProperty("sonatypeUser") as String? ?: System.getenv("SONATYPE_USERNAME") //OSS user token: mandatory
+                password = findProperty("sonatypePassword") as String? ?: System.getenv("SONATYPE_PASSWORD") //OSS user password: mandatory
+            })
         })
     })
     dryRun = false
