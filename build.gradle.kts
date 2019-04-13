@@ -1,5 +1,5 @@
+
 import com.jfrog.bintray.gradle.BintrayExtension
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import nebula.plugin.contacts.Contact
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -105,12 +105,12 @@ configure<BintrayExtension> {
         issueTrackerUrl = "https://github.com/snowe2010/${project.name}/issues"
         vcsUrl = "https://github.com/snowe2010/${project.name}.git"
         setLabels("axon", "kotlin")
-//        version(delegateClosureOf<BintrayExtension.VersionConfig> {
-//            gpg(delegateClosureOf<BintrayExtension.GpgConfig> {
-//                sign = true
-//                passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
-//            })
-//        })
+        version(delegateClosureOf<BintrayExtension.VersionConfig> {
+            gpg(delegateClosureOf<BintrayExtension.GpgConfig> {
+                sign = true
+                passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
+            })
+        })
     })
     dryRun = false
     publish = true
