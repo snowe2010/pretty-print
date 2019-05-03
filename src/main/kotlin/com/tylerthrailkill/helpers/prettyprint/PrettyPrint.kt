@@ -1,7 +1,7 @@
 package com.tylerthrailkill.helpers.prettyprint
 
 import com.ibm.icu.text.BreakIterator
-import mu.KotlinLogging
+import mu.KLogging
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
@@ -48,10 +48,12 @@ fun <T> T.pp(
  */
 private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrappedLineWidth: Int) {
     private val lineInstance = BreakIterator.getLineInstance()
-    private val logger = KotlinLogging.logger {}
+//    private val logger = KotlinLogging.logger {}
     private val visited = mutableSetOf<Int>()
     private val revisited = mutableSetOf<Int>()
-
+    
+    companion object: KLogging()
+    
     /**
      * Pretty prints the given object with this printer.
      *
@@ -89,6 +91,7 @@ private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrapp
             obj is Iterable<*> -> ppIterable(obj, collectionElementPad)
             obj is Map<*, *> -> ppMap(obj, collectionElementPad)
             obj is String -> ppString(obj, collectionElementPad)
+            obj is Enum<*> -> ppEnum(obj)
             obj.isAtomic() -> ppAtomic(obj)
             obj is Any -> ppPlainObject(obj, objectFieldPad)
         }
@@ -171,6 +174,10 @@ private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrapp
         } else {
             write("\"$s\"")
         }
+    }
+
+    private fun ppEnum(enum: Enum<*>) {
+        write("${enum.javaClass.simpleName}.${enum.toString()}")
     }
 
     private fun ppAtomic(obj: Any?) {

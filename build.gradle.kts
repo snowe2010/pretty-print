@@ -3,7 +3,7 @@ import com.jfrog.bintray.gradle.BintrayExtension
 import nebula.plugin.contacts.Contact
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val spekVersion = "2.0.0-alpha.2"
+val spekVersion = "2.0.3"
 
 plugins {
     `build-scan`
@@ -18,6 +18,7 @@ plugins {
     id("nebula.nebula-bintray-publishing") version "5.0.0"
     id("nebula.contacts") version "5.0.2"
     id("tylerthrailkill.nebula-mit-license") version "0.0.3"
+    id("info.solidsoft.pitest") version "1.4.0"
     jacoco
 }
 
@@ -120,9 +121,22 @@ configure<BintrayExtension> {
     publish = true
 }
 
-contacts {  // Use statically-typed extension accessor
-    addPerson("tyler.b.thrailkill@gmail.com", delegateClosureOf<Contact> { // type-safe adapter for dynamic Groovy Closure
+contacts {
+    // Use statically-typed extension accessor
+    addPerson("tyler.b.thrailkill@gmail.com", delegateClosureOf<Contact> {
+        // type-safe adapter for dynamic Groovy Closure
         moniker = "Tyler Thrailkill" // This can be assigned as property
         role("owner") // To add role to `roles` set, you also can call it directly `roles.add("owner")`
     })
+}
+
+pitest {
+    testPlugin = "junit5"
+    pitestVersion = "1.4.5"
+    targetClasses = setOf("com.tylerthrailkill.*")
+    targetTests = setOf("com.tylerthrailkill.**.*")
+    verbose = true
+//    mainProcessJvmArgs = listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
+    jvmArgs = listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
+//    jvmArgs = listOf("-Xdebug","-Xnoagent", "-Djava.compiler=NONE", "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006")
 }

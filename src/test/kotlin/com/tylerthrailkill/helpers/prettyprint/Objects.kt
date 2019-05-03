@@ -78,3 +78,14 @@ data class ObjectContainingObjectWithList(
 data class ObjectWithList(
     val list: MutableList<ObjectContainingObjectWithList?>
 )
+
+enum class TestEnum {
+    NUMBER,
+    STRING,
+    BOOLEAN,
+    NULL;
+
+    override fun toString(): String = name
+}
+
+data class ObjectWithEnum(val enum: TestEnum)
