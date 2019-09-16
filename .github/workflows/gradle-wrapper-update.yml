@@ -18,3 +18,5 @@ jobs:
           java-version: 1.8
       - name: Update gradle wrapper
         uses: rahulsom/gradle-up@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
