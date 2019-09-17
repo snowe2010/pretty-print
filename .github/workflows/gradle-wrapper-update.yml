@@ -3,7 +3,7 @@ name: Update Gradle Wrapper on Schedule
 on:
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron:  '*/2 * * * *'
+    - cron:  '*/30 * * * *'
 
 jobs:
   build:
