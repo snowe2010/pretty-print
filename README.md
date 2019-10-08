@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/snowe2010/pretty-print.svg?branch=master)](https://travis-ci.com/snowe2010/pretty-print)
 [![Download](https://api.bintray.com/packages/snowe/maven/Pretty-Print/images/download.svg)](https://bintray.com/snowe/maven/Pretty-Print/_latestVersion)
 [![codecov](https://codecov.io/gh/snowe2010/pretty-print/branch/master/graph/badge.svg)](https://codecov.io/gh/snowe2010/pretty-print)
- 
+
 # pretty-print - pp
 
 Adds a `pp(Any?)` and `T.pp()` method to pretty print any Java or Kotlin object.
@@ -13,7 +13,7 @@ Adds a `pp(Any?)` and `T.pp()` method to pretty print any Java or Kotlin object.
     <thead><tr><th>Approach</th><th>Instruction</th></tr></thead>
     <tr>
         <td>Gradle</td>
-        <td><pre>testImplementation "io.mockk:mockk:{version}"</pre></td>
+        <td><pre>testImplementation "com.tylerthrailkill.helpers:pretty-print:{version}"</pre></td>
     </tr>
     <tr>
         <td>Maven<td>
@@ -37,18 +37,24 @@ Adds a `pp(Any?)` and `T.pp()` method to pretty print any Java or Kotlin object.
 `wrappedLineWidth` changes the number of characters allowed before wrapping in a multiline string. Default is `80`.
  
 # Examples
+
 ### Main API
+
 ###### Top level method
+
 ```kotlin
 data class TinyObject(var int: Int)
 pp(TinyObject(1))
 ```
+
 ```text
 TinyObject(
   int = 1
 )
 ```
+
 ###### Inline method
+
 ```kotlin
 data class TinyObject(var int: Int)
 fun callSomething(obj: Any?) {
@@ -56,6 +62,7 @@ fun callSomething(obj: Any?) {
 }
 callSomething(TinyObject(1).pp())
 ```
+
 ```
 TinyObject(
   int = 1
@@ -64,10 +71,13 @@ inline wrapper function entered
 ```
 
 ### Other uses
+
 ###### List
+
 ```kotlin
 pp(listOf("1", 2, 3.0, true))
 ```
+
 ```text
 [
   "1",
@@ -76,11 +86,14 @@ pp(listOf("1", 2, 3.0, true))
   true
 ]
 ```
+
 ###### Object with list
+
 ```kotlin
 data class OL(val list: List<String>)
 pp(OL(listOf("1")))
 ```
+
 ```
 OL(
   list = [
@@ -90,20 +103,25 @@ OL(
 ```
 
 ###### Map
+
 ```kotlin
 pp(mapOf("key1" to "value1", "key2" to "value2"))
 ```
+
 ```
 {
   "key1" -> "value1",
   "key2" -> "value2"
 }
 ```
+
 ###### Object with map
+
 ```kotlin
 data class OM(val map: Map<Any, Any>)
 pp(OM(mapOf(1 to "value", "key" to 1)))
 ```
+
 ```text
 OM(
   map = {
@@ -114,29 +132,35 @@ OM(
 ```
 
 ###### Multiline strings
+
 ```kotlin
 pp("Goodbye, cruel world. Goodbye, cruel lamp.", wrappedLineWidth = 22)
 ```
+
 ```
 """
-Goodbye, cruel world. 
+Goodbye, cruel world.
 Goodbye, cruel lamp.
 """
 ```
 
 ###### Multiline strings with unicode line breaking
+
 ```kotlin
 pp("Goodbye, cruel world. Good­bye, cruel lamp.", wrappedLineWidth = 27)
 ```
+
 ```
 """
 Goodbye, cruel world. Good­
 bye, cruel lamp.
 """
 ```
+
 ```kotlin
 pp("😍️🥞😍️", wrappedLineWidth = 3)
 ```
+
 ```text
 """
 😍️
@@ -146,9 +170,11 @@ pp("😍️🥞😍️", wrappedLineWidth = 3)
 ```
 
 ###### Multiple fields
+
 ```kotlin
 pp(SmallObject("Goodbye, cruel world. Goodbye, cruel lamp.", 1))
 ```
+
 ```
 SmallObject(
   field1 = "Goodbye, cruel world. Goodbye, cruel lamp."
@@ -157,19 +183,23 @@ SmallObject(
 ```
 
 ###### Different indent size
+
 ```kotlin
 data class TinyObject(var int: Int)
 pp(TinyObject(1), tabSize = 0)
 ```
+
 ```text
 TinyObject(
 int = 1
 )
 ```
+
 ```kotlin
 data class TinyObject(var int: Int)
 pp(TinyObject(1), tabSize = 10)
 ```
+
 ```text
 TinyObject(
           int = 1
@@ -177,6 +207,7 @@ TinyObject(
 ```
 
 ###### Different output stream
+
 ```kotlin
 val stream = ByteArrayOutputStream()
 pp(TinyObject(1), printStream = PrintStream(stream))
@@ -184,6 +215,7 @@ println(":::")
 print(stream.toString())
 println(":::")
 ```
+
 ```text
 :::
 TinyObject(
@@ -202,6 +234,7 @@ val sco2 = O2(sco1)
 sco1.c = sco2
 pp(sco1)
 ```
+
 ```text
 O1(
   c = O2(
