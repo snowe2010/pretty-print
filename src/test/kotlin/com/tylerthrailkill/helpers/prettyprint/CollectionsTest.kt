@@ -7,6 +7,25 @@ import java.io.ByteArrayOutputStream
 object CollectionsTest : Spek({
     setup()
 
+    describe("pretty printing array should") {
+        it("render an array") {
+            prettyPrint(Array(1){ 0 }) mapsTo """
+                [
+                  0
+                ]
+                """
+        }
+        it("render an array of array") {
+            prettyPrint(Array(1){Array(1) { 0 } }) mapsTo """
+                [
+                  [
+                    0
+                  ]
+                ]
+                """
+        }
+    }
+
     describe("pretty printing lists should") {
         it("render a list of strings") {
             prettyPrint(listOf("a", "b", "c")) mapsTo """

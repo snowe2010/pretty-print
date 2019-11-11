@@ -93,6 +93,7 @@ private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrapp
             obj is String -> ppString(obj, collectionElementPad)
             obj is Enum<*> -> ppEnum(obj)
             obj.isAtomic() -> ppAtomic(obj)
+            obj is Array<*> -> ppArray(obj, collectionElementPad)
             obj is Any -> ppPlainObject(obj, objectFieldPad)
         }
         visited.remove(id)
@@ -146,6 +147,20 @@ private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrapp
 
         writeLine('[')
         obj.ppContents(currentDepth, ",") {
+            write(increasedDepth)
+            ppAny(it, increasedDepth)
+        }
+        write(']')
+    }
+
+    private fun ppArray(obj: Array<*>, currentDepth: String) {
+        val increasedDepth = deepen(currentDepth)
+
+        // https://stackoverflow.com/questions/35938906/why-doesnt-kotlin-arrayt-implement-iterablet
+        val iterableList = obj.toList()
+
+        writeLine('[')
+        iterableList.ppContents(currentDepth, ",") {
             write(increasedDepth)
             ppAny(it, increasedDepth)
         }
