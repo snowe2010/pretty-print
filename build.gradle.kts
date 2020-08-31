@@ -6,8 +6,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val spekVersion = "2.0.3"
 
 plugins {
-    `build-scan`
-    kotlin("jvm") version "1.3.11"
+//    `build-scan`
+    kotlin("jvm") version "1.4.0"
     id("nebula.maven-publish") version "9.4.6"
     id("nebula.maven-base-publish") version "9.4.6"
     id("nebula.publish-verification") version "9.4.6"
@@ -51,6 +51,7 @@ dependencies {
         exclude(group = "org.junit.platform")
         exclude(group = "org.jetbrains.kotlin")
     }
+    testImplementation("io.kotest:kotest-runner-junit5:4.2.2") // for kotest framework
     testImplementation("com.beust:klaxon:5.0.1") // used to parse naughty list
     testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
 }
@@ -85,10 +86,14 @@ tasks {
     this["check"].dependsOn(report)
 }
 
-buildScan {
-    termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    termsOfServiceAgree = "yes"
+sourceSets.test {
+    java.srcDirs("src/test/kotlin")
 }
+
+//buildScan {
+//    termsOfServiceUrl = "https://gradle.com/terms-of-service"
+//    termsOfServiceAgree = "yes"
+//}
 
 configure<BintrayExtension> {
     user = findProperty("bintrayUser") as String? ?: System.getenv("BINTRAY_USER")
