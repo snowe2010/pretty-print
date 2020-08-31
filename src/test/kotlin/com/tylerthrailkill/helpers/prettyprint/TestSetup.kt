@@ -1,5 +1,7 @@
 package com.tylerthrailkill.helpers.prettyprint
 
+import io.kotest.matchers.Matcher
+import io.kotest.matchers.MatcherResult
 import mu.KotlinLogging
 import org.spekframework.spek2.dsl.Root
 import org.spekframework.spek2.dsl.TestBody
@@ -60,4 +62,28 @@ infix fun ByteArrayOutputStream.mapsTo(expected: String) {
         expected.trimIndent(),
         this.toString().trim().replace("\r", "")
     )
+}
+
+/**
+ *
+ * Test helper function, defaults to providing no tab size and wrapping the print stream in
+ * a ByteArrayOutputStream to test against
+ */
+fun prettyPrint(obj: Any?, tabSize: Int? = null, wrappedLineWidth: Int? = null): ByteArrayOutputStream {
+    val outContent = ByteArrayOutputStream()
+    if (tabSize == null) {
+        pp(obj, writeTo = PrintStream(outContent), wrappedLineWidth = wrappedLineWidth ?: 80) // TODO fix this, really messy
+    } else {
+        pp(obj, indent = tabSize, writeTo = PrintStream(outContent), wrappedLineWidth = wrappedLineWidth ?: 80) // TODO ^
+    }
+    return outContent
+}
+
+fun mapsTo(expected: String) = object : Matcher<String> {
+    override fun test(value: String) =
+        MatcherResult(
+            value.trimIndent() == expected.toString().trim().replace("\r",""),
+            "$value does not match expected output $expected",
+            "$value does not match expected output $expected"
+        )
 }
