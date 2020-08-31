@@ -1,14 +1,10 @@
 package com.tylerthrailkill.helpers.prettyprint
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
-import java.io.ByteArrayOutputStream
+import io.kotest.core.spec.style.FreeSpec
 
-object NestedObjectTest : Spek({
-    setup()
-
-    describe("small nested object should") {
-        it("render a single field with multiple subfields") {
+class NestedObjectTest : FreeSpec({
+    "small nested object should" - {
+        "render a single field with multiple subfields" - {
             prettyPrint(NestedSmallObject(SmallObject("a", 1))) mapsTo """
                 NestedSmallObject(
                   smallObject = SmallObject(
@@ -21,8 +17,8 @@ object NestedObjectTest : Spek({
         }
     }
 
-    describe("nested large object should") {
-        it("render many nested fields") {
+    "nested large object should" - {
+        "render many nested fields" - {
             prettyPrint(
                 NestedLargeObject(
                     NestedSmallObject(SmallObject("smallObjectField1", 777)),
@@ -66,8 +62,8 @@ object NestedObjectTest : Spek({
         }
     }
 
-    describe("nested object with collection should") {
-        it("render a single item in a collection") {
+    "nested object with collection should" - {
+        "render a single item in a collection" - {
             prettyPrint(
                 NestedObjectWithCollection(
                     listOf(1)
@@ -81,7 +77,7 @@ object NestedObjectTest : Spek({
                 """
         }
 
-        it("render a single string in a collection") {
+        "render a single string in a collection" - {
             prettyPrint(
                 NestedObjectWithCollection(
                     listOf("a string with spaces")
@@ -95,7 +91,7 @@ object NestedObjectTest : Spek({
                 """
         }
 
-        it("render multiple objects in a collection, with commas") {
+        "render multiple objects in a collection, with commas" - {
             prettyPrint(
                 NestedObjectWithCollection(
                     listOf(1, 2)
@@ -110,7 +106,7 @@ object NestedObjectTest : Spek({
                 """
         }
 
-        it("render a single nested object in a collection") {
+        "render a single nested object in a collection" - {
             prettyPrint(
                 NestedObjectWithCollection(
                     listOf(NestedSmallObject(SmallObject("a", 1)))
@@ -129,7 +125,7 @@ object NestedObjectTest : Spek({
                 """
         }
 
-        it("render a multiple nested objects in a collection, with commas") {
+        "render a multiple nested objects in a collection, with commas" - {
             prettyPrint(
                 NestedObjectWithCollection(
                     listOf(

@@ -1,15 +1,12 @@
 package com.tylerthrailkill.helpers.prettyprint
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
-import java.io.ByteArrayOutputStream
+import io.kotest.core.spec.style.FreeSpec
 import java.math.BigDecimal
-import java.util.*
+import java.util.UUID
 
-object MassiveObjectTest : Spek({
-    setup()
+class MassiveObjectTest : FreeSpec({
 
-    describe("massive objects") {
+    "massive objects" - {
         val smallObject = SmallObject("a string in small object", 777)
         val nestedLargeObjectNull = NestedLargeObject(
             NestedSmallObject(smallObject),
@@ -50,7 +47,7 @@ object MassiveObjectTest : Spek({
             EmailAddress("\" \"@example.org"),
             EmailAddress("\"john..doe\"@example.org")
         )
-        it("should render") {
+        "should render" - {
             // DON'T INDENT THIS STRING. IT'S TOO LARGE FOR THE JVM 😂😂😂
             prettyPrint(
                 MassiveObject(

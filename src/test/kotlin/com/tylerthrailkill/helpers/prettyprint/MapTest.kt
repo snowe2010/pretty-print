@@ -1,21 +1,19 @@
 package com.tylerthrailkill.helpers.prettyprint
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotest.core.spec.style.FreeSpec
 
-object MapTest : Spek({
-    setup()
+class MapTest : FreeSpec({
 
-    describe("maps") {
-        context("strings") {
-            it("single key value pair") {
+    "maps" - {
+        "strings" - {
+            "single key value pair" - {
                 prettyPrint(mapOf("key" to "value")) mapsTo """
                 {
                   "key" -> "value"
                 }
                 """
             }
-            it("render many key value pairs") {
+            "render many key value pairs" - {
                 prettyPrint(
                     mapOf(
                         "key1" to "value1",
@@ -34,8 +32,8 @@ object MapTest : Spek({
             }
         }
 
-        context("objects") {
-            it("single object as value") {
+        "objects" - {
+            "single object as value" - {
                 prettyPrint(
                     mapOf(
                         "key1" to SmallObject("field", 1)
@@ -49,7 +47,7 @@ object MapTest : Spek({
                 }
                 """
             }
-            it("single object as key") {
+            "single object as key" - {
                 prettyPrint(
                     mapOf(
                         SmallObject("field", 1) to "value1"
@@ -63,7 +61,7 @@ object MapTest : Spek({
                 }
                 """
             }
-            it("multiple objects") {
+            "multiple objects" - {
                 prettyPrint(
                     mapOf(
                         "key1" to SmallObject("field", 1),
@@ -82,7 +80,7 @@ object MapTest : Spek({
                 }
                 """
             }
-            it("map of lists") {
+            "map of lists" - {
                 prettyPrint(
                     mapOf(
                         listOf(1, 2, 3) to listOf(4, 5, 6),
@@ -111,7 +109,7 @@ object MapTest : Spek({
                 }
                 """
             }
-            it("map of maps") {
+            "map of maps" - {
                 prettyPrint(
                     mapOf(
                         mapOf(1 to 2, 2 to 3) to mapOf(3 to 4, 4 to 5),
@@ -137,8 +135,8 @@ object MapTest : Spek({
                 """
             }
         }
-        context("null stuff") {
-            it("null keys") {
+        "null stuff" - {
+            "null keys" - {
                 prettyPrint(
                     mapOf(
                         null to SmallObject("field", 1)
@@ -152,7 +150,7 @@ object MapTest : Spek({
                 }
                 """
             }
-            it("null values") {
+            "null values" - {
                 prettyPrint(
                     mapOf(
                         "key1" to null
@@ -163,7 +161,7 @@ object MapTest : Spek({
                 }
                 """
             }
-            it("multiple null values") {
+            "multiple null values" - {
                 prettyPrint(
                     mapOf(
                         "key1" to null,
@@ -176,7 +174,7 @@ object MapTest : Spek({
                 }
                 """
             }
-            it("null key and null value") {
+            "null key and null value" - {
                 prettyPrint(
                     mapOf(
                         null to null
@@ -187,7 +185,7 @@ object MapTest : Spek({
                 }
                 """
             }
-            it("null key and null value") {
+            "null key and null value 2" - {
                 prettyPrint(
                     mapOf(
                         null to SmallObject("field", 1),

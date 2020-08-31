@@ -1,14 +1,13 @@
 package com.tylerthrailkill.helpers.prettyprint
 
+import io.kotest.core.spec.style.FreeSpec
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.io.ByteArrayOutputStream
 
-object CollectionsTest : Spek({
-    setup()
-
-    describe("pretty printing lists should") {
-        it("render a list of strings") {
+class CollectionsTest : FreeSpec({
+    "pretty printing lists should" - {
+        "render a list of strings" - {
             prettyPrint(listOf("a", "b", "c")) mapsTo """
                 [
                   "a",
@@ -17,7 +16,7 @@ object CollectionsTest : Spek({
                 ]
                 """
         }
-        it("render a list of mixed primitive objects") {
+        "render a list of mixed primitive objects" - {
             prettyPrint(listOf("a", 1, true)) mapsTo """
                 [
                   "a",
@@ -26,14 +25,15 @@ object CollectionsTest : Spek({
                 ]
                 """
         }
-        it("render null lists as null") {
+
+        "render null lists as null" - {
             prettyPrint(NullableLists(null)) mapsTo """
             NullableLists(
               col = null
             )
             """
         }
-        it("render lists with null items") {
+        "render lists with null items" - {
             prettyPrint(NullableLists(listOf(null, null, null))) mapsTo """
             NullableLists(
               col = [
@@ -44,7 +44,7 @@ object CollectionsTest : Spek({
             )
             """
         }
-        it("render lists with mixed null and not-null items") {
+        "render lists with mixed null and not-null items" - {
             prettyPrint(NullableLists(listOf(null, 1, null, "a", null, true))) mapsTo """
             NullableLists(
               col = [
@@ -58,7 +58,7 @@ object CollectionsTest : Spek({
             )
             """
         }
-        it("render lists with a small object") {
+        "render lists with a small object" - {
             prettyPrint(NullableLists(listOf(TinyObject(1)))) mapsTo """
             NullableLists(
               col = [
@@ -69,7 +69,7 @@ object CollectionsTest : Spek({
             )
             """
         }
-        it("render lists with multiple small objects") {
+        "render lists with multiple small objects" - {
             prettyPrint(
                 NullableLists(
                     listOf(
@@ -94,7 +94,7 @@ object CollectionsTest : Spek({
             )
             """
         }
-        it("lists with maps") {
+        "lists with maps" - {
             prettyPrint(
                 NullableLists(
                     listOf(
@@ -122,5 +122,6 @@ object CollectionsTest : Spek({
             )
             """
         }
+
     }
 })

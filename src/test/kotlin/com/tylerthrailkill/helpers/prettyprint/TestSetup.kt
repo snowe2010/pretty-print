@@ -79,6 +79,23 @@ fun prettyPrint(obj: Any?, tabSize: Int? = null, wrappedLineWidth: Int? = null):
     return outContent
 }
 
+/**
+ * Helper function for testing the inline version of `pp`
+ * It defaults to providing no tab size and wrapping the print stream in
+ * a ByteArrayOutputStream to test against
+ */
+fun prettyPrintInline(obj: Any?, tabSize: Int? = null): ByteArrayOutputStream {
+//    val outContent by memoized<ByteArrayOutputStream>()
+    val outContent = ByteArrayOutputStream()
+    val printStream = PrintStream(outContent)
+    if (tabSize == null) {
+        inlineWrapper(obj.pp(writeTo = printStream), printStream)
+    } else {
+        inlineWrapper(obj.pp(indent = tabSize, writeTo = printStream), printStream)
+    }
+    return outContent
+}
+
 fun mapsTo(expected: String) = object : Matcher<String> {
     override fun test(value: String) =
         MatcherResult(

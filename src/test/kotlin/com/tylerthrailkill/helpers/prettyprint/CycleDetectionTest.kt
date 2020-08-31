@@ -1,23 +1,19 @@
 package com.tylerthrailkill.helpers.prettyprint
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotest.core.spec.style.FreeSpec
 
-object CycleDetectionTest : Spek({
-    setup()
-
-    describe("pretty printing") {
-        context("plain objects with cycles") {
-            it("should detect a cycle with plain Unit") {
+class CycleDetectionTest : FreeSpec({
+    "pretty printing" - {
+        "plain objects with cycles" - {
+            "should detect a cycle with plain Unit" - {
                 val unit = Unit
-                val identity = System.identityHashCode(unit)
                 prettyPrint(unit) mapsTo """
                 Unit(
-                  INSTANCE = cyclic reference detected for $identity
-                )[${'$'}id=$identity]
+                  INSTANCE = Unit.<static cyclic class reference>
+                )
                 """
             }
-            it("should detect a cycle with two small objects") {
+            "should detect a cycle with two small objects" - {
                 val sco1 = SmallCyclicalObject1()
                 val sco2 = SmallCyclicalObject2(sco1)
                 sco1.c = sco2
@@ -30,7 +26,7 @@ object CycleDetectionTest : Spek({
                 )[${'$'}id=$identity]
                 """
             }
-            it("should detect no cycle when an element is repeated several times in the same objects fields") {
+            "should detect no cycle when an element is repeated several times in the same objects fields" - {
                 val smallObject = SmallObject("a string in small object", 777)
                 val nestedLargeObjectNull = NestedLargeObject(
                     NestedSmallObject(smallObject),
@@ -56,8 +52,8 @@ object CycleDetectionTest : Spek({
                 """
             }
         }
-        context("maps with cycles") {
-            it("should detect a cycle between an object with a map with an object with a cycle") {
+        "maps with cycles" - {
+            "should detect a cycle between an object with a map with an object with a cycle" - {
                 val objectWithMap = ObjectWithMap(
                     mutableMapOf(1 to null)
                 )
@@ -75,7 +71,7 @@ object CycleDetectionTest : Spek({
                 )[${'$'}id=$identity]
                 """.trimIndent()
             }
-            it("should detect a cycle of a map containing itself") {
+            "should detect a cycle of a map containing itself" - {
                 val outerMap: MutableMap<Int, Any?> = mutableMapOf(1 to null)
                 val innerMap = mutableMapOf(1 to outerMap)
                 outerMap[1] = innerMap
@@ -89,8 +85,8 @@ object CycleDetectionTest : Spek({
                 """.trimIndent()
             }
         }
-        context("lists with cycles") {
-            it("should detect a cycle between an object with a list with an object with a cycle") {
+        "lists with cycles" - {
+            "should detect a cycle between an object with a list with an object with a cycle" - {
                 val objectWithList = ObjectWithList(mutableListOf())
                 val objectContainingObjectWithList = ObjectContainingObjectWithList()
                 objectContainingObjectWithList.objectWithList = objectWithList
@@ -106,7 +102,7 @@ object CycleDetectionTest : Spek({
                 )[${'$'}id=$identity]
                 """.trimIndent()
             }
-            it("should detect a cycle of a list containing itself") {
+            "should detect a cycle of a list containing itself" - {
                 val outerList: MutableList<Any?> = mutableListOf()
                 val innerList = mutableListOf(outerList)
                 outerList.add(innerList)
@@ -120,9 +116,9 @@ object CycleDetectionTest : Spek({
                 """.trimIndent()
             }
         }
-        context("a cycle of 3 objects") {
-            context("a list contains 2 of these objects") {
-                it("should only show ID of outermost object in the cycle each time the cycle gets printed") {
+        "a cycle of 3 objects" - {
+            "a list contains 2 of these objects" - {
+                "should only show ID of outermost object in the cycle each time the cycle gets printed" - {
                     // outermost meaning the first object in the cycle that pretty print calls on
                     val anyMap = { mutableMapOf<Any, Any>() }
                     val a = anyMap()

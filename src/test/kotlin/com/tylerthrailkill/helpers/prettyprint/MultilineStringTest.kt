@@ -1,6 +1,7 @@
 //@formatter:off
 package com.tylerthrailkill.helpers.prettyprint
 
+import io.kotest.core.spec.style.DescribeSpec
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 
@@ -19,8 +20,7 @@ val testsToSkipCurrently = listOf(
 
 const val SPACE = ' '
 
-object MultilineStringTest : Spek({
-    setup()
+class MultilineStringTest : DescribeSpec({
 
     describe("really long string reformatting") {
         it("when there are plain spaces") {
