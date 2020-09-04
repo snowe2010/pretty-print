@@ -1,36 +1,33 @@
 package com.tylerthrailkill.helpers.prettyprint
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotest.core.spec.style.FreeSpec
 
-object PojoTest : Spek({
-    setup()
-
-    describe("pretty print should print primitives correctly: ") {
-        it("string") {
-            prettyPrint("Goodbye, cruel world. Goodbye, cruel lamp.") mapsTo """
+class PojoTest : FreeSpec({
+    "pretty print should print primitives correctly: " - {
+        "string" - {
+            prettyPrint("Goodbye, cruel world. Goodbye, cruel lamp.") mapTo """
                 "Goodbye, cruel world. Goodbye, cruel lamp."
                 """
         }
-        it("int") {
-            prettyPrint(100) mapsTo "100"
+        "int" - {
+            prettyPrint(100) mapTo "100"
         }
-        it("boolean") {
-            prettyPrint(true) mapsTo "true"
+        "boolean" - {
+            prettyPrint(true) mapTo "true"
         }
-        it("double") {
-            prettyPrint(1.0) mapsTo "1.0"
+        "double" - {
+            prettyPrint(1.0) mapTo "1.0"
         }
-        it("float") {
-            prettyPrint(100f) mapsTo "100.0"
+        "float" - {
+            prettyPrint(100f) mapTo "100.0"
         }
-        it("char") {
-            prettyPrint('a') mapsTo "a"
+        "char" - {
+            prettyPrint('a') mapTo "a"
         }
     }
-    describe("pretty print should print other objects correctly: ") {
-        it("string") {
-            prettyPrint("Goodbye, cruel world. Goodbye, cruel lamp.") mapsTo """
+    "pretty print should print other objects correctly: " - {
+        "string" - {
+            prettyPrint("Goodbye, cruel world. Goodbye, cruel lamp.") mapTo """
                 "Goodbye, cruel world. Goodbye, cruel lamp."
                 """
         }

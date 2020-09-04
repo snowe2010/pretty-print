@@ -1,17 +1,15 @@
 package com.tylerthrailkill.helpers.prettyprint
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotest.core.spec.style.FreeSpec
 
-object TabTest : Spek({
-    setup()
+class TabTest : FreeSpec({
 
-    describe("pretty printing an object should") {
-        it("render a list with 4 spaces for the tab size instead of 2") {
+    "pretty printing an object should" - {
+        "render a list with 4 spaces for the tab size instead of 2" - {
             prettyPrint(
                 tabSize = 4,
                 obj = listOf("a", "b", "c")
-            ) mapsTo """
+            ) mapTo """
                 [
                     "a",
                     "b",
@@ -19,11 +17,11 @@ object TabTest : Spek({
                 ]
                 """
         }
-        it("render a list of lists with 4 spaces for the tab size instead of 2") {
+        "render a list of lists with 4 spaces for the tab size instead of 2" - {
             prettyPrint(
                 tabSize = 4,
                 obj = listOf(listOf("a", "b", "c"), listOf("a", "b", "c"), listOf("a", "b", "c"))
-            ) mapsTo """
+            ) mapTo """
                 [
                     [
                         "a",
@@ -43,11 +41,11 @@ object TabTest : Spek({
                 ]
                 """
         }
-        it("render a map with 4 spaces for the tab size instead of 2") {
+        "render a map with 4 spaces for the tab size instead of 2" - {
             prettyPrint(
                 tabSize = 4,
                 obj = mapOf(mapOf(1 to 2, 2 to 3) to mapOf(3 to 4, 4 to 5))
-            ) mapsTo """
+            ) mapTo """
                 {
                     {
                         1 -> 2,

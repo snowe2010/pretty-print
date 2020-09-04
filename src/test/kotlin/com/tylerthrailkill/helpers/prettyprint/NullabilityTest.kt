@@ -1,13 +1,12 @@
 package com.tylerthrailkill.helpers.prettyprint
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotest.core.spec.style.FreeSpec
 
-object NullabilityTest : Spek({
-    setup()
+class NullabilityTest : FreeSpec({
+//    setup()
 
-//    describe("pretty printing lists should") {
-//        it("render a list of strings") {
+//    "pretty printing lists should" - {
+//        "render a list of strings" - {
 //            prettyPrint(Unit) mapsTo """
 //                [
 //                  "a",
@@ -17,14 +16,14 @@ object NullabilityTest : Spek({
 //                """
 //        }
 //    }
-    describe("pretty printing") {
-        it("null should work") {
-            prettyPrint(null) mapsTo """
+    "pretty printing" - {
+        "null should work" - {
+            prettyPrint(null) mapTo """
                 null
                 """
         }
-        it("objects with no fields should work") {
-            prettyPrint(EmptyObject()) mapsTo """
+        "objects with no fields should work" - {
+            prettyPrint(EmptyObject()) mapTo """
                 EmptyObject(
                 )
                 """

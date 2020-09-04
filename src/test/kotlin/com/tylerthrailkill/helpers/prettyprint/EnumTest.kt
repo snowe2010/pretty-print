@@ -1,38 +1,35 @@
 package com.tylerthrailkill.helpers.prettyprint
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotest.core.spec.style.FreeSpec
 
-object EnumTest : Spek({
-    setup()
-    
-    describe("pretty printing enums should") {
-        it("render all values of the enum") {
-            prettyPrint(TestEnum.BOOLEAN) mapsTo """TestEnum.BOOLEAN"""
+class EnumTest : FreeSpec({
+    "pretty printing enums should" - {
+        "render all values of the enum" - {
+            prettyPrint(TestEnum.BOOLEAN) mapTo """TestEnum.BOOLEAN"""
         }
-        it("render enum in a list") {
-            prettyPrint(listOf(TestEnum.BOOLEAN)) mapsTo """
+        "render enum in a list" - {
+            prettyPrint(listOf(TestEnum.BOOLEAN)) mapTo """
                 [
                   TestEnum.BOOLEAN
                 ]
                 """.trimIndent()
         }
-        it("render enum as key in a map") {
-            prettyPrint(mapOf(TestEnum.BOOLEAN to "")) mapsTo """
+        "render enum as key in a map" - {
+            prettyPrint(mapOf(TestEnum.BOOLEAN to "")) mapTo """
                 {
                   TestEnum.BOOLEAN -> ""
                 }
                 """
         }
-        it("render enum as value in a map") {
-            prettyPrint(mapOf("" to TestEnum.BOOLEAN)) mapsTo """
+        "render enum as value in a map" - {
+            prettyPrint(mapOf("" to TestEnum.BOOLEAN)) mapTo """
                 {
                   "" -> TestEnum.BOOLEAN
                 }
                 """
         }
-        it("render enum in an object") {
-            prettyPrint(ObjectWithEnum(TestEnum.BOOLEAN)) mapsTo """
+        "render enum in an object" - {
+            prettyPrint(ObjectWithEnum(TestEnum.BOOLEAN)) mapTo """
                 ObjectWithEnum(
                   enum = TestEnum.BOOLEAN
                 )

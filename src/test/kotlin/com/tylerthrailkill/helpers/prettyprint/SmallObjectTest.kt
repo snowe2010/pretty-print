@@ -1,16 +1,12 @@
 package com.tylerthrailkill.helpers.prettyprint
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
-import java.io.ByteArrayOutputStream
+import io.kotest.core.spec.style.FreeSpec
 
-object SmallObjectTest : Spek({
-    setup()
-
-    describe("tiny object should") {
-        context("render") {
-            it("a single field ") {
-                prettyPrint(TinyObject(1)) mapsTo """
+class SmallObjectTest : FreeSpec({
+    "tiny object should" - {
+        "render" - {
+            "a single field " - {
+                prettyPrint(TinyObject(1)) mapTo """
                 TinyObject(
                   int = 1
                 )
@@ -18,10 +14,10 @@ object SmallObjectTest : Spek({
             }
         }
     }
-    describe("small object should") {
-        context("render ") {
-            it("two fields") {
-                prettyPrint(SmallObject("a", 1)) mapsTo """
+    "small object should" - {
+        "render " - {
+            "two fields" - {
+                prettyPrint(SmallObject("a", 1)) mapTo """
                 SmallObject(
                   field1 = "a"
                   field2 = 1

@@ -1,8 +1,7 @@
 //@formatter:off
 package com.tylerthrailkill.helpers.prettyprint
 
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import io.kotest.core.spec.style.DescribeSpec
 
 // TODO add these tests back when you figure out why https://stackoverflow.com/questions/54756894/breakiterator-failing-on-unicode-ucd-linebreaktest
 // is happening
@@ -19,15 +18,14 @@ val testsToSkipCurrently = listOf(
 
 const val SPACE = ' '
 
-object MultilineStringTest : Spek({
-    setup()
+class MultilineStringTest : DescribeSpec({
 
     describe("really long string reformatting") {
         it("when there are plain spaces") {
             prettyPrint(
                 wrappedLineWidth = 22,
                 obj = SmallObject("Goodbye, cruel world. Goodbye, cruel lamp.", 1)
-            ) mapsTo """
+            ) mapTo """
             SmallObject(
               field1 = ""${'"'}
                        Goodbye, cruel world.$SPACE
@@ -41,7 +39,7 @@ object MultilineStringTest : Spek({
         context("when the long string is not part of another object") {
             it("renders as a multiline string") {
                 val s = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a"
-                prettyPrint(s) mapsTo """
+                prettyPrint(s) mapTo """
                     ${"\"\"\""}
                     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa$SPACE
                     a
@@ -57,7 +55,7 @@ object MultilineStringTest : Spek({
                         "Yes, if you make it look like an electrical fire. When you do things right, people won't be sure you've done anything at all. Too much work. Let's burn it and say we dumped it in the sewer. Goodbye, cruel world. Goodbye, cruel lamp.",
                         1
                     )
-                ) mapsTo """
+                ) mapTo """
                 SmallObject(
                   field1 = ${"\"\"\""}
                            Yes, if you make it look like an electrical fire. When you do things right,$SPACE
@@ -71,7 +69,10 @@ object MultilineStringTest : Spek({
         }
 
         context("break should occur between ") {
-            javaClass.getResource("/LineBreakTest.txt").readText().lines().forEach nextTest@{ testLine ->
+            javaClass.getResource("/LineBreakTest.txt")
+                .readText()
+                .lines()
+                .forEach nextTest@{ testLine ->
                 if (testLine.startsWith('#') or testLine.isBlank()) {
                     return@nextTest
                 }
@@ -87,7 +88,7 @@ object MultilineStringTest : Spek({
                     prettyPrint(
                         wrappedLineWidth = 1,
                         obj = LongString(parts.flatten().joinToString(""))
-                    ) mapsTo """
+                    ) mapTo """
                         LongString(
                           longString = ""${'"'}
                                        ${parts.joinToString("\n$padding") { it.joinToString("") }}
@@ -101,7 +102,7 @@ object MultilineStringTest : Spek({
             prettyPrint(
                 wrappedLineWidth = 22,
                 obj = SmallObject("Goodbye, cruel world.\u1680Goodbye, cruel lamp.", 1)
-            ) mapsTo """
+            ) mapTo """
                 SmallObject(
                   field1 = ""${'"'}
                            Goodbye, cruel world. 
@@ -116,7 +117,7 @@ object MultilineStringTest : Spek({
                 prettyPrint(
                     wrappedLineWidth = 22,
                     obj = listOf("Goodbye, cruel world. Goodbye, cruel lamp.")
-                ) mapsTo """
+                ) mapTo """
                 [
                   ""${'"'}
                   Goodbye, cruel world. 
@@ -131,7 +132,7 @@ object MultilineStringTest : Spek({
                     listOf(
                         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a"
                     )
-                ) mapsTo """
+                ) mapTo """
                     [
                       ${"\"\"\""}
                       aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa$SPACE
@@ -146,7 +147,7 @@ object MultilineStringTest : Spek({
                 prettyPrint(
                     wrappedLineWidth = 22,
                     obj = mapOf(1 to "Goodbye, cruel world. Goodbye, cruel lamp.")
-                ) mapsTo """
+                ) mapTo """
                 {
                   1 -> ""${'"'}
                   Goodbye, cruel world. 
@@ -159,7 +160,7 @@ object MultilineStringTest : Spek({
                 prettyPrint(
                     wrappedLineWidth = 22,
                     obj = mapOf("Goodbye, cruel world. Goodbye, cruel lamp." to 1)
-                ) mapsTo """
+                ) mapTo """
                 {
                   ""${'"'}
                   Goodbye, cruel world. 
@@ -174,7 +175,7 @@ object MultilineStringTest : Spek({
                         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a"
                                 to "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb b"
                     )
-                ) mapsTo """
+                ) mapTo """
                     {
                       ${"\"\"\""}
                       aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa$SPACE

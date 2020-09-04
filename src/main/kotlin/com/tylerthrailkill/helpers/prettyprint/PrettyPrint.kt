@@ -2,6 +2,7 @@ package com.tylerthrailkill.helpers.prettyprint
 
 import com.ibm.icu.text.BreakIterator
 import mu.KLogging
+import java.lang.reflect.Modifier
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
@@ -46,14 +47,15 @@ fun <T> T.pp(
  * @param [writeTo] Where to write a pretty printed object.
  * @param [wrappedLineWidth] How long a String needs to be before it gets transformed into a multiline String.
  */
-private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrappedLineWidth: Int) {
+private class PrettyPrinter(private val tabSize: Int, private val writeTo: Appendable, private val wrappedLineWidth: Int) {
     private val lineInstance = BreakIterator.getLineInstance()
-//    private val logger = KotlinLogging.logger {}
+
+    //    private val logger = KotlinLogging.logger {}
     private val visited = mutableSetOf<Int>()
     private val revisited = mutableSetOf<Int>()
-    
-    companion object: KLogging()
-    
+
+    companion object : KLogging()
+
     /**
      * Pretty prints the given object with this printer.
      *
@@ -76,9 +78,16 @@ private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrapp
     private fun ppAny(
         obj: Any?,
         collectionElementPad: String = "",
-        objectFieldPad: String = collectionElementPad
+        objectFieldPad: String = collectionElementPad,
+        staticMatchesParent: Boolean = false
     ) {
         val id = System.identityHashCode(obj)
+
+        if (obj!= null && staticMatchesParent) {
+            val className = obj.javaClass.simpleName
+            write("$className.<static cyclic class reference>")
+            return
+        }
 
         if (!obj.isAtomic() && visited[id]) {
             write("cyclic reference detected for $id")
@@ -131,12 +140,14 @@ private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrapp
         obj.javaClass.declaredFields
             .filterNot { it.isSynthetic }
             .ppContents(currentDepth) {
+                val staticMatchesParent = Modifier.isStatic(it.modifiers) && it.type == obj.javaClass
+                
                 it.isAccessible = true
                 write("$increasedDepth${it.name} = ")
                 val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3) // 3 is " = ".length in prev line
                 val fieldValue = it.get(obj)
                 logger.debug { "field value is ${fieldValue.javaClass}" }
-                ppAny(fieldValue, extraIncreasedDepth, increasedDepth)
+                ppAny(fieldValue, extraIncreasedDepth, increasedDepth, staticMatchesParent)
             }
         write(')')
     }
@@ -189,7 +200,7 @@ private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrapp
      */
     private fun writeLine(str: Any? = "") {
         logger.debug { "writing $str" }
-        writeTo.append(str.toString()).appendln()
+        writeTo.append(str.toString()).appendLine()
     }
 
     /**

@@ -6,8 +6,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val spekVersion = "2.0.3"
 
 plugins {
-    `build-scan`
-    kotlin("jvm") version "1.3.11"
+//    `build-scan`
+    kotlin("jvm") version "1.4.0"
     id("nebula.maven-publish") version "9.4.6"
     id("nebula.maven-base-publish") version "9.4.6"
     id("nebula.publish-verification") version "9.4.6"
@@ -18,7 +18,7 @@ plugins {
     id("nebula.nebula-bintray-publishing") version "5.0.0"
     id("nebula.contacts") version "5.0.2"
     id("tylerthrailkill.nebula-mit-license") version "0.0.3"
-    id("info.solidsoft.pitest") version "1.4.0"
+    id("info.solidsoft.pitest") version "1.5.1"
     jacoco
 }
 
@@ -28,6 +28,7 @@ description = "Pretty printing of objects"
 repositories {
     jcenter()
     maven(url = "https://dl.bintray.com/spekframework/spek-dev/")
+    maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
 }
 
 dependencies {
@@ -42,17 +43,13 @@ dependencies {
     implementation(group = "org.slf4j", name = "slf4j-simple", version = "1.6.1")
     implementation("io.github.microutils:kotlin-logging:1.6.22")
 
+    testImplementation("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
     testImplementation("io.mockk:mockk:1.9.kotlin12")
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion") {
-        exclude(group = "org.jetbrains.kotlin")
-    }
-    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:$spekVersion") {
-        exclude(group = "org.junit.platform")
-        exclude(group = "org.jetbrains.kotlin")
-    }
+    testImplementation("io.kotest:kotest-runner-junit5:4.3.0.621-SNAPSHOT") // for kotest framework
     testImplementation("com.beust:klaxon:5.0.1") // used to parse naughty list
     testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
+    testImplementation("io.kotest:kotest-plugins-pitest:4.3.0.621-SNAPSHOT")
 }
 
 tasks {
@@ -65,9 +62,8 @@ tasks {
     }
 
     withType<Test> {
-        useJUnitPlatform {
-            includeEngines("spek2")
-        }
+        useJUnitPlatform {}
+        maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).takeIf { it > 0 } ?: 1
     }
     val report = withType<JacocoReport> {
         reports {
@@ -85,10 +81,14 @@ tasks {
     this["check"].dependsOn(report)
 }
 
-buildScan {
-    termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    termsOfServiceAgree = "yes"
+sourceSets.test {
+    java.srcDirs("src/test/kotlin")
 }
+
+//buildScan {
+//    termsOfServiceUrl = "https://gradle.com/terms-of-service"
+//    termsOfServiceAgree = "yes"
+//}
 
 configure<BintrayExtension> {
     user = findProperty("bintrayUser") as String? ?: System.getenv("BINTRAY_USER")
@@ -130,13 +130,8 @@ contacts {
     })
 }
 
-pitest {
-    testPlugin = "junit5"
-    pitestVersion = "1.4.5"
-    targetClasses = setOf("com.tylerthrailkill.*")
-    targetTests = setOf("com.tylerthrailkill.**.*")
-    verbose = true
-//    mainProcessJvmArgs = listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
-    jvmArgs = listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
-//    jvmArgs = listOf("-Xdebug","-Xnoagent", "-Djava.compiler=NONE", "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006")
+configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
+    testPlugin.set("Kotest")    // <-- Telling Pitest that we're using Kotest
+    targetClasses.set(listOf("com.tylerthrailkill.*"))
+//    avoidCallsTo.set(listOf("java.util.logging", "org.apache.log4j", "org.slf4j", "org.apache.commons.logging", "mu"))
 }
