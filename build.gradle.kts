@@ -6,7 +6,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val spekVersion = "2.0.3"
 
 plugins {
-//    `build-scan`
     kotlin("jvm") version "1.4.0"
     id("nebula.maven-publish") version "9.4.6"
     id("nebula.maven-base-publish") version "9.4.6"
@@ -84,11 +83,6 @@ tasks {
 sourceSets.test {
     java.srcDirs("src/test/kotlin")
 }
-
-//buildScan {
-//    termsOfServiceUrl = "https://gradle.com/terms-of-service"
-//    termsOfServiceAgree = "yes"
-//}
 
 configure<BintrayExtension> {
     user = findProperty("bintrayUser") as String? ?: System.getenv("BINTRAY_USER")
