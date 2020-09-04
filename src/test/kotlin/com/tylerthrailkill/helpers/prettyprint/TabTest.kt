@@ -11,7 +11,7 @@ class TabTest : FreeSpec({
                 obj = listOf("a", "b", "c")
             ) mapTo """
                 [
-                    "",
+                    "a",
                     "b",
                     "c"
                 ]
@@ -24,7 +24,7 @@ class TabTest : FreeSpec({
             ) mapTo """
                 [
                     [
-                        "",
+                        "a",
                         "b",
                         "c"
                     ],
