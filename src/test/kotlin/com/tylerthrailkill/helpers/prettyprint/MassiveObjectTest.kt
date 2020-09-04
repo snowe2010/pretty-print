@@ -94,7 +94,7 @@ class MassiveObjectTest : FreeSpec({
                         )
                     )
                 )
-            ) mapsTo """
+            ) mapTo """
 MassiveObject(
   astring = "a string"
   listOfObject = [

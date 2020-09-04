@@ -1,14 +1,11 @@
 package com.tylerthrailkill.helpers.prettyprint
 
 import io.kotest.core.spec.style.FreeSpec
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
-import java.io.ByteArrayOutputStream
 
 class CollectionsTest : FreeSpec({
     "pretty printing lists should" - {
         "render a list of strings" - {
-            prettyPrint(listOf("a", "b", "c")) mapsTo """
+            prettyPrint(listOf("a", "b", "c")) mapTo """
                 [
                   "a",
                   "b",
@@ -17,7 +14,7 @@ class CollectionsTest : FreeSpec({
                 """
         }
         "render a list of mixed primitive objects" - {
-            prettyPrint(listOf("a", 1, true)) mapsTo """
+            prettyPrint(listOf("a", 1, true)) mapTo """
                 [
                   "a",
                   1,
@@ -27,14 +24,14 @@ class CollectionsTest : FreeSpec({
         }
 
         "render null lists as null" - {
-            prettyPrint(NullableLists(null)) mapsTo """
+            prettyPrint(NullableLists(null)) mapTo """
             NullableLists(
               col = null
             )
             """
         }
         "render lists with null items" - {
-            prettyPrint(NullableLists(listOf(null, null, null))) mapsTo """
+            prettyPrint(NullableLists(listOf(null, null, null))) mapTo """
             NullableLists(
               col = [
                       null,
@@ -45,7 +42,7 @@ class CollectionsTest : FreeSpec({
             """
         }
         "render lists with mixed null and not-null items" - {
-            prettyPrint(NullableLists(listOf(null, 1, null, "a", null, true))) mapsTo """
+            prettyPrint(NullableLists(listOf(null, 1, null, "a", null, true))) mapTo """
             NullableLists(
               col = [
                       null,
@@ -59,7 +56,7 @@ class CollectionsTest : FreeSpec({
             """
         }
         "render lists with a small object" - {
-            prettyPrint(NullableLists(listOf(TinyObject(1)))) mapsTo """
+            prettyPrint(NullableLists(listOf(TinyObject(1)))) mapTo """
             NullableLists(
               col = [
                       TinyObject(
@@ -78,7 +75,7 @@ class CollectionsTest : FreeSpec({
                         TinyObject(3)
                     )
                 )
-            ) mapsTo """
+            ) mapTo """
             NullableLists(
               col = [
                       TinyObject(
@@ -103,7 +100,7 @@ class CollectionsTest : FreeSpec({
                         mapOf(9 to 0, 0 to 1)
                     )
                 )
-            ) mapsTo """
+            ) mapTo """
             NullableLists(
               col = [
                       {

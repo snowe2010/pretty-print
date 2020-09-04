@@ -6,7 +6,7 @@ class SmallObjectTest : FreeSpec({
     "tiny object should" - {
         "render" - {
             "a single field " - {
-                prettyPrint(TinyObject(1)) mapsTo """
+                prettyPrint(TinyObject(1)) mapTo """
                 TinyObject(
                   int = 1
                 )
@@ -17,7 +17,7 @@ class SmallObjectTest : FreeSpec({
     "small object should" - {
         "render " - {
             "two fields" - {
-                prettyPrint(SmallObject("a", 1)) mapsTo """
+                prettyPrint(SmallObject("a", 1)) mapTo """
                 SmallObject(
                   field1 = "a"
                   field2 = 1

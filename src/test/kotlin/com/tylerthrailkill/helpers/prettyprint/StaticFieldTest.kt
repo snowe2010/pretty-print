@@ -6,7 +6,7 @@ class StaticFieldTest: FreeSpec({
     "pretty printing lists should" - {
         "render a list of strings" - {
             val staticFieldsObject = StaticFieldsObject.FOO
-            prettyPrint(staticFieldsObject) mapsTo """
+            prettyPrint(staticFieldsObject) mapTo """
             StaticFieldsObject(
               FOO = StaticFieldsObject.<static cyclic class reference>
               BAR = StaticFieldsObject.<static cyclic class reference>

@@ -7,7 +7,7 @@ class CycleDetectionTest : FreeSpec({
         "plain objects with cycles" - {
             "should detect a cycle with plain Unit" - {
                 val unit = Unit
-                prettyPrint(unit) mapsTo """
+                prettyPrint(unit) mapTo """
                 Unit(
                   INSTANCE = Unit.<static cyclic class reference>
                 )
@@ -18,7 +18,7 @@ class CycleDetectionTest : FreeSpec({
                 val sco2 = SmallCyclicalObject2(sco1)
                 sco1.c = sco2
                 val identity = System.identityHashCode(sco1)
-                prettyPrint(sco1) mapsTo """
+                prettyPrint(sco1) mapTo """
                 SmallCyclicalObject1(
                   c = SmallCyclicalObject2(
                     c = cyclic reference detected for $identity
@@ -34,7 +34,7 @@ class CycleDetectionTest : FreeSpec({
                     "test string, please don't break",
                     null
                 )
-                prettyPrint(nestedLargeObjectNull) mapsTo """
+                prettyPrint(nestedLargeObjectNull) mapTo """
                 NestedLargeObject(
                   nestedSmallObject = NestedSmallObject(
                     smallObject = SmallObject(
@@ -61,7 +61,7 @@ class CycleDetectionTest : FreeSpec({
                 objectContainingObjectWithMap.objectWithMap = objectWithMap
                 objectWithMap.map[1] = objectContainingObjectWithMap
                 val identity = System.identityHashCode(objectWithMap)
-                prettyPrint(objectWithMap) mapsTo """
+                prettyPrint(objectWithMap) mapTo """
                 ObjectWithMap(
                   map = {
                           1 -> ObjectContainingObjectWithMap(
@@ -76,7 +76,7 @@ class CycleDetectionTest : FreeSpec({
                 val innerMap = mutableMapOf(1 to outerMap)
                 outerMap[1] = innerMap
                 val identity = System.identityHashCode(outerMap)
-                prettyPrint(outerMap) mapsTo """
+                prettyPrint(outerMap) mapTo """
                 {
                   1 -> {
                     1 -> cyclic reference detected for $identity
@@ -92,7 +92,7 @@ class CycleDetectionTest : FreeSpec({
                 objectContainingObjectWithList.objectWithList = objectWithList
                 objectWithList.list.add(objectContainingObjectWithList)
                 val identity = System.identityHashCode(objectWithList)
-                prettyPrint(objectWithList) mapsTo """
+                prettyPrint(objectWithList) mapTo """
                 ObjectWithList(
                   list = [
                            ObjectContainingObjectWithList(
@@ -107,7 +107,7 @@ class CycleDetectionTest : FreeSpec({
                 val innerList = mutableListOf(outerList)
                 outerList.add(innerList)
                 val identity = System.identityHashCode(outerList)
-                prettyPrint(outerList) mapsTo """
+                prettyPrint(outerList) mapTo """
                 [
                   [
                     cyclic reference detected for $identity
@@ -129,7 +129,7 @@ class CycleDetectionTest : FreeSpec({
                     b["fie"] = c
                     c["fum"] = a
 
-                    prettyPrint(listOf(a, b)) mapsTo """
+                    prettyPrint(listOf(a, b)) mapTo """
                         [
                           {
                             "foo" -> {

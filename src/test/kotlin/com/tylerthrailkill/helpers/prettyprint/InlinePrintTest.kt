@@ -5,7 +5,7 @@ import io.kotest.core.spec.style.FreeSpec
 class InlinePrintTest : FreeSpec({
     "pretty printing inline should" - {
         "print a test string before pretty printing" - {
-            prettyPrintInline(TinyObject(1)) mapsTo """
+            prettyPrintInline(TinyObject(1)) mapTo """
                 TinyObject(
                   int = 1
                 )

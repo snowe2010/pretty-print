@@ -5,29 +5,29 @@ import io.kotest.core.spec.style.FreeSpec
 class PojoTest : FreeSpec({
     "pretty print should print primitives correctly: " - {
         "string" - {
-            prettyPrint("Goodbye, cruel world. Goodbye, cruel lamp.") mapsTo """
+            prettyPrint("Goodbye, cruel world. Goodbye, cruel lamp.") mapTo """
                 "Goodbye, cruel world. Goodbye, cruel lamp."
                 """
         }
         "int" - {
-            prettyPrint(100) mapsTo "100"
+            prettyPrint(100) mapTo "100"
         }
         "boolean" - {
-            prettyPrint(true) mapsTo "true"
+            prettyPrint(true) mapTo "true"
         }
         "double" - {
-            prettyPrint(1.0) mapsTo "1.0"
+            prettyPrint(1.0) mapTo "1.0"
         }
         "float" - {
-            prettyPrint(100f) mapsTo "100.0"
+            prettyPrint(100f) mapTo "100.0"
         }
         "char" - {
-            prettyPrint('a') mapsTo "a"
+            prettyPrint('a') mapTo "a"
         }
     }
     "pretty print should print other objects correctly: " - {
         "string" - {
-            prettyPrint("Goodbye, cruel world. Goodbye, cruel lamp.") mapsTo """
+            prettyPrint("Goodbye, cruel world. Goodbye, cruel lamp.") mapTo """
                 "Goodbye, cruel world. Goodbye, cruel lamp."
                 """
         }

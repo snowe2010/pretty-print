@@ -9,9 +9,9 @@ class TabTest : FreeSpec({
             prettyPrint(
                 tabSize = 4,
                 obj = listOf("a", "b", "c")
-            ) mapsTo """
+            ) mapTo """
                 [
-                    "a",
+                    "",
                     "b",
                     "c"
                 ]
@@ -21,10 +21,10 @@ class TabTest : FreeSpec({
             prettyPrint(
                 tabSize = 4,
                 obj = listOf(listOf("a", "b", "c"), listOf("a", "b", "c"), listOf("a", "b", "c"))
-            ) mapsTo """
+            ) mapTo """
                 [
                     [
-                        "a",
+                        "",
                         "b",
                         "c"
                     ],
@@ -45,7 +45,7 @@ class TabTest : FreeSpec({
             prettyPrint(
                 tabSize = 4,
                 obj = mapOf(mapOf(1 to 2, 2 to 3) to mapOf(3 to 4, 4 to 5))
-            ) mapsTo """
+            ) mapTo """
                 {
                     {
                         1 -> 2,

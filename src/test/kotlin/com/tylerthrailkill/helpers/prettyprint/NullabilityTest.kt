@@ -18,12 +18,12 @@ class NullabilityTest : FreeSpec({
 //    }
     "pretty printing" - {
         "null should work" - {
-            prettyPrint(null) mapsTo """
+            prettyPrint(null) mapTo """
                 null
                 """
         }
         "objects with no fields should work" - {
-            prettyPrint(EmptyObject()) mapsTo """
+            prettyPrint(EmptyObject()) mapTo """
                 EmptyObject(
                 )
                 """

@@ -5,7 +5,7 @@ import io.kotest.core.spec.style.FreeSpec
 class NestedObjectTest : FreeSpec({
     "small nested object should" - {
         "render a single field with multiple subfields" - {
-            prettyPrint(NestedSmallObject(SmallObject("a", 1))) mapsTo """
+            prettyPrint(NestedSmallObject(SmallObject("a", 1))) mapTo """
                 NestedSmallObject(
                   smallObject = SmallObject(
                     field1 = "a"
@@ -30,7 +30,7 @@ class NestedObjectTest : FreeSpec({
                         "a test string in NestedLargeObject inner"
                     )
                 )
-            ) mapsTo """
+            ) mapTo """
                 NestedLargeObject(
                   nestedSmallObject = NestedSmallObject(
                     smallObject = SmallObject(
@@ -68,7 +68,7 @@ class NestedObjectTest : FreeSpec({
                 NestedObjectWithCollection(
                     listOf(1)
                 )
-            ) mapsTo """
+            ) mapTo """
                 NestedObjectWithCollection(
                   coll = [
                            1
@@ -82,7 +82,7 @@ class NestedObjectTest : FreeSpec({
                 NestedObjectWithCollection(
                     listOf("a string with spaces")
                 )
-            ) mapsTo """
+            ) mapTo """
                 NestedObjectWithCollection(
                   coll = [
                            "a string with spaces"
@@ -96,7 +96,7 @@ class NestedObjectTest : FreeSpec({
                 NestedObjectWithCollection(
                     listOf(1, 2)
                 )
-            ) mapsTo """
+            ) mapTo """
                 NestedObjectWithCollection(
                   coll = [
                            1,
@@ -111,7 +111,7 @@ class NestedObjectTest : FreeSpec({
                 NestedObjectWithCollection(
                     listOf(NestedSmallObject(SmallObject("a", 1)))
                 )
-            ) mapsTo """
+            ) mapTo """
                 NestedObjectWithCollection(
                   coll = [
                            NestedSmallObject(
@@ -135,7 +135,7 @@ class NestedObjectTest : FreeSpec({
                         NestedSmallObject(SmallObject("a", 1))
                     )
                 )
-            ) mapsTo """
+            ) mapTo """
                 NestedObjectWithCollection(
                   coll = [
                            NestedSmallObject(

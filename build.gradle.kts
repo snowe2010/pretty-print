@@ -44,13 +44,13 @@ dependencies {
 
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
     testImplementation("io.mockk:mockk:1.9.kotlin12")
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion") {
-        exclude(group = "org.jetbrains.kotlin")
-    }
-    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:$spekVersion") {
-        exclude(group = "org.junit.platform")
-        exclude(group = "org.jetbrains.kotlin")
-    }
+//    testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion") {
+//        exclude(group = "org.jetbrains.kotlin")
+//    }
+//    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:$spekVersion") {
+//        exclude(group = "org.junit.platform")
+//        exclude(group = "org.jetbrains.kotlin")
+//    }
     testImplementation("io.kotest:kotest-runner-junit5:4.2.2") // for kotest framework
     testImplementation("com.beust:klaxon:5.0.1") // used to parse naughty list
     testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
@@ -67,7 +67,7 @@ tasks {
 
     withType<Test> {
         useJUnitPlatform {
-            includeEngines("spek2")
+//            includeEngines("spek2")
         }
     }
     val report = withType<JacocoReport> {

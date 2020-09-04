@@ -7,7 +7,7 @@ class MapTest : FreeSpec({
     "maps" - {
         "strings" - {
             "single key value pair" - {
-                prettyPrint(mapOf("key" to "value")) mapsTo """
+                prettyPrint(mapOf("key" to "value")) mapTo """
                 {
                   "key" -> "value"
                 }
@@ -21,7 +21,7 @@ class MapTest : FreeSpec({
                         "key3" to "value3",
                         "key4" to "value4"
                     )
-                ) mapsTo """
+                ) mapTo """
                 {
                   "key1" -> "value1",
                   "key2" -> "value2",
@@ -38,7 +38,7 @@ class MapTest : FreeSpec({
                     mapOf(
                         "key1" to SmallObject("field", 1)
                     )
-                ) mapsTo """
+                ) mapTo """
                 {
                   "key1" -> SmallObject(
                     field1 = "field"
@@ -52,7 +52,7 @@ class MapTest : FreeSpec({
                     mapOf(
                         SmallObject("field", 1) to "value1"
                     )
-                ) mapsTo """
+                ) mapTo """
                 {
                   SmallObject(
                     field1 = "field"
@@ -67,7 +67,7 @@ class MapTest : FreeSpec({
                         "key1" to SmallObject("field", 1),
                         "key2" to SmallObject("field2", 2)
                     )
-                ) mapsTo """
+                ) mapTo """
                 {
                   "key1" -> SmallObject(
                     field1 = "field"
@@ -86,7 +86,7 @@ class MapTest : FreeSpec({
                         listOf(1, 2, 3) to listOf(4, 5, 6),
                         listOf(7, 8, 9) to listOf(0, 1, 2)
                     )
-                ) mapsTo """
+                ) mapTo """
                 {
                   [
                     1,
@@ -115,7 +115,7 @@ class MapTest : FreeSpec({
                         mapOf(1 to 2, 2 to 3) to mapOf(3 to 4, 4 to 5),
                         mapOf(6 to 7, 7 to 8) to mapOf(8 to 9, 9 to 0)
                     )
-                ) mapsTo """
+                ) mapTo """
                 {
                   {
                     1 -> 2,
@@ -141,7 +141,7 @@ class MapTest : FreeSpec({
                     mapOf(
                         null to SmallObject("field", 1)
                     )
-                ) mapsTo """
+                ) mapTo """
                 {
                   null -> SmallObject(
                     field1 = "field"
@@ -155,7 +155,7 @@ class MapTest : FreeSpec({
                     mapOf(
                         "key1" to null
                     )
-                ) mapsTo """
+                ) mapTo """
                 {
                   "key1" -> null
                 }
@@ -167,7 +167,7 @@ class MapTest : FreeSpec({
                         "key1" to null,
                         "key2" to null
                     )
-                ) mapsTo """
+                ) mapTo """
                 {
                   "key1" -> null,
                   "key2" -> null
@@ -179,7 +179,7 @@ class MapTest : FreeSpec({
                     mapOf(
                         null to null
                     )
-                ) mapsTo """
+                ) mapTo """
                 {
                   null -> null
                 }
@@ -191,7 +191,7 @@ class MapTest : FreeSpec({
                         null to SmallObject("field", 1),
                         "key2" to null
                     )
-                ) mapsTo """
+                ) mapTo """
                 {
                   null -> SmallObject(
                     field1 = "field"

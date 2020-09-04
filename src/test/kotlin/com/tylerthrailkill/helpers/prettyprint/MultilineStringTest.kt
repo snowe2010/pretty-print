@@ -2,8 +2,6 @@
 package com.tylerthrailkill.helpers.prettyprint
 
 import io.kotest.core.spec.style.DescribeSpec
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
 
 // TODO add these tests back when you figure out why https://stackoverflow.com/questions/54756894/breakiterator-failing-on-unicode-ucd-linebreaktest
 // is happening
@@ -27,7 +25,7 @@ class MultilineStringTest : DescribeSpec({
             prettyPrint(
                 wrappedLineWidth = 22,
                 obj = SmallObject("Goodbye, cruel world. Goodbye, cruel lamp.", 1)
-            ) mapsTo """
+            ) mapTo """
             SmallObject(
               field1 = ""${'"'}
                        Goodbye, cruel world.$SPACE
@@ -41,7 +39,7 @@ class MultilineStringTest : DescribeSpec({
         context("when the long string is not part of another object") {
             it("renders as a multiline string") {
                 val s = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a"
-                prettyPrint(s) mapsTo """
+                prettyPrint(s) mapTo """
                     ${"\"\"\""}
                     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa$SPACE
                     a
@@ -57,7 +55,7 @@ class MultilineStringTest : DescribeSpec({
                         "Yes, if you make it look like an electrical fire. When you do things right, people won't be sure you've done anything at all. Too much work. Let's burn it and say we dumped it in the sewer. Goodbye, cruel world. Goodbye, cruel lamp.",
                         1
                     )
-                ) mapsTo """
+                ) mapTo """
                 SmallObject(
                   field1 = ${"\"\"\""}
                            Yes, if you make it look like an electrical fire. When you do things right,$SPACE
@@ -71,7 +69,10 @@ class MultilineStringTest : DescribeSpec({
         }
 
         context("break should occur between ") {
-            javaClass.getResource("/LineBreakTest.txt").readText().lines().forEach nextTest@{ testLine ->
+            javaClass.getResource("/LineBreakTest.txt")
+                .readText()
+                .lines()
+                .forEach nextTest@{ testLine ->
                 if (testLine.startsWith('#') or testLine.isBlank()) {
                     return@nextTest
                 }
@@ -87,7 +88,7 @@ class MultilineStringTest : DescribeSpec({
                     prettyPrint(
                         wrappedLineWidth = 1,
                         obj = LongString(parts.flatten().joinToString(""))
-                    ) mapsTo """
+                    ) mapTo """
                         LongString(
                           longString = ""${'"'}
                                        ${parts.joinToString("\n$padding") { it.joinToString("") }}
@@ -101,7 +102,7 @@ class MultilineStringTest : DescribeSpec({
             prettyPrint(
                 wrappedLineWidth = 22,
                 obj = SmallObject("Goodbye, cruel world.\u1680Goodbye, cruel lamp.", 1)
-            ) mapsTo """
+            ) mapTo """
                 SmallObject(
                   field1 = ""${'"'}
                            Goodbye, cruel world. 
@@ -116,7 +117,7 @@ class MultilineStringTest : DescribeSpec({
                 prettyPrint(
                     wrappedLineWidth = 22,
                     obj = listOf("Goodbye, cruel world. Goodbye, cruel lamp.")
-                ) mapsTo """
+                ) mapTo """
                 [
                   ""${'"'}
                   Goodbye, cruel world. 
@@ -131,7 +132,7 @@ class MultilineStringTest : DescribeSpec({
                     listOf(
                         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a"
                     )
-                ) mapsTo """
+                ) mapTo """
                     [
                       ${"\"\"\""}
                       aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa$SPACE
@@ -146,7 +147,7 @@ class MultilineStringTest : DescribeSpec({
                 prettyPrint(
                     wrappedLineWidth = 22,
                     obj = mapOf(1 to "Goodbye, cruel world. Goodbye, cruel lamp.")
-                ) mapsTo """
+                ) mapTo """
                 {
                   1 -> ""${'"'}
                   Goodbye, cruel world. 
@@ -159,7 +160,7 @@ class MultilineStringTest : DescribeSpec({
                 prettyPrint(
                     wrappedLineWidth = 22,
                     obj = mapOf("Goodbye, cruel world. Goodbye, cruel lamp." to 1)
-                ) mapsTo """
+                ) mapTo """
                 {
                   ""${'"'}
                   Goodbye, cruel world. 
@@ -174,7 +175,7 @@ class MultilineStringTest : DescribeSpec({
                         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa a"
                                 to "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb b"
                     )
-                ) mapsTo """
+                ) mapTo """
                     {
                       ${"\"\"\""}
                       aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa$SPACE
