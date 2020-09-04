@@ -47,7 +47,7 @@ fun <T> T.pp(
  * @param [writeTo] Where to write a pretty printed object.
  * @param [wrappedLineWidth] How long a String needs to be before it gets transformed into a multiline String.
  */
-private class PrettyPrinter(val tabSize: Int, val writeTo: Appendable, val wrappedLineWidth: Int) {
+private class PrettyPrinter(private val tabSize: Int, private val writeTo: Appendable, private val wrappedLineWidth: Int) {
     private val lineInstance = BreakIterator.getLineInstance()
 
     //    private val logger = KotlinLogging.logger {}

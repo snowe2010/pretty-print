@@ -130,19 +130,8 @@ contacts {
     })
 }
 
-//pitest {
-//    junit5PluginVersion = "0.12"
-//    testPlugin = "junit5"
-//    pitestVersion = "1.5.1"
-//    targetClasses = setOf("com.tylerthrailkill.*")
-//    targetTests = setOf("com.tylerthrailkill.**.*")
-//    verbose = true
-//    mainProcessJvmArgs = listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
-//    jvmArgs = listOf("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005")
-//    jvmArgs = listOf("-Xdebug","-Xnoagent", "-Djava.compiler=NONE", "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5006")
-//}
-
 configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
     testPlugin.set("Kotest")    // <-- Telling Pitest that we're using Kotest
     targetClasses.set(listOf("com.tylerthrailkill.*"))
+//    avoidCallsTo.set(listOf("java.util.logging", "org.apache.log4j", "org.slf4j", "org.apache.commons.logging", "mu"))
 }
