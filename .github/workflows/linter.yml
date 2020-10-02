@@ -18,4 +18,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILTER_REGEX_EXCLUDE: .*gradle/.*
           VALIDATE_JAVA: false
-          
+          VALIDATE_KOTLIN: false
+          VALIDATE_BASH: false
