@@ -9,11 +9,24 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2.3.2
+
     - name: Cache Gradle packages
       uses: actions/cache@v2
       with:
         path: ~/.gradle/caches
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
         restore-keys: ${{ runner.os }}-gradle
+
     - name: Build with Gradle
       run: ./gradlew build
+
+    - name: Bundle the build report
+      if: failure()
+      run: find . -type d -name 'reports' | zip -@ -r build-reports.zip
+
+    - name: Upload the build report
+      if: failure()
+      uses: actions/upload-artifact@master
+      with:
+        name: error-report
+        path: build-reports.zip

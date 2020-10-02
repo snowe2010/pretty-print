@@ -9,7 +9,7 @@ class CollectionsTest : FreeSpec({
                 [
                   "a",
                   "b",
-                  "c"
+                  "c",
                 ]
                 """
         }
