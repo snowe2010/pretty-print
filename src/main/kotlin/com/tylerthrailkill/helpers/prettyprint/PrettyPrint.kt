@@ -47,7 +47,11 @@ fun <T> T.pp(
  * @param [writeTo] Where to write a pretty printed object.
  * @param [wrappedLineWidth] How long a String needs to be before it gets transformed into a multiline String.
  */
-private class PrettyPrinter(private val tabSize: Int, private val writeTo: Appendable, private val wrappedLineWidth: Int) {
+private class PrettyPrinter(
+    private val tabSize: Int,
+    private val writeTo: Appendable,
+    private val wrappedLineWidth: Int
+) {
     private val lineInstance = BreakIterator.getLineInstance()
 
     //    private val logger = KotlinLogging.logger {}
@@ -83,7 +87,7 @@ private class PrettyPrinter(private val tabSize: Int, private val writeTo: Appen
     ) {
         val id = System.identityHashCode(obj)
 
-        if (obj!= null && staticMatchesParent) {
+        if (obj != null && staticMatchesParent) {
             val className = obj.javaClass.simpleName
             write("$className.<static cyclic class reference>")
             return
@@ -141,7 +145,7 @@ private class PrettyPrinter(private val tabSize: Int, private val writeTo: Appen
             .filterNot { it.isSynthetic }
             .ppContents(currentDepth) {
                 val staticMatchesParent = Modifier.isStatic(it.modifiers) && it.type == obj.javaClass
-                
+
                 it.isAccessible = true
                 write("$increasedDepth${it.name} = ")
                 val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3) // 3 is " = ".length in prev line

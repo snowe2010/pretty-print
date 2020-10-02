@@ -9,7 +9,10 @@ class NaughtyStringsTest : FreeSpec({
         val naughtyList = Klaxon().parseArray<String>(naughtyString)!!
         "in list" - {
             val expectedString = javaClass.getResource("/naughty_string_printed.txt").readText()
-            prettyPrint(naughtyList, wrappedLineWidth = 1000) mapTo expectedString // don't wrap in the naughty strings test, as it can't be generated then.
+            prettyPrint(
+                naughtyList,
+                wrappedLineWidth = 1000
+            ) mapTo expectedString // don't wrap in the naughty strings test, as it can't be generated then.
         }
     }
 })

@@ -73,30 +73,30 @@ class MultilineStringTest : DescribeSpec({
                 .readText()
                 .lines()
                 .forEach nextTest@{ testLine ->
-                if (testLine.startsWith('#') or testLine.isBlank()) {
-                    return@nextTest
-                }
-                val parts = mapUnicodeTestLineToParts(testLine)
-                val padding = "                                       "
-                val testName = testLine.split('#')[1]
-                if (testsToSkipCurrently.contains(testName)) {
-                    return@nextTest
-                }
-                it(testName) {
-                    logger.info { testName }
-                    logger.debug { parts }
-                    prettyPrint(
-                        wrappedLineWidth = 1,
-                        obj = LongString(parts.flatten().joinToString(""))
-                    ) mapTo """
+                    if (testLine.startsWith('#') or testLine.isBlank()) {
+                        return@nextTest
+                    }
+                    val parts = mapUnicodeTestLineToParts(testLine)
+                    val padding = "                                       "
+                    val testName = testLine.split('#')[1]
+                    if (testsToSkipCurrently.contains(testName)) {
+                        return@nextTest
+                    }
+                    it(testName) {
+                        logger.info { testName }
+                        logger.debug { parts }
+                        prettyPrint(
+                            wrappedLineWidth = 1,
+                            obj = LongString(parts.flatten().joinToString(""))
+                        ) mapTo """
                         LongString(
                           longString = ""${'"'}
                                        ${parts.joinToString("\n$padding") { it.joinToString("") }}
                                        ""${'"'}
                         )
                         """
+                    }
                 }
-            }
         }
         it("when there are unicode breaking space characters at the break point") {
             prettyPrint(

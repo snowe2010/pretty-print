@@ -35,7 +35,7 @@ Adds a `pp(Any?)` and `T.pp()` method to pretty print any Java or Kotlin object.
 `printStream` changes the `PrintStream` you are printing to. Default is `System.out`.
 
 `wrappedLineWidth` changes the number of characters allowed before wrapping in a multiline string. Default is `80`.
- 
+
 # Examples
 
 ### Main API
@@ -63,7 +63,7 @@ fun callSomething(obj: Any?) {
 callSomething(TinyObject(1).pp())
 ```
 
-```
+```text
 TinyObject(
   int = 1
 )
@@ -94,7 +94,7 @@ data class OL(val list: List<String>)
 pp(OL(listOf("1")))
 ```
 
-```
+```text
 OL(
   list = [
            "1"
@@ -108,7 +108,7 @@ OL(
 pp(mapOf("key1" to "value1", "key2" to "value2"))
 ```
 
-```
+```text
 {
   "key1" -> "value1",
   "key2" -> "value2"
@@ -137,7 +137,7 @@ OM(
 pp("Goodbye, cruel world. Goodbye, cruel lamp.", wrappedLineWidth = 22)
 ```
 
-```
+```kotlin
 """
 Goodbye, cruel world.
 Goodbye, cruel lamp.
@@ -150,7 +150,7 @@ Goodbye, cruel lamp.
 pp("Goodbye, cruel world. Good­bye, cruel lamp.", wrappedLineWidth = 27)
 ```
 
-```
+```kotlin
 """
 Goodbye, cruel world. Good­
 bye, cruel lamp.
@@ -175,7 +175,7 @@ pp("😍️🥞😍️", wrappedLineWidth = 3)
 pp(SmallObject("Goodbye, cruel world. Goodbye, cruel lamp.", 1))
 ```
 
-```
+```kotlin
 SmallObject(
   field1 = "Goodbye, cruel world. Goodbye, cruel lamp."
   field2 = 1
@@ -246,5 +246,5 @@ O1(
 # ToDo
 
 * Test nullability cases
-* implement pretty print for `java*` classes 
+* implement pretty print for `java*` classes
 * fix unicode line breaking with icu4j library characters

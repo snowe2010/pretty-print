@@ -2,7 +2,7 @@ package com.tylerthrailkill.helpers.prettyprint
 
 import io.kotest.core.spec.style.FreeSpec
 
-class StaticFieldTest: FreeSpec({
+class StaticFieldTest : FreeSpec({
     "pretty printing lists should" - {
         "render a list of strings" - {
             val staticFieldsObject = StaticFieldsObject.FOO
