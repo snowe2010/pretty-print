@@ -24,7 +24,7 @@ plugins {
 
 group = "com.tylerthrailkill.helpers"
 description = "Pretty printing of objects"
-
+version = Ci.publishVersion
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
@@ -43,7 +43,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.9.kotlin12")
     testImplementation("com.beust:klaxon:5.0.1") // used to parse naughty list
     testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
-    
+
     testImplementation("io.kotest:kotest-runner-junit5:4.3.0.621-SNAPSHOT") // for kotest framework
     testImplementation("io.kotest:kotest-plugins-pitest:4.3.0.621-SNAPSHOT")
 }
@@ -114,8 +114,10 @@ configure<BintrayExtension> {
                 passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
             })
             mavenCentralSync(delegateClosureOf<BintrayExtension.MavenCentralSyncConfig> {
-                user = findProperty("sonatypeUser") as String? ?: System.getenv("SONATYPE_USERNAME") //OSS user token: mandatory
-                password = findProperty("sonatypePassword") as String? ?: System.getenv("SONATYPE_PASSWORD") //OSS user password: mandatory
+                user = findProperty("sonatypeUser") as String?
+                    ?: System.getenv("SONATYPE_USERNAME") //OSS user token: mandatory
+                password = findProperty("sonatypePassword") as String?
+                    ?: System.getenv("SONATYPE_PASSWORD") //OSS user password: mandatory
             })
         })
     })
@@ -151,16 +153,14 @@ publishing {
                 password = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.key") as String?
             }
         }
-        if (!Ci.isRelease) {
-            maven {
-                name = "BintrayOrOJO"
-                val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-                val snapshotsRepoUrl = uri("https://oss.jfrog.org")
-                url = if (Ci.isRelease) releasesRepoUrl else snapshotsRepoUrl
-                credentials {
-                    username = System.getenv("BINTRAY_USERNAME") ?: project.findProperty("bintray.user") as String?
-                    password = System.getenv("BINTRAY_API_KEY") ?: project.findProperty("bintray.key") as String?
-                }
+        maven {
+            name = "OJO"
+            val releasesRepoUrl = uri("https://oss.jfrog.org/artifactory/libs-release")
+            val snapshotsRepoUrl = uri("https://oss.jfrog.org/artifactory/libs-snapshot")
+            url = if (Ci.isRelease) releasesRepoUrl else snapshotsRepoUrl
+            credentials {
+                username = System.getenv("BINTRAY_USERNAME") ?: project.findProperty("bintray.user") as String?
+                password = System.getenv("BINTRAY_API_KEY") ?: project.findProperty("bintray.key") as String?
             }
         }
     }
@@ -170,7 +170,7 @@ publishing {
             from(components["java"])
         }
     }
-    
+
     publications.withType<MavenPublication>().forEach {
         it.apply {
             artifact(javadocJar)
