@@ -20,6 +20,18 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
+    - name: Publish Snapshots to Repositories
+      run: gradle publish
+      env:
+        RELEASE_VERSION: ${{ github.event.inputs.version }}
+        GITHUB_USERNAME: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+        OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+        BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
+        BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+
+
     - name: Bundle the build report
       if: failure()
       run: find . -type d -name 'reports' | zip -@ -r build-reports.zip
