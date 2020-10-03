@@ -1,34 +1,30 @@
-
 import com.jfrog.bintray.gradle.BintrayExtension
-import nebula.plugin.contacts.Contact
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val spekVersion = "2.0.3"
+val githubUsername = "snowe2010"
+val repoName = "pretty-print"
+
+val signingKey: String? by project
+val signingPassword: String? by project
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
+}
 
 plugins {
-    kotlin("jvm") version "1.4.0"
-    id("nebula.maven-publish") version "9.4.6"
-    id("nebula.maven-base-publish") version "9.4.6"
-    id("nebula.publish-verification") version "9.4.6"
-    id("nebula.source-jar") version "9.4.6"
-    id("nebula.javadoc-jar") version "9.4.6"
-    id("nebula.info") version "5.0.2"
-    id("nebula.release") version "9.2.0"
-    id("nebula.nebula-bintray-publishing") version "5.0.0"
-    id("nebula.contacts") version "5.0.2"
-    id("tylerthrailkill.nebula-mit-license") version "0.0.3"
-    id("info.solidsoft.pitest") version "1.5.1"
+    `maven-publish`
+    `java-library`
     jacoco
+    id("com.jfrog.bintray") version "1.8.5"
+    kotlin("jvm") version "1.4.10"
+    id("info.solidsoft.pitest") version "1.5.1"
 }
 
 group = "com.tylerthrailkill.helpers"
 description = "Pretty printing of objects"
 
-repositories {
-    jcenter()
-    maven(url = "https://dl.bintray.com/spekframework/spek-dev/")
-    maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
-}
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
@@ -45,9 +41,10 @@ dependencies {
     testImplementation("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
     testImplementation("io.mockk:mockk:1.9.kotlin12")
-    testImplementation("io.kotest:kotest-runner-junit5:4.3.0.621-SNAPSHOT") // for kotest framework
     testImplementation("com.beust:klaxon:5.0.1") // used to parse naughty list
     testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
+    
+    testImplementation("io.kotest:kotest-runner-junit5:4.3.0.621-SNAPSHOT") // for kotest framework
     testImplementation("io.kotest:kotest-plugins-pitest:4.3.0.621-SNAPSHOT")
 }
 
@@ -84,9 +81,19 @@ sourceSets.test {
     java.srcDirs("src/test/kotlin")
 }
 
+configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
+    testPlugin.set("Kotest")    // <-- Telling Pitest that we're using Kotest
+    targetClasses.set(listOf("com.tylerthrailkill.*"))
+//    avoidCallsTo.set(listOf("java.util.logging", "org.apache.log4j", "org.slf4j", "org.apache.commons.logging", "mu"))
+}
+
+
+/**
+ * Publishing
+ */
 configure<BintrayExtension> {
     user = findProperty("bintrayUser") as String? ?: System.getenv("BINTRAY_USER")
-    key = findProperty("bintrayKey") as String? ?: System.getenv("BINTRAY_KEY")
+    key = findProperty("bintrayKey") as String? ?: System.getenv("BINTRAY_API_KEY")
     override = true
 
     pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
@@ -96,11 +103,12 @@ configure<BintrayExtension> {
         desc = "Pretty printing of objects"
 
         setLicenses("MIT")
-        websiteUrl = "https://github.com/snowe2010/${project.name}"
-        issueTrackerUrl = "https://github.com/snowe2010/${project.name}/issues"
-        vcsUrl = "https://github.com/snowe2010/${project.name}.git"
-        setLabels("axon", "kotlin")
+        websiteUrl = "https://github.com/$githubUsername/${project.name}"
+        issueTrackerUrl = "https://github.com/$githubUsername/${project.name}/issues"
+        vcsUrl = "https://github.com/$githubUsername/${project.name}.git"
+        setLabels("kotlin")
         version(delegateClosureOf<BintrayExtension.VersionConfig> {
+            this.name = Ci.publishVersion
             gpg(delegateClosureOf<BintrayExtension.GpgConfig> {
                 sign = true
                 passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
@@ -115,17 +123,83 @@ configure<BintrayExtension> {
     publish = true
 }
 
-contacts {
-    // Use statically-typed extension accessor
-    addPerson("tyler.b.thrailkill@gmail.com", delegateClosureOf<Contact> {
-        // type-safe adapter for dynamic Groovy Closure
-        moniker = "Tyler Thrailkill" // This can be assigned as property
-        role("owner") // To add role to `roles` set, you also can call it directly `roles.add("owner")`
-    })
+val javadoc = tasks.named("javadoc")
+val javadocJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = "Assembles java doc to jar"
+    archiveClassifier.set("javadoc")
+    from(javadoc)
 }
 
-configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
-    testPlugin.set("Kotest")    // <-- Telling Pitest that we're using Kotest
-    targetClasses.set(listOf("com.tylerthrailkill.*"))
-//    avoidCallsTo.set(listOf("java.util.logging", "org.apache.log4j", "org.slf4j", "org.apache.commons.logging", "mu"))
+publishing {
+    repositories {
+//        maven {
+//            name = "MavenCentral"
+//            val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+//            val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+//            url = if (Ci.isRelease) releasesRepoUrl else snapshotsRepoUrl
+//            credentials {
+//                username = System.getenv("OSSRH_USERNAME") ?: findProperty("ossrh.user") as String?
+//                password = System.getenv("OSSRH_PASSWORD") ?: findProperty("ossrh.password") as String?
+//            }
+//        }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/$githubUsername/$repoName")
+            credentials {
+                username = System.getenv("GITHUB_USERNAME") ?: project.findProperty("gpr.user") as String?
+                password = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.key") as String?
+            }
+        }
+        if (!Ci.isRelease) {
+            maven {
+                name = "BintrayOrOJO"
+                val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+                val snapshotsRepoUrl = uri("https://oss.jfrog.org")
+                url = if (Ci.isRelease) releasesRepoUrl else snapshotsRepoUrl
+                credentials {
+                    username = System.getenv("BINTRAY_USERNAME") ?: project.findProperty("bintray.user") as String?
+                    password = System.getenv("BINTRAY_API_KEY") ?: project.findProperty("bintray.key") as String?
+                }
+            }
+        }
+    }
+
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
+        }
+    }
+    
+    publications.withType<MavenPublication>().forEach {
+        it.apply {
+            artifact(javadocJar)
+            pom {
+                name.set(repoName)
+                description.set("Pretty printing of objects")
+                url.set("http://www.github.com/$githubUsername/$repoName")
+
+                scm {
+                    connection.set("scm:git:http://www.github.com/$githubUsername/$repoName")
+                    developerConnection.set("scm:git:http://github.com/$githubUsername/")
+                    url.set("http://www.github.com/snowe2010/$repoName/")
+                }
+
+                licenses {
+                    license {
+                        name.set("MIT")
+                        url.set("https://opensource.org/licenses/MIT")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("snowe")
+                        name.set("Tyler Thrailkill")
+                        email.set("tyler.b.thrailkill@gmail.com")
+                    }
+                }
+            }
+        }
+    }
 }
