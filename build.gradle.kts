@@ -4,9 +4,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val githubUsername = "snowe2010"
 val repoName = "pretty-print"
 
-val signingKey: String? by project
-val signingPassword: String? by project
-
 repositories {
     jcenter()
     mavenCentral()
@@ -135,32 +132,12 @@ val javadocJar by tasks.creating(Jar::class) {
 
 publishing {
     repositories {
-//        maven {
-//            name = "MavenCentral"
-//            val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-//            val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-//            url = if (Ci.isRelease) releasesRepoUrl else snapshotsRepoUrl
-//            credentials {
-//                username = System.getenv("OSSRH_USERNAME") ?: findProperty("ossrh.user") as String?
-//                password = System.getenv("OSSRH_PASSWORD") ?: findProperty("ossrh.password") as String?
-//            }
-//        }
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/$githubUsername/$repoName")
             credentials {
                 username = System.getenv("GITHUB_USERNAME") ?: project.findProperty("gpr.user") as String?
                 password = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.key") as String?
-            }
-        }
-        maven {
-            name = "OJO"
-            val releasesRepoUrl = uri("https://oss.jfrog.org/artifactory/libs-release")
-            val snapshotsRepoUrl = uri("https://oss.jfrog.org/artifactory/libs-snapshot")
-            url = if (Ci.isRelease) releasesRepoUrl else snapshotsRepoUrl
-            credentials {
-                username = System.getenv("BINTRAY_USERNAME") ?: project.findProperty("bintray.user") as String?
-                password = System.getenv("BINTRAY_API_KEY") ?: project.findProperty("bintray.key") as String?
             }
         }
     }
