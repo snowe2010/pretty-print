@@ -88,12 +88,14 @@ configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
 /**
  * Publishing
  */
-configure<BintrayExtension> {
+bintray {
     user = findProperty("bintrayUser") as String? ?: System.getenv("BINTRAY_USER")
     key = findProperty("bintrayKey") as String? ?: System.getenv("BINTRAY_API_KEY")
     override = true
 
-    pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
+    this.setPublications("release")
+    
+    with(pkg) {
         userOrg = "snowe"
         repo = "maven"
         name = "Pretty-Print"
@@ -104,20 +106,20 @@ configure<BintrayExtension> {
         issueTrackerUrl = "https://github.com/$githubUsername/${project.name}/issues"
         vcsUrl = "https://github.com/$githubUsername/${project.name}.git"
         setLabels("kotlin")
-        version(delegateClosureOf<BintrayExtension.VersionConfig> {
+        with(version) {
             this.name = Ci.publishVersion
-            gpg(delegateClosureOf<BintrayExtension.GpgConfig> {
+            with(gpg) {
                 sign = true
                 passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
-            })
-            mavenCentralSync(delegateClosureOf<BintrayExtension.MavenCentralSyncConfig> {
+            }
+            with(mavenCentralSync) { 
                 user = findProperty("sonatypeUser") as String?
                     ?: System.getenv("SONATYPE_USERNAME") //OSS user token: mandatory
                 password = findProperty("sonatypePassword") as String?
                     ?: System.getenv("SONATYPE_PASSWORD") //OSS user password: mandatory
-            })
-        })
-    })
+            }
+        }
+    }
     dryRun = false
     publish = true
 }
@@ -145,6 +147,12 @@ publishing {
     publications {
         register<MavenPublication>("gpr") {
             from(components["java"])
+        }
+        register<MavenPublication>("release") {
+            from(components["java"])
+            groupId = project.group.toString()
+            artifactId = project.name
+            version = project.version.toString()
         }
     }
 
