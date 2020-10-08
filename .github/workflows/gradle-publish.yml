@@ -5,9 +5,23 @@ name: Gradle Publish Release
 
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
+
+  debug:
+    name: Debug
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump env
+        env:
+          RELEASE_VERSION: ${{ github.event.release.tag_name }}
+        run: env | sort
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
   build:
 
     runs-on: ubuntu-latest
@@ -23,11 +37,13 @@ jobs:
 
     - name: Build with Gradle
       run: gradle build
+      env:
+        RELEASE_VERSION: ${{ github.event.release.tag_name }}
 
     - name: Publish to Repositories
       run: gradle publish
       env:
-        RELEASE_VERSION: ${{ github.event.inputs.version }}
+        RELEASE_VERSION: ${{ github.event.release.tag_name }}
         GITHUB_USERNAME: ${{ github.actor }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
@@ -38,7 +54,7 @@ jobs:
     - name: Upload Bintray Release
       run: gradle bintrayUpload
       env:
-        RELEASE_VERSION: ${{ github.event.inputs.version }}
+        RELEASE_VERSION: ${{ github.event.release.tag_name }}
         GITHUB_USERNAME: ${{ github.actor }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
@@ -49,7 +65,7 @@ jobs:
     - name: Publish Bintray Release
       run: gradle bintrayPublish
       env:
-        RELEASE_VERSION: ${{ github.event.inputs.version }}
+        RELEASE_VERSION: ${{ github.event.release.tag_name }}
         GITHUB_USERNAME: ${{ github.actor }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}

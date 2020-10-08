@@ -19,6 +19,8 @@ plugins {
     id("info.solidsoft.pitest") version "1.5.1"
 }
 
+println("+++++++${System.getenv("RELEASE_VERSION")}++++++")
+
 group = "com.tylerthrailkill.helpers"
 description = "Pretty printing of objects"
 version = Ci.publishVersion
@@ -93,6 +95,7 @@ bintray {
     key = findProperty("bintrayKey") as String? ?: System.getenv("BINTRAY_API_KEY")
     override = true
 
+    Ci.test()
     this.setPublications("release")
     
     with(pkg) {
@@ -114,9 +117,9 @@ bintray {
             }
             with(mavenCentralSync) { 
                 user = findProperty("sonatypeUser") as String?
-                    ?: System.getenv("SONATYPE_USERNAME") //OSS user token: mandatory
+                    ?: System.getenv("OSSRH_USERNAME") //OSS user token: mandatory
                 password = findProperty("sonatypePassword") as String?
-                    ?: System.getenv("SONATYPE_PASSWORD") //OSS user password: mandatory
+                    ?: System.getenv("OSSRH_PASSWORD") //OSS user password: mandatory
             }
         }
     }
