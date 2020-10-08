@@ -36,7 +36,7 @@ jobs:
         BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
 
     - name: Upload Bintray Release
-      run: gradle bintrayUplaod
+      run: gradle bintrayUpload
       env:
         RELEASE_VERSION: ${{ github.event.inputs.version }}
         GITHUB_USERNAME: ${{ github.actor }}
