@@ -2,7 +2,7 @@
  * Used under Apache 2 License from https://github.com/kotest/kotest/blob/master/buildSrc/src/main/kotlin/Ci.kt
  */
 object Ci {
-   private const val snapshotBase = "2.0.3"
+   private const val snapshotBase = "2.0.8"
    private val githubBuildNumber = System.getenv("GITHUB_RUN_NUMBER")
    private val snapshotVersion = when (githubBuildNumber) {
       null -> "$snapshotBase-LOCAL"
