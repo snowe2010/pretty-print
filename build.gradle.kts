@@ -147,9 +147,6 @@ publishing {
     }
 
     publications {
-        register<MavenPublication>("gpr") {
-            from(components["java"])
-        }
         register<MavenPublication>("release") {
             from(components["java"])
             groupId = project.group.toString()
