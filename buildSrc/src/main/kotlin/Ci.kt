@@ -11,10 +11,6 @@ object Ci {
 
    private val releaseVersion = System.getenv("RELEASE_VERSION")
 
-   fun test() {
-      println("=== releaseVersion $releaseVersion ===")
-//      println("=== ${releaseVersion.isNotEmpty()} ===")
-   }
    val isRelease = releaseVersion != null && releaseVersion.isNotEmpty()
    val publishVersion = releaseVersion ?: snapshotVersion
 }

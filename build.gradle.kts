@@ -95,7 +95,6 @@ bintray {
     key = findProperty("bintrayKey") as String? ?: System.getenv("BINTRAY_API_KEY")
     override = true
 
-    Ci.test()
     this.setPublications("release")
     
     with(pkg) {
