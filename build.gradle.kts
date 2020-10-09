@@ -161,7 +161,6 @@ publishing {
 
     publications.withType<MavenPublication>().forEach {
         it.apply {
-            artifact(javadocJar)
             pom {
                 name.set(repoName)
                 description.set("Pretty printing of objects")
