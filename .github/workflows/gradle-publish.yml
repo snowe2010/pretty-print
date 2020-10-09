@@ -38,7 +38,8 @@ jobs:
     - name: Build with Gradle
       run: gradle build
       env:
-        RELEASE_VERSION: ${{ github.event.release.tag_name }}
+        # have to set this for no good reason, otherwise RELEASE_VERSION below will not be populated
+        RELEASE_VERSION: ${{ github.event.release.tag_name }} 
 
     - name: Publish to Repositories
       run: gradle publish
