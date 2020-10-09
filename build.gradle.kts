@@ -135,16 +135,16 @@ val javadocJar by tasks.creating(Jar::class) {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/$githubUsername/$repoName")
-            credentials {
-                username = System.getenv("GITHUB_USERNAME") ?: project.findProperty("gpr.user") as String?
-                password = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.key") as String?
-            }
-        }
-    }
+//    repositories {
+//        maven {
+//            name = "GitHubPackages"
+//            url = uri("https://maven.pkg.github.com/$githubUsername/$repoName")
+//            credentials {
+//                username = System.getenv("GITHUB_USERNAME") ?: project.findProperty("gpr.user") as String?
+//                password = System.getenv("GITHUB_TOKEN") ?: project.findProperty("gpr.key") as String?
+//            }
+//        }
+//    }
 
     publications {
         register<MavenPublication>("release") {
