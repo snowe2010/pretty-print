@@ -86,6 +86,10 @@ configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
 //    avoidCallsTo.set(listOf("java.util.logging", "org.apache.log4j", "org.slf4j", "org.apache.commons.logging", "mu"))
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
 
 /**
  * Publishing
@@ -114,7 +118,7 @@ bintray {
                 sign = true
                 passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
             }
-            with(mavenCentralSync) { 
+            with(mavenCentralSync) {
                 user = findProperty("sonatypeUser") as String?
                     ?: System.getenv("OSSRH_USERNAME") //OSS user token: mandatory
                 password = findProperty("sonatypePassword") as String?
@@ -126,13 +130,13 @@ bintray {
     publish = true
 }
 
-val javadoc = tasks.named("javadoc")
-val javadocJar by tasks.creating(Jar::class) {
-    group = JavaBasePlugin.DOCUMENTATION_GROUP
-    description = "Assembles java doc to jar"
-    archiveClassifier.set("javadoc")
-    from(javadoc)
-}
+//val javadoc = tasks.named("javadoc")
+//val javadocJar by tasks.creating(Jar::class) {
+//    group = JavaBasePlugin.DOCUMENTATION_GROUP
+//    description = "Assembles java doc to jar"
+//    archiveClassifier.set("javadoc")
+//    from(javadoc)
+//}
 
 publishing {
 //    repositories {
