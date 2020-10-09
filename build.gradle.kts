@@ -91,7 +91,7 @@ configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
  * Publishing
  */
 bintray {
-    user = findProperty("bintrayUser") as String? ?: System.getenv("BINTRAY_USER")
+    user = findProperty("bintrayUser") as String? ?: System.getenv("BINTRAY_USERNAME")
     key = findProperty("bintrayKey") as String? ?: System.getenv("BINTRAY_API_KEY")
     override = true
 
