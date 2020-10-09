@@ -52,8 +52,8 @@ jobs:
         BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
         BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
 
-    - name: Upload Bintray Release
-      run: gradle bintrayUpload
+    - name: Upload and Publish Bintray Release
+      run: gradle bintrayUpload bintrayPublish
       env:
         RELEASE_VERSION: ${{ github.event.release.tag_name }}
         GITHUB_USERNAME: ${{ github.actor }}
@@ -62,15 +62,3 @@ jobs:
         OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
         BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-
-    - name: Publish Bintray Release
-      run: gradle bintrayPublish
-      env:
-        RELEASE_VERSION: ${{ github.event.release.tag_name }}
-        GITHUB_USERNAME: ${{ github.actor }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-        OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-        BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
-        BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
