@@ -1,0 +1,336 @@
+image:https://img.shields.io/github/workflow/status/snowe2010/pretty-print/Kotlin%20CI[GitHub Workflow Status]
+image:https://img.shields.io/bintray/v/snowe/maven/Pretty-Print[Bintray]
+image:https://img.shields.io/codecov/c/github/snowe2010/pretty-print[Codecov]
+
+== pretty-print - pp
+
+Adds a `pp(Any?)` and `T.pp()` method to pretty print any Java or Kotlin object.
+
+`pp(Any?)` takes any object and prints it in a pretty format.
+
+`T.pp()` pretty prints inside a method chain when called on an object inline.
+
+
+[%header,cols="1,3a"]
+|===
+|Approach
+|Instruction
+
+|Gradle
+|[source,groovy]
+----
+testImplementation "com.tylerthrailkill.helpers:pretty-print:{version}"
+----
+
+|Gradle Kotlin DSL
+|[source,kotlin]
+----
+testImplementation("com.tylerthrailkill.helpers:pretty-print:$version")
+----
+
+|Maven
+|[source,xml]
+----
+<dependency>
+    <groupId>com.tylerthrailkill.helpers</groupId>
+    <artifactId>pretty-print</artifactId>
+    <version>{version}</version>
+</dependency>
+----
+|===
+
+
+== API
+
+`pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out, wrappedLineWidth: Int = 80)`
+
+[%header,cols="1a,3a,1a"]
+|===
+|Parameter
+|Description
+|Default
+
+|``obj``
+|object to print
+| 
+
+|``tabSize``
+|changes the number of spaces used to indent each level of the output
+|``2``
+
+|``printStream``
+|changes the ``PrintStream`` you are printing to
+|``System.out``
+
+|``wrappedLineWidth``
+|changes the number of characters allowed before wrapping in a multiline string
+|`80`
+|===
+
+
+== Examples
+
+=== Main API
+
+
+.Top Level Method
+[%collapsible]
+====
+[source,kotlin]
+----
+data class TinyObject(var int: Int)
+pp(TinyObject(1))
+----
+
+[source,text]
+----
+TinyObject(
+  int = 1
+)
+----
+====
+
+.Inline method
+[%collapsible]
+====
+[source,kotlin]
+----
+data class TinyObject(var int: Int)
+fun callSomething(obj: Any?) {
+    println("inline wrapper function entered")
+}
+callSomething(TinyObject(1).pp())
+----
+
+[source,text]
+----
+TinyObject(
+  int = 1
+)
+inline wrapper function entered
+----
+====
+
+=== Other uses
+
+.List
+[%collapsible]
+====
+[source,kotlin]
+----
+pp(listOf("1", 2, 3.0, true))
+----
+
+[source,text]
+----
+[
+  "1",
+  2,
+  3.0,
+  true
+]
+----
+====
+
+.Object with list
+[%collapsible]
+====
+[source,kotlin]
+----
+data class OL(val list: List<String>)
+pp(OL(listOf("1")))
+----
+
+[source,text]
+----
+OL(
+  list = [
+           "1"
+         ]
+)
+----
+====
+
+.Map
+[%collapsible]
+====
+[source,kotlin]
+----
+pp(mapOf("key1" to "value1", "key2" to "value2"))
+----
+
+[source,text]
+----
+{
+  "key1" -> "value1",
+  "key2" -> "value2"
+}
+----
+====
+
+.Object with map
+[%collapsible]
+====
+[source,kotlin]
+----
+data class OM(val map: Map<Any, Any>)
+pp(OM(mapOf(1 to "value", "key" to 1)))
+----
+
+[source,text]
+----
+OM(
+  map = {
+          1 -> "value",
+          "key" -> 1
+        }
+)
+----
+====
+
+.Multiline strings
+[%collapsible]
+====
+[source,kotlin]
+----
+pp("Goodbye, cruel world. Goodbye, cruel lamp.", wrappedLineWidth = 22)
+----
+
+[source,kotlin]
+----
+"""
+Goodbye, cruel world.
+Goodbye, cruel lamp.
+"""
+----
+====
+
+.Multiline strings with unicode line breaking
+[%collapsible]
+====
+[source,kotlin]
+----
+pp("Goodbye, cruel world. Good­bye, cruel lamp.", wrappedLineWidth = 27)
+----
+
+[source,kotlin]
+----
+"""
+Goodbye, cruel world. Good­
+bye, cruel lamp.
+"""
+----
+
+[source,kotlin]
+----
+pp("😍️🥞😍️", wrappedLineWidth = 3)
+----
+
+[source,text]
+----
+"""
+😍️
+🥞
+😍️
+"""
+----
+====
+
+.Multiple fields
+[%collapsible]
+====
+[source,kotlin]
+----
+pp(SmallObject("Goodbye, cruel world. Goodbye, cruel lamp.", 1))
+----
+
+[source,kotlin]
+----
+SmallObject(
+  field1 = "Goodbye, cruel world. Goodbye, cruel lamp."
+  field2 = 1
+)
+----
+====
+
+.Different indent size
+[%collapsible]
+====
+[source,kotlin]
+----
+data class TinyObject(var int: Int)
+pp(TinyObject(1), tabSize = 0)
+----
+
+[source,text]
+----
+TinyObject(
+int = 1
+)
+----
+
+[source,kotlin]
+----
+data class TinyObject(var int: Int)
+pp(TinyObject(1), tabSize = 10)
+----
+
+[source,text]
+----
+TinyObject(
+          int = 1
+)
+----
+====
+
+.Different output stream
+[%collapsible]
+====
+[source,kotlin]
+----
+val stream = ByteArrayOutputStream()
+pp(TinyObject(1), printStream = PrintStream(stream))
+println(":::")
+print(stream.toString())
+println(":::")
+----
+
+[source,text]
+----
+:::
+TinyObject(
+  int = 1
+)
+:::
+----
+====
+
+.Cyclic references
+[%collapsible]
+====
+[source,kotlin]
+----
+data class O1(var c: O2? = null)
+data class O2(var c: O1? = null)
+val sco1 = O1()
+val sco2 = O2(sco1)
+sco1.c = sco2
+pp(sco1)
+----
+
+[source,text]
+----
+O1(
+  c = O2(
+    c = cyclic reference detected for 50699452
+  )
+)[$id=50699452]
+----
+====
+
+== ToDo
+
+* Test nullability cases
+* implement pretty print for `java*` classes
+* fix unicode line breaking with icu4j library characters
+* multiplatform
