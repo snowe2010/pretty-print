@@ -72,8 +72,10 @@ testImplementation("com.tylerthrailkill.helpers:pretty-print:$version")
 
 === Main API
 
-==== Top level method
 
+.Top Level Method
+[%collapsible]
+====
 [source,kotlin]
 ----
 data class TinyObject(var int: Int)
@@ -86,9 +88,11 @@ TinyObject(
   int = 1
 )
 ----
+====
 
-==== Inline method
-
+.Inline method
+[%collapsible]
+====
 [source,kotlin]
 ----
 data class TinyObject(var int: Int)
@@ -105,11 +109,13 @@ TinyObject(
 )
 inline wrapper function entered
 ----
+====
 
-### Other uses
+=== Other uses
 
-==== List
-
+.List
+[%collapsible]
+====
 [source,kotlin]
 ----
 pp(listOf("1", 2, 3.0, true))
@@ -124,9 +130,11 @@ pp(listOf("1", 2, 3.0, true))
   true
 ]
 ----
+====
 
-==== Object with list
-
+.Object with list
+[%collapsible]
+====
 [source,kotlin]
 ----
 data class OL(val list: List<String>)
@@ -141,9 +149,11 @@ OL(
          ]
 )
 ----
+====
 
-==== Map
-
+.Map
+[%collapsible]
+====
 [source,kotlin]
 ----
 pp(mapOf("key1" to "value1", "key2" to "value2"))
@@ -156,9 +166,11 @@ pp(mapOf("key1" to "value1", "key2" to "value2"))
   "key2" -> "value2"
 }
 ----
+====
 
-==== Object with map
-
+.Object with map
+[%collapsible]
+====
 [source,kotlin]
 ----
 data class OM(val map: Map<Any, Any>)
@@ -174,9 +186,11 @@ OM(
         }
 )
 ----
+====
 
-==== Multiline strings
-
+.Multiline strings
+[%collapsible]
+====
 [source,kotlin]
 ----
 pp("Goodbye, cruel world. Goodbye, cruel lamp.", wrappedLineWidth = 22)
@@ -189,9 +203,11 @@ Goodbye, cruel world.
 Goodbye, cruel lamp.
 """
 ----
+====
 
-==== Multiline strings with unicode line breaking
-
+.Multiline strings with unicode line breaking
+[%collapsible]
+====
 [source,kotlin]
 ----
 pp("Goodbye, cruel world. Good­bye, cruel lamp.", wrappedLineWidth = 27)
@@ -218,9 +234,11 @@ pp("😍️🥞😍️", wrappedLineWidth = 3)
 😍️
 """
 ----
+====
 
-==== Multiple fields
-
+.Multiple fields
+[%collapsible]
+====
 [source,kotlin]
 ----
 pp(SmallObject("Goodbye, cruel world. Goodbye, cruel lamp.", 1))
@@ -233,9 +251,11 @@ SmallObject(
   field2 = 1
 )
 ----
+====
 
-==== Different indent size
-
+.Different indent size
+[%collapsible]
+====
 [source,kotlin]
 ----
 data class TinyObject(var int: Int)
@@ -261,9 +281,11 @@ TinyObject(
           int = 1
 )
 ----
+====
 
-==== Different output stream
-
+.Different output stream
+[%collapsible]
+====
 [source,kotlin]
 ----
 val stream = ByteArrayOutputStream()
@@ -281,9 +303,11 @@ TinyObject(
 )
 :::
 ----
+====
 
-==== Cyclic references
-
+.Cyclic references
+[%collapsible]
+====
 [source,kotlin]
 ----
 data class O1(var c: O2? = null)
@@ -302,6 +326,7 @@ O1(
   )
 )[$id=50699452]
 ----
+====
 
 == ToDo
 
