@@ -35,7 +35,7 @@ dependencies {
     // logging
     implementation(group = "ch.qos.logback", name = "logback-classic", version = "1.3.0-alpha4")
     implementation(group = "org.slf4j", name = "slf4j-simple", version = "1.6.1")
-    implementation("io.github.microutils:kotlin-logging:1.6.22")
+    implementation("io.github.microutils:kotlin-logging:2.0.4")
 
     testImplementation("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
