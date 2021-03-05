@@ -35,7 +35,7 @@ dependencies {
     // logging
     implementation(group = "ch.qos.logback", name = "logback-classic", version = "1.3.0-alpha4")
     implementation(group = "org.slf4j", name = "slf4j-simple", version = "1.6.1")
-    implementation("io.github.microutils:kotlin-logging:1.6.22")
+    implementation("io.github.microutils:kotlin-logging:2.0.6")
 
     testImplementation("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
@@ -44,7 +44,7 @@ dependencies {
     testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
 
     testImplementation("io.kotest:kotest-runner-junit5:4.3.0.621-SNAPSHOT") // for kotest framework
-    testImplementation("io.kotest:kotest-plugins-pitest:4.3.0.621-SNAPSHOT")
+    testImplementation("io.kotest:kotest-plugins-pitest:4.6.0.151-SNAPSHOT")
 }
 
 tasks {
