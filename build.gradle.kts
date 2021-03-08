@@ -30,7 +30,7 @@ dependencies {
     implementation(kotlin("reflect"))
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
-    implementation("com.ibm.icu:icu4j:63.1")
+    implementation("com.ibm.icu:icu4j:68.2")
 
     // logging
     implementation(group = "ch.qos.logback", name = "logback-classic", version = "1.3.0-alpha5")
