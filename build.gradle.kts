@@ -38,7 +38,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:2.0.6")
 
     testImplementation("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.4.0")
-    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
     testImplementation("io.mockk:mockk:1.10.6")
     testImplementation("com.beust:klaxon:5.5") // used to parse naughty list
     testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
