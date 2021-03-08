@@ -44,7 +44,7 @@ dependencies {
     testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
 
     testImplementation("io.kotest:kotest-runner-junit5:4.4.3") // for kotest framework
-    testImplementation("io.kotest:kotest-plugins-pitest:4.4.2")
+    testImplementation("io.kotest:kotest-plugins-pitest:4.4.3")
 }
 
 tasks {
