@@ -43,7 +43,7 @@ dependencies {
     testImplementation("com.beust:klaxon:5.5") // used to parse naughty list
     testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.8.0-SNAPSHOT")
 
-    testImplementation("io.kotest:kotest-runner-junit5:4.4.3") // for kotest framework
+    testImplementation("io.kotest:kotest-runner-junit5:4.6.1") // for kotest framework
     testImplementation("io.kotest:kotest-plugins-pitest:4.4.3")
 }
 
