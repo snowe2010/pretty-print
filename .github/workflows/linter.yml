@@ -17,6 +17,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILTER_REGEX_EXCLUDE: (.*gradle/.*|.*.github/.*|.*\.txt)
-          VALIDATE_JAVA: true
-          VALIDATE_KOTLIN: true
+#          VALIDATE_JAVA: true
+#          VALIDATE_KOTLIN: true
           VALIDATE_BASH: false
