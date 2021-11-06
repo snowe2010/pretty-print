@@ -15,7 +15,7 @@ plugins {
     `java-library`
     jacoco
     id("com.jfrog.bintray") version "1.8.5"
-    kotlin("jvm") version "1.4.31"
+    kotlin("jvm") version "1.5.31"
     id("info.solidsoft.pitest") version "1.7.0"
 }
 
@@ -29,7 +29,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     testImplementation(kotlin("test"))
-    testImplementation(kotlin("test-junit"))
+    testImplementation(kotlin("test-junit5"))
     implementation("com.ibm.icu:icu4j:63.1")
 
     // logging
@@ -89,6 +89,10 @@ configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
 java {
     withSourcesJar()
     withJavadocJar()
+}
+
+jacoco {
+    toolVersion = "0.8.7"
 }
 
 /**

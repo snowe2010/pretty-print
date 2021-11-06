@@ -103,84 +103,84 @@ MassiveObject(
                      number = 1
                      emailAddresses = [
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "a@b.com"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "🎃@zack.is"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "ñoñó1234@server.com"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "δοκιμή@παράδειγμα.δοκιμή"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "我買@屋企.香港"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "二ノ宮@黒川.日本"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "чебурашка@ящик-с-апельсинами.рф"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "संपर्क@डाटामेल.भारत"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "simple@example.com"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "very.common@example.com"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "disposable.style.email.with+symbol@example.com"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "other.email-with-hyphen@example.com"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "fully-qualified-domain@example.com"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "user.name+tag+sorting@example.com"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "x@example.com"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "example-indeed@strange-example.com"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "admin@mailserver1"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "example@s.example"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = "" "@example.org"
+                                          serialVersionUUID = 1
                                         ),
                                         EmailAddress(
-                                          serialVersionUUID = 1
                                           emailAddress = ""john..doe"@example.org"
+                                          serialVersionUUID = 1
                                         )
                                       ]
                      nestedObjectsListToMap = [
