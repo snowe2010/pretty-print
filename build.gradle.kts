@@ -5,7 +5,7 @@ val githubUsername = "snowe2010"
 val repoName = "pretty-print"
 
 repositories {
-    jcenter()
+//    jcenter()
     mavenCentral()
     maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
 }
@@ -41,7 +41,7 @@ dependencies {
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
     testImplementation("io.mockk:mockk:1.10.6")
     testImplementation("com.beust:klaxon:5.5") // used to parse naughty list
-    testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.8.0-SNAPSHOT")
+    testImplementation("org.junit.platform:junit-platform-engine:1.8.1")
 
     testImplementation("io.kotest:kotest-runner-junit5:4.4.3") // for kotest framework
     testImplementation("io.kotest:kotest-plugins-pitest:4.4.3")
