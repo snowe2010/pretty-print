@@ -16,7 +16,7 @@ plugins {
     jacoco
     id("com.jfrog.bintray") version "1.8.5"
     kotlin("jvm") version "1.4.31"
-    id("info.solidsoft.pitest") version "1.6.0"
+    id("info.solidsoft.pitest") version "1.7.0"
 }
 
 println("+++++++${System.getenv("RELEASE_VERSION")}++++++")
