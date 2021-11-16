@@ -39,7 +39,7 @@ dependencies {
 
     testImplementation("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.0")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
-    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("io.mockk:mockk:1.12.1")
     testImplementation("com.beust:klaxon:5.5") // used to parse naughty list
     testImplementation("org.junit.platform:junit-platform-engine:1.8.1")
 
