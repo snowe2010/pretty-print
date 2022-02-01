@@ -42,7 +42,7 @@ testImplementation("com.tylerthrailkill.helpers:pretty-print:$version")
 
 == API
 
-`pp(obj: Any?, tabSize: Int = 2, printStream: PrintStream = System.out, wrappedLineWidth: Int = 80)`
+`pp(obj: Any?, indent: Int = 2, writeTo: Appendable = System.out, wrappedLineWidth: Int = 80)
 
 [%header,cols="1a,3a,1a"]
 |===
@@ -54,12 +54,12 @@ testImplementation("com.tylerthrailkill.helpers:pretty-print:$version")
 |object to print
 | 
 
-|``tabSize``
+|``indent``
 |changes the number of spaces used to indent each level of the output
 |``2``
 
-|``printStream``
-|changes the ``PrintStream`` you are printing to
+|``writeTo``
+|changes the ``Appendable`` you are printing to
 |``System.out``
 
 |``wrappedLineWidth``
