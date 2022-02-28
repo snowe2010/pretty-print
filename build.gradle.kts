@@ -34,12 +34,12 @@ dependencies {
 
     // logging
     implementation(group = "ch.qos.logback", name = "logback-classic", version = "1.3.0-alpha10")
-    implementation(group = "org.slf4j", name = "slf4j-simple", version = "1.7.32")
+    implementation(group = "org.slf4j", name = "slf4j-simple", version = "1.7.36")
     implementation("io.github.microutils:kotlin-logging:2.0.11")
 
     testImplementation("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.0")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
-    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("io.mockk:mockk:1.12.3")
     testImplementation("com.beust:klaxon:5.5") // used to parse naughty list
     testImplementation("org.junit.platform:junit-platform-engine:1.8.1")
 
