@@ -41,7 +41,7 @@ dependencies {
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
     testImplementation("io.mockk:mockk:1.12.3")
     testImplementation("com.beust:klaxon:5.5") // used to parse naughty list
-    testImplementation("org.junit.platform:junit-platform-engine:1.8.1")
+    testImplementation("org.junit.platform:junit-platform-engine:1.9.0")
 
     testImplementation("io.kotest:kotest-runner-junit5:4.6.3") // for kotest framework
     testImplementation("io.kotest:kotest-plugins-pitest:4.4.3")
