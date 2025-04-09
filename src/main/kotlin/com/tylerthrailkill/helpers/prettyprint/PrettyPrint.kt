@@ -3,9 +3,61 @@ package com.tylerthrailkill.helpers.prettyprint
 import com.ibm.icu.text.BreakIterator
 import mu.KLogging
 import java.lang.reflect.Modifier
+import java.lang.reflect.Type
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.util.*
+
+
+/**
+ * Configuration object for the pretty print function.
+ *
+ * @property [defaultIndent] The default number of spaces to use to indent. Defaults to 2.
+ * @property [defaultWrappedLineWidth] The default number of characters of a string that should be on a line. Defaults to 80.
+ * @property [printNull] Whether or not to print null values. Defaults to true.
+ * @property [registerPrintAdapter] A function to register a custom pretty print adapter for a specific type.
+ * @property [getPrintAdapter] A function to get the custom pretty print adapter for a specific type.
+ */
+object PrettyPrintConfig {
+    private val adapters: MutableMap<Type, ((x: Any?) -> List<String>)> = mutableMapOf()
+
+    var defaultIndent = 2
+    var defaultWrappedLineWidth = 80
+    var printNull = true
+
+    /**
+     * Register a custom pretty print adapter for a specific type.
+     *
+     * Example: print adapter for org.threeten.bp.OffsetDateTime
+     *
+     * ```kotlin
+     * PrettyPrintConfig.registerPrintAdapter(OffsetDateTime::class.java) {
+     *    listOf( "OffsetDateTime(${it.toString()})" )
+     * }
+     * ```
+     * or
+     * ```kotlin
+     *  PrettyPrintConfig.registerPrintAdapter(OffsetDateTime::class.java) {
+     *     listOf(
+     *        "OffsetDateTime(",
+     *        "  date = ${it.toLocalDate()}",
+     *        "  time = ${it.toLocalTime()}",
+     *        ")"
+     *     )
+     *  }
+     * ```
+     *
+     * @param [type] The type to register the adapter for.
+     * @param [adapter] The custom pretty print adapter function.
+     */
+    fun <T> registerPrintAdapter(type: Class<T>, adapter: (x: T) -> List<String>) {
+        adapters[type] = adapter as (Any?) -> List<String>
+    }
+
+    fun getPrintAdapter(type: Type): ((x: Any?) -> List<String>)? {
+        return if (adapters.containsKey(type)) adapters[type] else null
+    }
+}
 
 /**
  * Pretty print function.
@@ -18,7 +70,7 @@ import java.util.*
  * @param [wrappedLineWidth] optional param that specifies how many characters of a string should be on a line.
  */
 @JvmOverloads
-fun pp(obj: Any?, indent: Int = 2, writeTo: Appendable = System.out, wrappedLineWidth: Int = 80) =
+fun pp(obj: Any?, indent: Int = PrettyPrintConfig.defaultIndent, writeTo: Appendable = System.out, wrappedLineWidth: Int = PrettyPrintConfig.defaultWrappedLineWidth) =
     PrettyPrinter(indent, writeTo, wrappedLineWidth).pp(obj)
 
 /**
@@ -34,10 +86,12 @@ fun pp(obj: Any?, indent: Int = 2, writeTo: Appendable = System.out, wrappedLine
  */
 @JvmOverloads
 fun <T> T.pp(
-    indent: Int = 2,
+    indent: Int = PrettyPrintConfig.defaultIndent,
     writeTo: Appendable = System.out,
-    wrappedLineWidth: Int = 80
-): T = this.also { pp(it, indent, writeTo, wrappedLineWidth) }
+    wrappedLineWidth: Int = PrettyPrintConfig.defaultWrappedLineWidth
+): T = this.also {
+    pp(it, indent, writeTo, wrappedLineWidth)
+}
 
 /**
  * Class for performing pretty print operations on any object with customized indentation, target output, and line wrapping
@@ -100,13 +154,19 @@ private class PrettyPrinter(
         }
 
         visited.add(id)
-        when {
-            obj is Iterable<*> -> ppIterable(obj, collectionElementPad)
-            obj is Map<*, *> -> ppMap(obj, collectionElementPad)
-            obj is String -> ppString(obj, collectionElementPad)
-            obj is Enum<*> -> ppEnum(obj)
-            obj.isAtomic() -> ppAtomic(obj)
-            obj is Any -> ppPlainObject(obj, objectFieldPad)
+        val objType = obj?.javaClass ?: Any::class.java
+        val printAdapter = PrettyPrintConfig.getPrintAdapter(objType)
+        if (printAdapter != null) {
+            ppMultiString(printAdapter(obj), collectionElementPad)
+        } else {
+            when {
+                obj is Iterable<*> -> ppIterable(obj, collectionElementPad)
+                obj is Map<*, *> -> ppMap(obj, collectionElementPad)
+                obj is String -> ppString(obj, collectionElementPad)
+                obj is Enum<*> -> ppEnum(obj)
+                obj.isAtomic() -> ppAtomic(obj)
+                obj is Any -> ppPlainObject(obj, objectFieldPad)
+            }
         }
         visited.remove(id)
 
@@ -121,19 +181,33 @@ private class PrettyPrinter(
      * of an application to each element is on its own line, separated by a separator. `currentDepth` specifies the
      * indentation level of any closing bracket.
      */
-    private fun <T> Iterable<T>.ppContents(currentDepth: String, separator: String = "", f: (T) -> Unit) {
+    private fun <T> Iterable<T>.ppContents(currentDepth: String, separator: String = "", f: (T) -> Boolean) {
         val list = this.toList()
 
-        if (!list.isEmpty()) {
-            f(list.first())
-            list.drop(1).forEach {
-                writeLine(separator)
-                f(it)
+        if (list.isNotEmpty()) {
+            list.forEach {
+                f(it).also { hasNewLine ->
+                    if (hasNewLine) {
+                        writeLine(separator)
+                    }
+                }
             }
-            writeLine()
         }
 
         write(currentDepth)
+    }
+
+    private fun ppMultiString(ss: List<String>, currentDepth: String) {
+        if (ss.isNotEmpty()) {
+            for (line in 0 until ss.size) {
+                val str: String = if (line == 0) ss[line] else "$currentDepth${ss[line]}"
+                if (line != ss.size - 1) {
+                    writeLine(str)
+                } else {
+                    write(str)
+                }
+            }
+        }
     }
 
     private fun ppPlainObject(obj: Any, currentDepth: String) {
@@ -147,11 +221,16 @@ private class PrettyPrinter(
                 val staticMatchesParent = Modifier.isStatic(it.modifiers) && it.type == obj.javaClass
 
                 it.isAccessible = true
-                write("$increasedDepth${it.name} = ")
-                val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3) // 3 is " = ".length in prev line
                 val fieldValue = it.get(obj)
-                logger.debug { "field value is ${fieldValue.javaClass}" }
-                ppAny(fieldValue, extraIncreasedDepth, increasedDepth, staticMatchesParent)
+                if (fieldValue == null && !PrettyPrintConfig.printNull) {
+                    return@ppContents false
+                } else {
+                    val extraIncreasedDepth = deepen(increasedDepth, it.name.length + 3) // 3 is " = ".length in prev line
+                    write("$increasedDepth${it.name} = ")
+                    logger.debug { "field value is ${fieldValue.javaClass}" }
+                    ppAny(fieldValue, extraIncreasedDepth, increasedDepth, staticMatchesParent)
+                    return@ppContents true
+                }
             }
         write(')')
     }
@@ -159,10 +238,16 @@ private class PrettyPrinter(
     private fun ppIterable(obj: Iterable<*>, currentDepth: String) {
         val increasedDepth = deepen(currentDepth)
 
+        if (obj.toList().isEmpty()) {
+            write("[]")
+            return
+        }
+
         writeLine('[')
         obj.ppContents(currentDepth, ",") {
             write(increasedDepth)
             ppAny(it, increasedDepth)
+            return@ppContents true
         }
         write(']')
     }
@@ -176,6 +261,7 @@ private class PrettyPrinter(
             ppAny(it.key, increasedDepth)
             write(" -> ")
             ppAny(it.value, increasedDepth)
+            return@ppContents true
         }
         write('}')
     }
@@ -249,7 +335,7 @@ private class PrettyPrinter(
  */
 private fun Any?.isAtomic(): Boolean =
     this == null
-            || this is Char || this is Number || this is Boolean || this is BigInteger || this is BigDecimal || this is UUID
+            || this is Char || this is BigInteger || this is BigDecimal || this is Number || this is Boolean || this is UUID
 
 // For syntactic sugar
 operator fun <T> Set<T>.get(x: T): Boolean = this.contains(x)
