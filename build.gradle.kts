@@ -13,7 +13,7 @@ plugins {
     `maven-publish`
     `java-library`
     jacoco
-    kotlin("jvm") version "2.1.0"
+    kotlin("jvm") version "2.2.0"
     id("info.solidsoft.pitest") version "1.19.0-rc.1"
 }
 
