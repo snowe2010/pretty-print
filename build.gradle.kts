@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val githubUsername = "snowe2010"
@@ -44,11 +45,13 @@ dependencies {
     testImplementation("io.kotest:kotest-plugins-pitest:4.4.3")
 }
 
-tasks {
-    withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_1_8)
     }
+}
 
+tasks {
     withType<Wrapper> {
         distributionType = Wrapper.DistributionType.ALL
     }
@@ -184,5 +187,12 @@ publishing {
                 }
             }
         }
+    }
+}
+
+develocity {
+    buildScan {
+        termsOfUseUrl.set("https://gradle.com/help/legal-terms-of-use")
+        termsOfUseAgree.set("yes")
     }
 }
