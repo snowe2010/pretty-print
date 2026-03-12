@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val githubUsername = "snowe2010"
 val repoName = "pretty-print"
@@ -28,11 +27,11 @@ dependencies {
     implementation(kotlin("reflect"))
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
-    implementation("com.ibm.icu:icu4j:63.1")
+    implementation("com.ibm.icu:icu4j:63.2")
 
     // logging
-    implementation(group = "ch.qos.logback", name = "logback-classic", version = "1.3.0-alpha10")
-    implementation(group = "org.slf4j", name = "slf4j-simple", version = "1.7.32")
+    implementation("ch.qos.logback:logback-classic:1.5.32")
+    implementation("org.slf4j:slf4j-simple:1.7.32")
     implementation("io.github.microutils:kotlin-logging:2.0.11")
 
     testImplementation("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.0")
@@ -41,13 +40,14 @@ dependencies {
     testImplementation("com.beust:klaxon:5.5") // used to parse naughty list
     testImplementation("org.junit.platform:junit-platform-engine:1.8.1")
 
-    testImplementation("io.kotest:kotest-runner-junit5:4.6.3") // for kotest framework
-    testImplementation("io.kotest:kotest-plugins-pitest:4.4.3")
+    testImplementation("io.kotest:kotest-runner-junit5:6.1.6") // for kotest framework
+    testImplementation("io.kotest:kotest-extensions-pitest:6.1.6")
+    testImplementation("org.pitest:pitest-junit5-plugin:1.2.3")
 }
 
 kotlin {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_1_8)
+        jvmTarget.set(JvmTarget.JVM_11)
     }
 }
 
@@ -64,11 +64,11 @@ tasks {
         reports {
             xml.apply {
                 required.set(true)
-                outputLocation.set(file("${layout.buildDirectory}/jacoco/report.xml"))
+                outputLocation.set(file("${layout.buildDirectory.get()}/jacoco/report.xml"))
             }
             html.apply {
                 required.set(true)
-                outputLocation.set(file("${layout.buildDirectory}/jacoco/html_report"))
+                outputLocation.set(file("${layout.buildDirectory.get()}/jacoco/html_report"))
             }
         }
         dependsOn("test")
@@ -81,16 +81,14 @@ sourceSets.test {
 }
 
 configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
-//    testPlugin.set("Kotest")    // <-- Telling Pitest that we're using Kotest
     targetClasses.set(listOf("com.tylerthrailkill.*"))
-//    avoidCallsTo.set(listOf("java.util.logging", "org.apache.log4j", "org.slf4j", "org.apache.commons.logging", "mu"))
 }
 
 java {
     withSourcesJar()
     withJavadocJar()
     toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
+        languageVersion = JavaLanguageVersion.of(11)
     }
 }
 

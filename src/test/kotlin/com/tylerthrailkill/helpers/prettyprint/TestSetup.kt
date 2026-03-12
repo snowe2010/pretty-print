@@ -65,7 +65,7 @@ fun mapTo(expected: String) = object : Matcher<ByteArrayOutputStream> {
     override fun test(value: ByteArrayOutputStream) =
         MatcherResult(
             expected.trimIndent() == value.toString().trim().replace("\r",""),
-            "$value does not match expected output $expected",
-            "$value does not match expected output $expected"
+            {"$value does not match expected output $expected"},
+            {"$value does not match expected output $expected"}
         )
 }
