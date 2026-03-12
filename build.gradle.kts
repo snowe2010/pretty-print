@@ -14,6 +14,7 @@ plugins {
     jacoco
     kotlin("jvm") version "2.2.0"
     id("info.solidsoft.pitest") version "1.19.0-rc.1"
+    id("com.arcmutate.github") version "2.3.2"
 }
 
 println("+++++++${System.getenv("RELEASE_VERSION")}++++++")
@@ -34,6 +35,8 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:1.7.32")
     implementation("io.github.microutils:kotlin-logging:2.0.11")
 
+    // Test
+
     testImplementation("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.0")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
     testImplementation("io.mockk:mockk:1.12.3")
@@ -43,6 +46,9 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5:6.1.6") // for kotest framework
     testImplementation("io.kotest:kotest-extensions-pitest:6.1.6")
     testImplementation("org.pitest:pitest-junit5-plugin:1.2.3")
+    pitest("com.arcmutate:base:1.7.0")
+    pitest("com.arcmutate:pitest-kotlin-plugin:1.5.0")
+    pitest("com.arcmutate:pitest-accelerator-junit5:1.2.2")
 }
 
 kotlin {
@@ -80,8 +86,12 @@ sourceSets.test {
     java.srcDirs("src/test/kotlin")
 }
 
-configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
+ pitest {
     targetClasses.set(listOf("com.tylerthrailkill.*"))
+    pitestVersion = "1.22.1"
+    features = listOf("+KOTLIN_NO_NULLS", "+auto_threads")
+    mutators.addAll("STRONGER", "EXTENDED", "KOTLIN_RETURNS", "KOTLIN_REMOVE_DISTINCT", "KOTLIN_REMOVE_SORTED")
+//    junit5PluginVersion = "1.2.3" // immediately breaks the build, I don't know why. https://github.com/szpak/gradle-pitest-plugin/issues/396
 }
 
 java {
@@ -99,7 +109,7 @@ jacoco {
 /**
  * Publishing
  */
-//bintray {
+// bintray {
 //    user = findProperty("bintrayUser") as String? ?: System.getenv("BINTRAY_USERNAME")
 //    key = findProperty("bintrayKey") as String? ?: System.getenv("BINTRAY_API_KEY")
 //    override = true
@@ -133,7 +143,7 @@ jacoco {
 //    }
 //    dryRun = false
 //    publish = true
-//}
+// }
 
 publishing {
     repositories {
