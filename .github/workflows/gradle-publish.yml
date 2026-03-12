@@ -27,11 +27,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
+    - uses: actions/checkout@v6
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v5
       with:
-        java-version: 1.8
+        java-version: 11
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
@@ -51,15 +52,3 @@ jobs:
         OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
         BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-
-    - name: Upload and Publish Bintray Release
-      run: gradle bintrayUpload bintrayPublish
-      env:
-        RELEASE_VERSION: ${{ github.event.release.tag_name }}
-        GITHUB_USERNAME: ${{ github.actor }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-        OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-        BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
-        BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-        GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
