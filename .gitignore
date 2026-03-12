@@ -46,5 +46,4 @@ hs_err_pid*
 
 ## Intellij
 
-.idea/workspace.xml
-.idea/tasks.xml
+.idea/
