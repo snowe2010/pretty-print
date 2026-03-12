@@ -12,8 +12,8 @@ plugins {
     `maven-publish`
     `java-library`
     jacoco
-    kotlin("jvm") version "1.6.0"
-    id("info.solidsoft.pitest") version "1.7.0"
+    kotlin("jvm") version "2.1.0"
+    id("info.solidsoft.pitest") version "1.19.0-rc.1"
 }
 
 println("+++++++${System.getenv("RELEASE_VERSION")}++++++")
@@ -61,11 +61,11 @@ tasks {
         reports {
             xml.apply {
                 required.set(true)
-                outputLocation.set(file("$buildDir/jacoco/report.xml"))
+                outputLocation.set(file("${layout.buildDirectory}/jacoco/report.xml"))
             }
             html.apply {
                 required.set(true)
-                outputLocation.set(file("$buildDir/jacoco/html_report"))
+                outputLocation.set(file("${layout.buildDirectory}/jacoco/html_report"))
             }
         }
         dependsOn("test")
@@ -78,7 +78,7 @@ sourceSets.test {
 }
 
 configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
-    testPlugin.set("Kotest")    // <-- Telling Pitest that we're using Kotest
+//    testPlugin.set("Kotest")    // <-- Telling Pitest that we're using Kotest
     targetClasses.set(listOf("com.tylerthrailkill.*"))
 //    avoidCallsTo.set(listOf("java.util.logging", "org.apache.log4j", "org.slf4j", "org.apache.commons.logging", "mu"))
 }
@@ -86,10 +86,13 @@ configure<info.solidsoft.gradle.pitest.PitestPluginExtension> {
 java {
     withSourcesJar()
     withJavadocJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
 }
 
 jacoco {
-    toolVersion = "0.8.7"
+    toolVersion = "0.8.8"
 }
 
 /**
