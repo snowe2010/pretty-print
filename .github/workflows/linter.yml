@@ -38,3 +38,4 @@ jobs:
           VALIDATE_BASH: false
           # tries to format json with weird defaults, and configuring it requires adding a .biome.json file to the root, which I don't want to do.
           VALIDATE_BIOME_FORMAT: false
+          VALIDATE_JSCPD: false
