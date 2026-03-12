@@ -1,11 +1,9 @@
-import com.jfrog.bintray.gradle.BintrayExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val githubUsername = "snowe2010"
 val repoName = "pretty-print"
 
 repositories {
-//    jcenter()
     mavenCentral()
     maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
 }
@@ -14,7 +12,6 @@ plugins {
     `maven-publish`
     `java-library`
     jacoco
-    id("com.jfrog.bintray") version "1.8.5"
     kotlin("jvm") version "1.6.0"
     id("info.solidsoft.pitest") version "1.7.0"
 }
@@ -63,12 +60,12 @@ tasks {
     val report = withType<JacocoReport> {
         reports {
             xml.apply {
-                isEnabled = true
-                this.destination = file("$buildDir/jacoco/report.xml")
+                required.set(true)
+                outputLocation.set(file("$buildDir/jacoco/report.xml"))
             }
             html.apply {
-                isEnabled = true
-                this.destination = file("$buildDir/jacoco/html_report")
+                required.set(true)
+                outputLocation.set(file("$buildDir/jacoco/html_report"))
             }
         }
         dependsOn("test")
@@ -98,41 +95,41 @@ jacoco {
 /**
  * Publishing
  */
-bintray {
-    user = findProperty("bintrayUser") as String? ?: System.getenv("BINTRAY_USERNAME")
-    key = findProperty("bintrayKey") as String? ?: System.getenv("BINTRAY_API_KEY")
-    override = true
-
-    this.setPublications("release")
-    
-    with(pkg) {
-        userOrg = "snowe"
-        repo = "maven"
-        name = "Pretty-Print"
-        desc = "Pretty printing of objects"
-
-        setLicenses("MIT")
-        websiteUrl = "https://github.com/$githubUsername/${project.name}"
-        issueTrackerUrl = "https://github.com/$githubUsername/${project.name}/issues"
-        vcsUrl = "https://github.com/$githubUsername/${project.name}.git"
-        setLabels("kotlin")
-        with(version) {
-            this.name = Ci.publishVersion
-            with(gpg) {
-                sign = true
-                passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
-            }
-            with(mavenCentralSync) {
-                user = findProperty("sonatypeUser") as String?
-                    ?: System.getenv("OSSRH_USERNAME") //OSS user token: mandatory
-                password = findProperty("sonatypePassword") as String?
-                    ?: System.getenv("OSSRH_PASSWORD") //OSS user password: mandatory
-            }
-        }
-    }
-    dryRun = false
-    publish = true
-}
+//bintray {
+//    user = findProperty("bintrayUser") as String? ?: System.getenv("BINTRAY_USERNAME")
+//    key = findProperty("bintrayKey") as String? ?: System.getenv("BINTRAY_API_KEY")
+//    override = true
+//
+//    this.setPublications("release")
+//
+//    with(pkg) {
+//        userOrg = "snowe"
+//        repo = "maven"
+//        name = "Pretty-Print"
+//        desc = "Pretty printing of objects"
+//
+//        setLicenses("MIT")
+//        websiteUrl = "https://github.com/$githubUsername/${project.name}"
+//        issueTrackerUrl = "https://github.com/$githubUsername/${project.name}/issues"
+//        vcsUrl = "https://github.com/$githubUsername/${project.name}.git"
+//        setLabels("kotlin")
+//        with(version) {
+//            this.name = Ci.publishVersion
+//            with(gpg) {
+//                sign = true
+//                passphrase = findProperty("gpgPassphrase") as String? ?: System.getenv("GPG_PASSPHRASE")
+//            }
+//            with(mavenCentralSync) {
+//                user = findProperty("sonatypeUser") as String?
+//                    ?: System.getenv("OSSRH_USERNAME") //OSS user token: mandatory
+//                password = findProperty("sonatypePassword") as String?
+//                    ?: System.getenv("OSSRH_PASSWORD") //OSS user password: mandatory
+//            }
+//        }
+//    }
+//    dryRun = false
+//    publish = true
+//}
 
 publishing {
     repositories {
