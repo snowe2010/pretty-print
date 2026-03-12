@@ -3,22 +3,22 @@ name: Linter
 # Run this workflow every time a new commit pushed to your repository
 on: push
 
+permissions:
+  # contents permission to clone the repository
+  contents: read
+  packages: read
+  # issues and pull-requests permissions to write results as pull
+  # request comments. Omit them if you don't need summary comments
+  issues: write
+  pull-requests: write
+  # To report GitHub Actions status checks. Omit if you don't need
+  # to update commit status
+  statuses: write
+
 jobs:
   lint:
     name: Lint code base
     runs-on: ubuntu-latest
-
-    permissions:
-      # contents permission to clone the repository
-      contents: read
-      packages: read
-      # issues and pull-requests permissions to write results as pull
-      # request comments. Omit them if you don't need summary comments
-      issues: write
-      pull-requests: write
-      # To report GitHub Actions status checks. Omit if you don't need
-      # to update commit status
-      statuses: write
 
     steps:
       - name: Checkout code
@@ -36,3 +36,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILTER_REGEX_EXCLUDE: (.*gradle/.*|.*.github/.*|.*\.txt)
           VALIDATE_BASH: false
+          # tries to format json with weird defaults, and configuring it requires adding a .biome.json file to the root, which I don't want to do.
+          VALIDATE_BIOME_FORMAT: false

@@ -2,9 +2,12 @@ name: Kotlin CI
 
 on: push
 
+permissions:
+  packages: write
+
 jobs:
   build:
-
+    name: Build and Publish snapshots
     runs-on: ubuntu-latest
 
     steps:
@@ -29,7 +32,6 @@ jobs:
         OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
         BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-
 
     - name: Bundle the build report
       if: failure()
