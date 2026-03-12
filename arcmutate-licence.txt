@@ -1,0 +1,7 @@
+#Licence file for arcmutate mutation testing https://www.arcmutate.com
+#Thu Mar 12 09:44:05 GMT 2026
+expires=12/03/2028
+keyVersion=1
+packages=com.tylerthrailkill.*
+signature=hiB1uwoTcjkUCTylttPkYOGvS/h5P/hHAhka8eXYaJF/GV/J1Px/UJkMin0/iWnf+wJsWh5E32YTs3Gix2GbXc0V1+QPY6+jU10ICL6/wSbIJQQMHAKiOa4gJOhoE+C7bcvot3F1byeAaayq9JBDBtdvENes6t2vFJqA5s65J7Q\=
+type=OSSS
