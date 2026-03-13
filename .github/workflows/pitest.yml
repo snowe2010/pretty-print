@@ -13,6 +13,7 @@ permissions:
   # To report GitHub Actions status checks. Omit if you don't need
   # to update commit status
   statuses: write
+  checks: write # for the upload I think
 
 jobs:
   pitest:
