@@ -13,7 +13,7 @@ plugins {
     `java-library`
     jacoco
     kotlin("jvm") version "2.2.0"
-    id("info.solidsoft.pitest") version "1.19.0-rc.1"
+    id("info.solidsoft.pitest") version "1.19.0-rc.3"
     id("com.arcmutate.github") version "2.3.2"
 }
 
@@ -32,20 +32,17 @@ dependencies {
 
     // logging
     implementation("ch.qos.logback:logback-classic:1.5.32")
-    implementation("org.slf4j:slf4j-simple:1.7.32")
     implementation("io.github.microutils:kotlin-logging:2.0.11")
 
     // Test
 
-    testImplementation("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.0")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
     testImplementation("io.mockk:mockk:1.12.3")
     testImplementation("com.beust:klaxon:5.5") // used to parse naughty list
     testImplementation("org.junit.platform:junit-platform-engine:1.8.1")
 
     testImplementation("io.kotest:kotest-runner-junit5:6.1.6") // for kotest framework
-    testImplementation("io.kotest:kotest-extensions-pitest:6.1.6")
-    testImplementation("org.pitest:pitest-junit5-plugin:1.2.3")
+    pitest("io.kotest:kotest-extensions-pitest:6.1.6")
     pitest("com.arcmutate:base:1.7.0")
     pitest("com.arcmutate:pitest-kotlin-plugin:1.5.0")
     pitest("com.arcmutate:pitest-accelerator-junit5:1.2.2")
@@ -195,12 +192,5 @@ publishing {
                 }
             }
         }
-    }
-}
-
-develocity {
-    buildScan {
-        termsOfUseUrl.set("https://gradle.com/help/legal-terms-of-use")
-        termsOfUseAgree.set("yes")
     }
 }
