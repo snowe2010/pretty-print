@@ -88,7 +88,6 @@ sourceSets.test {
     pitestVersion = "1.22.1"
     features = listOf("+KOTLIN_NO_NULLS", "+auto_threads")
     mutators.addAll("STRONGER", "EXTENDED", "KOTLIN_RETURNS", "KOTLIN_REMOVE_DISTINCT", "KOTLIN_REMOVE_SORTED")
-//    junit5PluginVersion = "1.2.3" // immediately breaks the build, I don't know why. https://github.com/szpak/gradle-pitest-plugin/issues/396
 }
 
 java {
